@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ragdoll Playground: Multiplayer Physics Sandbox</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Rajdhani:wght@600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #7dd3fc;
+            font-family: 'Outfit', 'Rajdhani', sans-serif;
+            color: #0f172a;
+        }
+
+        #canvas-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Crosshair */
+        #crosshair {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 20;
+        }
+        #crosshair::before, #crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(2, 132, 199, 0.9);
+            box-shadow: 0 0 6px rgba(2, 132, 199, 0.6);
+        }
+        #crosshair::before {
+            top: 11px;
+            left: 0;
+            width: 24px;
+            height: 2px;
+        }
+        #crosshair::after {
+            top: 0;
+            left: 11px;
+            width: 2px;
+            height: 24px;
+        }
+        #crosshair .circle {
+            position: absolute;
+            inset: 4px;
+            border: 2px solid rgba(2, 132, 199, 0.7);
+            border-radius: 50%;
+        }
+
+        /* Grab Notification Hint */
+        #grab-hint {
+            position: fixed;
+            top: 55%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            color: #38bdf8;
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 6px 18px;
+            border-radius: 999px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            z-index: 22;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        }
+        #grab-hint.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* HUD Overlays */
+        #hud {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+        }
+
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .title-badge {
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid #38bdf8;
+            border-radius: 20px;
+            padding: 14px 24px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        .title-badge h1 {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: #0284c7;
+            text-transform: uppercase;
+        }
+        .title-badge p {
+            font-size: 13px;
+            color: #475569;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            font-weight: 700;
+        }
+
+        .mode-toggle-btn {
+            pointer-events: auto;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid transparent;
+            transition: all 0.15s ease;
+        }
+        .mode-toggle-btn.standing {
+            background: #10b981;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        .mode-toggle-btn.falling {
+            background: #f43f5e;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid #38bdf8;
+            border-radius: 20px;
+            padding: 14px 24px;
+            backdrop-filter: blur(16px);
+            text-align: right;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        .status-badge .status-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0369a1;
+            letter-spacing: 1px;
+        }
+
+        .hud-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .controls-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid #38bdf8;
+            border-radius: 20px;
+            padding: 16px 24px;
+            backdrop-filter: blur(16px);
+            font-size: 13px;
+            color: #334155;
+            line-height: 1.65;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            font-weight: 700;
+        }
+        .key {
+            display: inline-block;
+            background: #e0f2fe;
+            border: 1.5px solid #0284c7;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #0369a1;
+            margin: 0 2px;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid #f43f5e;
+            border-radius: 20px;
+            padding: 16px 24px;
+            backdrop-filter: blur(16px);
+            text-align: right;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        .stats-card .stat-line {
+            font-size: 14px;
+            font-weight: 800;
+            color: #475569;
+        }
+        .stat-val {
+            color: #e11d48;
+            font-size: 20px;
+            font-weight: 900;
+        }
+    </style>
+    <!-- Three.js & Cannon.js (UMD) & Socket.io -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <div id="crosshair"><div class="circle"></div></div>
+    <div id="grab-hint">CLICK OBJECT TO GRAB</div>
+
+    <div id="hud">
+        <div class="hud-header">
+            <div class="title-badge">
+                <h1>Ragdoll Playground</h1>
+                <p>Multiplayer 3D Sandbox • Moving Obstacles • Real Humans Only</p>
+                <button id="mode-toggle" class="mode-toggle-btn standing">
+                    <span id="mode-icon">🧍</span> State: <span id="mode-text">Standing / Walking</span> (Press F)
+                </button>
+            </div>
+            <div class="status-badge">
+                <div class="status-title" id="tether-status">MULTIPLAYER ROPE READY 🔗</div>
+                <div style="font-size: 12px; color: #0284c7; font-weight: 800; margin-top: 4px;" id="players-online">1 Real Player (You)</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 2px;" id="network-status">Connected to Room</div>
+            </div>
+        </div>
+
+        <div class="hud-footer">
+            <div class="controls-card">
+                <div><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> Smooth walk & run in camera direction</div>
+                <div><span class="key">Shift</span> Sprint • <span class="key">Space</span> Jump / Bounce Leap</div>
+                <div><span class="key">F</span> Toggle Ragdoll Flop (collapse into floppy ragdoll)</div>
+                <div><span class="key">Left Click</span> Pick up closest object • Click again to <b>THROW</b></div>
+                <div><span class="key">Right Click + Drag</span> Rotate orbital camera around your character</div>
+                <div><span class="key">🔗 Connected by Rope</span> All real humans in the playground are tethered together!</div>
+            </div>
+            <div class="stats-card">
+                <div class="stat-line">OBJECTS THROWN: <span id="throws-count" class="stat-val">0</span></div>
+                <div class="stat-line">TIMES BUMPED / SWEPT: <span id="bump-count" class="stat-val" style="color: #0284c7;">0</span></div>
+                <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Make up your own games with friends!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Setup Three.js scene, renderer, camera
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb); // Sunny blue sky
+        scene.fog = new THREE.FogExp2(0xcfe9fc, 0.002);
+
+        const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+        let camDist = 14;
+        let camYaw = 0;
+        let camPitch = 0.35;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Cannon.js Physics World
+        const CANNON = window.CANNON;
+        const world = new CANNON.World();
+        world.gravity.set(0, -18.0, 0); // Snappy gravity
+        world.solver.iterations = 14;
+
+        // Physics Materials
+        const groundMaterial = new CANNON.Material('ground');
+        const ragdollMaterial = new CANNON.Material('ragdoll');
+        const objectMaterial = new CANNON.Material('object');
+        const bouncerMaterial = new CANNON.Material('bouncer');
+
+        world.addContactMaterial(new CANNON.ContactMaterial(groundMaterial, ragdollMaterial, {
+            friction: 0.6,
+            restitution: 0.05
+        }));
+        world.addContactMaterial(new CANNON.ContactMaterial(groundMaterial, objectMaterial, {
+            friction: 0.5,
+            restitution: 0.3
+        }));
+        world.addContactMaterial(new CANNON.ContactMaterial(ragdollMaterial, objectMaterial, {
+            friction: 0.4,
+            restitution: 0.4
+        }));
+        world.addContactMaterial(new CANNON.ContactMaterial(ragdollMaterial, bouncerMaterial, {
+            friction: 0.1,
+            restitution: 1.6 // High bounce for trampolines
+        }));
+
+        // Sunny Daytime Lighting
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x87ceeb, 0.95);
+        scene.add(hemiLight);
+
+        const sunLight = new THREE.DirectionalLight(0xfffbe8, 1.6);
+        sunLight.position.set(60, 120, 70);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 400;
+        const d = 80;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        scene.add(sunLight);
+
+        // Fluffy Clouds
+        const cloudsGroup = new THREE.Group();
+        const cloudGeo = new THREE.DodecahedronGeometry(14, 1);
+        const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, flatShading: true });
+        for (let i = 0; i < 28; i++) {
+            const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+            cloud.position.set(
+                (Math.random() - 0.5) * 600,
+                50 + Math.random() * 60,
+                (Math.random() - 0.5) * 600
+            );
+            cloud.scale.set(1.6 + Math.random(), 0.8 + Math.random() * 0.4, 1.4 + Math.random());
+            cloudsGroup.add(cloud);
+        }
+        scene.add(cloudsGroup);
+
+        // ==========================================
+        // PLAYGROUND ENVIRONMENT ARENA
+        // ==========================================
+        // Ground Box Collider (Deep thick solid floor so characters never clip or sink)
+        const GROUND_DEPTH = 6.0;
+        const groundShape = new CANNON.Box(new CANNON.Vec3(ARENA_SIZE, GROUND_DEPTH / 2, ARENA_SIZE));
+        const groundBody = new CANNON.Body({ mass: 0, material: groundMaterial });
+        groundBody.addShape(groundShape);
+        groundBody.position.set(0, -GROUND_DEPTH / 2, 0); // Top surface is exactly y = 0
+        world.addBody(groundBody);
+
+        const groundGeo = new THREE.PlaneGeometry(ARENA_SIZE * 2, ARENA_SIZE * 2);
+        const groundMeshMat = new THREE.MeshStandardMaterial({
+            color: 0x86efac, // Vibrant playground grass green
+            roughness: 0.8,
+            metalness: 0.05
+        });
+        const groundMesh = new THREE.Mesh(groundGeo, groundMeshMat);
+        groundMesh.rotation.x = -Math.PI / 2;
+        groundMesh.receiveShadow = true;
+        scene.add(groundMesh);
+
+        // Grid lines on ground for orientation
+        const gridHelper = new THREE.GridHelper(ARENA_SIZE * 2, 40, 0x15803d, 0x4ade80);
+        gridHelper.position.y = 0.02;
+        scene.add(gridHelper);
+
+        // Perimeter Walls
+        function createWall(x, z, width, depth, height = 8) {
+            const shape = new CANNON.Box(new CANNON.Vec3(width / 2, height / 2, depth / 2));
+            const body = new CANNON.Body({ mass: 0, material: groundMaterial });
+            body.addShape(shape);
+            body.position.set(x, height / 2, z);
+            world.addBody(body);
+
+            const geo = new THREE.BoxGeometry(width, height, depth);
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0x0284c7, // Cool cyan/blue padded boundary
+                roughness: 0.4,
+                metalness: 0.1
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, height / 2, z);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+        }
+        createWall(0, -ARENA_SIZE, ARENA_SIZE * 2, 4);
+        createWall(0, ARENA_SIZE, ARENA_SIZE * 2, 4);
+        createWall(-ARENA_SIZE, 0, 4, ARENA_SIZE * 2);
+        createWall(ARENA_SIZE, 0, 4, ARENA_SIZE * 2);
+
+        // Static Playground Structures:
+        // 1. Center Castle / Observation Tower with ramps
+        function createPlatform(x, y, z, w, h, d, color = 0xf59e0b) {
+            const shape = new CANNON.Box(new CANNON.Vec3(w / 2, h / 2, d / 2));
+            const body = new CANNON.Body({ mass: 0, material: groundMaterial });
+            body.addShape(shape);
+            body.position.set(x, y + h / 2, z);
+            world.addBody(body);
+
+            const mesh = new THREE.Mesh(
+                new THREE.BoxGeometry(w, h, d),
+                new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.1 })
+            );
+            mesh.position.set(x, y + h / 2, z);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+            return { body, mesh };
+        }
+
+        // Center Hill / Castle Tower
+        createPlatform(0, 0, 0, 24, 4, 24, 0x0ea5e9);
+        createPlatform(0, 4, 0, 14, 4, 14, 0x38bdf8);
+
+        // Climbing Ramps to the Center Tower
+        function createRamp(x, y, z, rotY, w = 8, len = 16, angle = 0.3) {
+            const shape = new CANNON.Box(new CANNON.Vec3(w / 2, 0.4, len / 2));
+            const body = new CANNON.Body({ mass: 0, material: groundMaterial });
+            body.addShape(shape);
+            body.position.set(x, y, z);
+            body.quaternion.setFromEuler(angle, rotY, 0, 'YXZ');
+            world.addBody(body);
+
+            const mesh = new THREE.Mesh(
+                new THREE.BoxGeometry(w, 0.8, len),
+                new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 })
+            );
+            mesh.position.copy(body.position);
+            mesh.quaternion.copy(body.quaternion);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+        }
+        createRamp(0, 2.0, 19, 0, 8, 16, -0.27);
+        createRamp(0, 2.0, -19, Math.PI, 8, 16, -0.27);
+        createRamp(19, 2.0, 0, Math.PI / 2, 8, 16, -0.27);
+        createRamp(-19, 2.0, 0, -Math.PI / 2, 8, 16, -0.27);
+
+        // Bouncy Trampolines / Jump Pads!
+        const trampolines = [];
+        function createTrampoline(x, z, radius = 5.5) {
+            const shape = new CANNON.Cylinder(radius, radius, 1.0, 16);
+            const body = new CANNON.Body({ mass: 0, material: bouncerMaterial });
+            body.addShape(shape);
+            body.position.set(x, 0.5, z);
+            world.addBody(body);
+
+            const mesh = new THREE.Mesh(
+                new THREE.CylinderGeometry(radius, radius, 1.0, 24),
+                new THREE.MeshStandardMaterial({ color: 0xec4899, roughness: 0.2, metalness: 0.3 })
+            );
+            mesh.position.set(x, 0.5, z);
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+
+            // Glowing bounce ring
+            const ringMesh = new THREE.Mesh(
+                new THREE.TorusGeometry(radius * 0.8, 0.2, 8, 24),
+                new THREE.MeshBasicMaterial({ color: 0xf472b6 })
+            );
+            ringMesh.rotation.x = Math.PI / 2;
+            ringMesh.position.set(x, 1.02, z);
+            scene.add(ringMesh);
+
+            trampolines.push({ body, mesh, x, z, radius });
+        }
+        createTrampoline(-35, -35);
+        createTrampoline(35, -35);
+        createTrampoline(-35, 35);
+        createTrampoline(35, 35);
+
+        // ==========================================
+        // DYNAMIC MOVING HAZARDS (SWEEPERS & PENDULUMS)
+        // ==========================================
+        const dynamicObstacles = [];
+
+        // 1. Double Sweeper Bar (Spinning obstacle on high platforms)
+        function createSpinningSweeper(x, y, z, length = 32, speed = 1.4) {
+            const shape = new CANNON.Box(new CANNON.Vec3(length / 2, 1.2, 1.2));
+            const body = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC });
+            body.addShape(shape);
+            body.position.set(x, y, z);
+            world.addBody(body);
+
+            const mat = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.3, roughness: 0.3 });
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(length, 2.4, 2.4), mat);
+            mesh.castShadow = true;
+            scene.add(mesh);
+
+            // Center pivot pillar
+            const pillar = new THREE.Mesh(
+                new THREE.CylinderGeometry(2, 2, y * 2, 16),
+                new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5 })
+            );
+            pillar.position.set(x, y / 2, z);
+            pillar.castShadow = true;
+            scene.add(pillar);
+
+            dynamicObstacles.push({
+                type: 'sweeper',
+                body,
+                mesh,
+                speed,
+                angle: 0
+            });
+        }
+        createSpinningSweeper(0, 9.5, 0, 28, 1.2); // On top of castle
+        createSpinningSweeper(-60, 2.0, 0, 36, -1.8);
+        createSpinningSweeper(60, 2.0, 0, 36, 1.8);
+
+        // 2. Giant Swinging Pendulums (Wrecking balls that knock ragdolls!)
+        function createPendulum(x, z, pivotY = 32, armLength = 26, period = 2.5) {
+            const sphereRadius = 3.2;
+            const shape = new CANNON.Sphere(sphereRadius);
+            const body = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC });
+            body.addShape(shape);
+            world.addBody(body);
+
+            const mat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.2, metalness: 0.6 });
+            const mesh = new THREE.Mesh(new THREE.SphereGeometry(sphereRadius, 20, 20), mat);
+            mesh.castShadow = true;
+            scene.add(mesh);
+
+            // Visual cable
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(x, pivotY, z),
+                new THREE.Vector3(x, pivotY - armLength, z)
+            ]);
+            const cable = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0x1e293b, linewidth: 2 }));
+            scene.add(cable);
+
+            dynamicObstacles.push({
+                type: 'pendulum',
+                body,
+                mesh,
+                cable,
+                x,
+                z,
+                pivotY,
+                armLength,
+                period,
+                time: Math.random() * 10
+            });
+        }
+        createPendulum(0, -60);
+        createPendulum(0, 60);
+
+        // ==========================================
+        // REAL RAGDOLL CHARACTERS (NO AI BOTS)
+        // ==========================================
+        function createRagdoll(colorHex, startX = 0, startZ = 20) {
+            const ragdoll = {
+                bodies: [],
+                meshes: [],
+                constraints: [],
+                isFalling: false,
+                isGrounded: true
+            };
+
+            const bodyColorMat = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.1, roughness: 0.5 });
+            const clothingMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.1, roughness: 0.7 });
+            const skinMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, metalness: 0.1, roughness: 0.5 });
+
+            const startY = 6.0; // High enough to drop naturally onto the ground without clipping
+
+            // 1. Torso
+            const torsoHalf = new CANNON.Vec3(0.8, 1.3, 0.55);
+            const torsoBody = new CANNON.Body({ mass: 14, material: ragdollMaterial });
+            torsoBody.addShape(new CANNON.Box(torsoHalf));
+            torsoBody.position.set(startX, startY, startZ);
+            torsoBody.linearDamping = 0.35;
+            torsoBody.angularDamping = 0.45;
+            world.addBody(torsoBody);
+
+            const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.6, 1.1), bodyColorMat);
+            torsoMesh.castShadow = true;
+            scene.add(torsoMesh);
+            ragdoll.bodies.push(torsoBody);
+            ragdoll.meshes.push(torsoMesh);
+            ragdoll.torso = torsoBody;
+            ragdoll.torsoMesh = torsoMesh;
+
+            // 2. Head
+            const headRadius = 0.6;
+            const headBody = new CANNON.Body({ mass: 3.0, material: ragdollMaterial });
+            headBody.addShape(new CANNON.Sphere(headRadius));
+            headBody.position.set(startX, startY + 2.1, startZ);
+            headBody.linearDamping = 0.35;
+            headBody.angularDamping = 0.45;
+            world.addBody(headBody);
+
+            const headMesh = new THREE.Mesh(new THREE.SphereGeometry(headRadius, 18, 18), skinMat);
+            headMesh.castShadow = true;
+
+            // Simple cute eyes
+            const eyeGeo = new THREE.SphereGeometry(0.09, 8, 8);
+            const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+            const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+            leftEye.position.set(-0.22, 0.08, 0.52);
+            const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+            rightEye.position.set(0.22, 0.08, 0.52);
+            headMesh.add(leftEye);
+            headMesh.add(rightEye);
+            scene.add(headMesh);
+
+            ragdoll.bodies.push(headBody);
+            ragdoll.meshes.push(headMesh);
+            ragdoll.head = headBody;
+            ragdoll.headMesh = headMesh;
+
+            const neckJoint = new CANNON.PointToPointConstraint(
+                torsoBody,
+                new CANNON.Vec3(0, 1.3, 0),
+                headBody,
+                new CANNON.Vec3(0, -headRadius, 0)
+            );
+            world.addConstraint(neckJoint);
+            ragdoll.constraints.push(neckJoint);
+
+            // 3. Limbs (Arms & Legs)
+            function addLimb(offsetTorso, length, isArm) {
+                const limbHalf = new CANNON.Vec3(0.3, length / 2, 0.3);
+                const limbBody = new CANNON.Body({ mass: 2.0, material: ragdollMaterial });
+                limbBody.addShape(new CANNON.Box(limbHalf));
+                limbBody.position.set(startX + offsetTorso.x, startY + offsetTorso.y - (length / 2), startZ + offsetTorso.z);
+                limbBody.linearDamping = 0.35;
+                limbBody.angularDamping = 0.45;
+                world.addBody(limbBody);
+
+                const limbMesh = new THREE.Mesh(new THREE.BoxGeometry(0.6, length, 0.6), isArm ? skinMat : clothingMat);
+                limbMesh.castShadow = true;
+                scene.add(limbMesh);
+                ragdoll.bodies.push(limbBody);
+                ragdoll.meshes.push(limbMesh);
+
+                const joint = new CANNON.PointToPointConstraint(
+                    torsoBody,
+                    new CANNON.Vec3(offsetTorso.x, offsetTorso.y, offsetTorso.z),
+                    limbBody,
+                    new CANNON.Vec3(0, length / 2, 0)
+                );
+                world.addConstraint(joint);
+                ragdoll.constraints.push(joint);
+            }
+
+            addLimb({ x: -1.05, y: 0.9, z: 0 }, 1.4, true);  // Left arm
+            addLimb({ x: 1.05, y: 0.9, z: 0 }, 1.4, true);   // Right arm
+            addLimb({ x: -0.45, y: -1.3, z: 0 }, 1.6, false); // Left leg
+            addLimb({ x: 0.45, y: -1.3, z: 0 }, 1.6, false);  // Right leg
+
+            return ragdoll;
+        }
+
+        function removeRagdoll(ragdoll) {
+            ragdoll.constraints.forEach(c => world.removeConstraint(c));
+            ragdoll.bodies.forEach(b => world.removeBody(b));
+            ragdoll.meshes.forEach(m => scene.remove(m));
+        }
+
+        // Real Local Player Ragdoll
+        const myPlayer = createRagdoll(0x0284c7, 0, 25);
+
+        // Store connected Real Remote Players only (NO BOTS)
+        const remotePlayers = new Map();
+        const activeTethers = [];
+
+        function addTetherConstraint(p1, p2) {
+            const constraint = new CANNON.DistanceConstraint(p1.torso, p2.torso, 8.5);
+            world.addConstraint(constraint);
+
+            const ropeGeometry = new THREE.BufferGeometry();
+            const ropePositions = new Float32Array(8 * 3);
+            ropeGeometry.setAttribute('position', new THREE.BufferAttribute(ropePositions, 3));
+            const visualRope = new THREE.Line(ropeGeometry, new THREE.LineBasicMaterial({ color: 0xd97706, linewidth: 3 }));
+            scene.add(visualRope);
+
+            const tether = { constraint, visualRope, ropeGeometry, p1, p2 };
+            activeTethers.push(tether);
+            return tether;
+        }
+
+        function updateTethers() {
+            activeTethers.forEach(t => {
+                const pos1 = t.p1.torso.position;
+                const pos2 = t.p2.torso.position;
+                const posAttr = t.ropeGeometry.attributes.position;
+                for (let i = 0; i < 8; i++) {
+                    const ratio = i / 7;
+                    const sag = Math.sin(ratio * Math.PI) * -0.6;
+                    posAttr.setXYZ(
+                        i,
+                        pos1.x + (pos2.x - pos1.x) * ratio,
+                        pos1.y + (pos2.y - pos1.y) * ratio + sag,
+                        pos1.z + (pos2.z - pos1.z) * ratio
+                    );
+                }
+                posAttr.needsUpdate = true;
+            });
+        }
+
+        // ==========================================
+        // INTERACTIVE PLAYGROUND TOYS & PROPS
+        // ==========================================
+        const playgroundProps = [];
+        const propPalette = [
+            { name: 'Beachball', color: 0xef4444, type: 'ball', mass: 1.5, size: 1.2 },
+            { name: 'Watermelon', color: 0x10b981, type: 'melon', mass: 2.2, size: 0.9 },
+            { name: 'Wooden Crate', color: 0xd97706, type: 'crate', mass: 3.5, size: 1.8 },
+            { name: 'Retro TV', color: 0x64748b, type: 'tv', mass: 4.0, size: 1.6 },
+            { name: 'Barrel', color: 0x0284c7, type: 'barrel', mass: 4.5, size: 1.4 },
+            { name: 'Giant Donut', color: 0xf43f5e, type: 'donut', mass: 2.5, size: 1.5 }
+        ];
+
+        function createPlaygroundProp(x, z, paletteItem) {
+            const mat = new THREE.MeshStandardMaterial({
+                color: paletteItem.color,
+                roughness: 0.35,
+                metalness: 0.2
+            });
+
+            let shape, geo;
+            if (paletteItem.type === 'ball' || paletteItem.type === 'melon') {
+                shape = new CANNON.Sphere(paletteItem.size / 2);
+                geo = new THREE.SphereGeometry(paletteItem.size / 2, 16, 16);
+            } else if (paletteItem.type === 'crate' || paletteItem.type === 'tv') {
+                shape = new CANNON.Box(new CANNON.Vec3(paletteItem.size / 2, paletteItem.size / 2, paletteItem.size / 2));
+                geo = new THREE.BoxGeometry(paletteItem.size, paletteItem.size, paletteItem.size);
+            } else if (paletteItem.type === 'barrel') {
+                shape = new CANNON.Cylinder(paletteItem.size / 2, paletteItem.size / 2, paletteItem.size * 1.4, 12);
+                geo = new THREE.CylinderGeometry(paletteItem.size / 2, paletteItem.size / 2, paletteItem.size * 1.4, 14);
+            } else {
+                shape = new CANNON.Sphere(paletteItem.size / 2);
+                geo = new THREE.TorusGeometry(paletteItem.size / 2, 0.4, 12, 20);
+            }
+
+            const body = new CANNON.Body({ mass: paletteItem.mass, material: objectMaterial });
+            body.addShape(shape);
+            body.position.set(x, 4.0, z);
+            body.linearDamping = 0.25;
+            body.angularDamping = 0.3;
+            world.addBody(body);
+
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+
+            return { body, mesh, item: paletteItem, isHeld: false };
+        }
+
+        // Spawn a fun variety of props around the playground
+        for (let i = 0; i < 32; i++) {
+            const item = propPalette[i % propPalette.length];
+            const angle = (i / 32) * Math.PI * 2;
+            const r = 15 + Math.random() * 45;
+            playgroundProps.push(createPlaygroundProp(Math.cos(angle) * r, Math.sin(angle) * r, item));
+        }
+
+        // ==========================================
+        // FLUID CONTROLS & CAMERA SYSTEM
+        // ==========================================
+        const keys = { w: false, a: false, s: false, d: false, space: false, shift: false };
+        let isRightMouseDown = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        window.addEventListener('keydown', (e) => {
+            const k = e.key.toLowerCase();
+            if (k === 'w' || k === 'arrowup') keys.w = true;
+            if (k === 'a' || k === 'arrowleft') keys.a = true;
+            if (k === 's' || k === 'arrowdown') keys.s = true;
+            if (k === 'd' || k === 'arrowright') keys.d = true;
+            if (k === 'shift') keys.shift = true;
+            if (k === ' ') {
+                keys.space = true;
+                // High-velocity jump impulse
+                if (myPlayer.torso.position.y < 12) {
+                    myPlayer.torso.velocity.y = Math.max(myPlayer.torso.velocity.y, 14);
+                }
+            }
+            if (k === 'f') toggleRagdollMode();
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const k = e.key.toLowerCase();
+            if (k === 'w' || k === 'arrowup') keys.w = false;
+            if (k === 'a' || k === 'arrowleft') keys.a = false;
+            if (k === 's' || k === 'arrowdown') keys.s = false;
+            if (k === 'd' || k === 'arrowright') keys.d = false;
+            if (k === 'shift') keys.shift = false;
+            if (k === ' ') keys.space = false;
+        });
+
+        // Mouse drag orbital camera
+        window.addEventListener('mousedown', (e) => {
+            if (e.button === 2) {
+                isRightMouseDown = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (e.button === 2) isRightMouseDown = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isRightMouseDown) {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+
+                camYaw -= deltaX * 0.005;
+                camPitch = Math.max(0.1, Math.min(1.2, camPitch + deltaY * 0.005));
+            }
+        });
+
+        window.addEventListener('wheel', (e) => {
+            camDist = Math.max(8, Math.min(32, camDist + e.deltaY * 0.02));
+        });
+
+        // Suppress right-click context menu
+        window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Grabbing & Throwing props
+        let heldProp = null;
+        let throwsCount = 0;
+        let bumpCount = 0;
+        const throwsEl = document.getElementById('throws-count');
+        const bumpEl = document.getElementById('bump-count');
+        const grabHint = document.getElementById('grab-hint');
+
+        window.addEventListener('click', (e) => {
+            if (e.button !== 0) return;
+
+            if (heldProp) {
+                // Throw held object in the direction the camera is facing!
+                const forward = new THREE.Vector3();
+                camera.getWorldDirection(forward);
+                forward.normalize();
+
+                const throwForce = forward.clone().multiplyScalar(45);
+                heldProp.body.mass = heldProp.originalMass || 4;
+                heldProp.body.updateMassProperties();
+                heldProp.body.velocity.set(throwForce.x, throwForce.y + 8, throwForce.z);
+                heldProp.body.angularVelocity.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
+                heldProp.body.wakeUp();
+
+                heldProp.isHeld = false;
+                heldProp = null;
+
+                throwsCount++;
+                throwsEl.innerText = throwsCount;
+                grabHint.innerText = 'OBJECT LAUNCHED! 🚀';
+                grabHint.classList.add('active');
+                setTimeout(() => grabHint.classList.remove('active'), 1000);
+            } else {
+                // Try grabbing nearest prop within reach
+                const playerPos = myPlayer.torsoMesh.position;
+                let closest = null;
+                let minDist = 7.5;
+
+                playgroundProps.forEach(prop => {
+                    const d = prop.mesh.position.distanceTo(playerPos);
+                    if (d < minDist) {
+                        minDist = d;
+                        closest = prop;
+                    }
+                });
+
+                if (closest) {
+                    heldProp = closest;
+                    heldProp.isHeld = true;
+                    heldProp.originalMass = heldProp.body.mass;
+                    heldProp.body.mass = 0; // Kinematic while held
+                    heldProp.body.updateMassProperties();
+
+                    grabHint.innerText = 'HOLDING ' + closest.item.name.toUpperCase() + ' (CLICK TO THROW)';
+                    grabHint.classList.add('active');
+                }
+            }
+        });
+
+        // Mode Toggle (Stand / Walk vs Ragdoll Flop)
+        const modeBtn = document.getElementById('mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const modeText = document.getElementById('mode-text');
+
+        function toggleRagdollMode() {
+            myPlayer.isFalling = !myPlayer.isFalling;
+            if (myPlayer.isFalling) {
+                modeBtn.className = 'mode-toggle-btn falling';
+                modeIcon.innerText = '🤸';
+                modeText.innerText = 'Ragdoll Flop';
+                // Push ragdoll tumble
+                myPlayer.torso.angularVelocity.set((Math.random() - 0.5) * 6, 2, (Math.random() - 0.5) * 6);
+            } else {
+                modeBtn.className = 'mode-toggle-btn standing';
+                modeIcon.innerText = '🧍';
+                modeText.innerText = 'Standing / Walking';
+                // Stand back up
+                myPlayer.torso.quaternion.set(0, 0, 0, 1);
+                myPlayer.torso.velocity.y += 4;
+            }
+        }
+        modeBtn.addEventListener('click', toggleRagdollMode);
+
+        // ==========================================
+        // MULTIPLAYER SOCKET (REAL HUMANS ONLY)
+        // ==========================================
+        const networkStatus = document.getElementById('network-status');
+        const playersOnline = document.getElementById('players-online');
+        const tetherStatus = document.getElementById('tether-status');
+
+        let socket = null;
+        if (typeof io !== 'undefined') {
+            try {
+                socket = io('/stairway-shootout', { transports: ['websocket', 'polling'] });
+
+                socket.on('connect', () => {
+                    networkStatus.innerText = 'Connected (Room: Sandbox)';
+                    socket.emit('joinRoom', { name: 'Player_' + Math.floor(Math.random() * 899 + 100) });
+                });
+
+                socket.on('joined', (data) => {
+                    console.log('[Multiplayer] Joined sandbox room:', data);
+                    updatePlayerListUI();
+                });
+
+                socket.on('playerJoined', (player) => {
+                    if (player.id === socket.id) return;
+                    console.log('[Multiplayer] Real human joined:', player);
+                    const remoteRagdoll = createRagdoll(player.color || 0xf43f5e, 5, 25);
+                    remotePlayers.set(player.id, remoteRagdoll);
+
+                    // Hook them with golden rope constraint!
+                    addTetherConstraint(myPlayer, remoteRagdoll);
+                    updatePlayerListUI();
+                });
+
+                socket.on('playerSynced', (data) => {
+                    const r = remotePlayers.get(data.id);
+                    if (r && data.ragdoll) {
+                        r.torso.position.set(data.ragdoll.torso.x, data.ragdoll.torso.y, data.ragdoll.torso.z);
+                        r.torso.quaternion.set(data.ragdoll.torso.qx, data.ragdoll.torso.qy, data.ragdoll.torso.qz, data.ragdoll.torso.qw);
+                    }
+                });
+
+                socket.on('playerLeft', (id) => {
+                    const r = remotePlayers.get(id);
+                    if (r) {
+                        removeRagdoll(r);
+                        remotePlayers.delete(id);
+                        // Clean up tethers
+                        for (let i = activeTethers.length - 1; i >= 0; i--) {
+                            if (activeTethers[i].p2 === r) {
+                                world.removeConstraint(activeTethers[i].constraint);
+                                scene.remove(activeTethers[i].visualRope);
+                                activeTethers.splice(i, 1);
+                            }
+                        }
+                    }
+                    updatePlayerListUI();
+                });
+            } catch (err) {
+                console.warn('[Multiplayer] Socket offline:', err);
+            }
+        }
+
+        function updatePlayerListUI() {
+            const count = 1 + remotePlayers.size;
+            playersOnline.innerText = count + (count === 1 ? ' Real Player (You)' : ' Real Players Online');
+            tetherStatus.innerText = count > 1 ? `CONNECTED BY GOLDEN TETHER 🔗 (${count}P)` : 'MULTIPLAYER ROPE READY 🔗';
+        }
+
+        // ==========================================
+        // MAIN SIMULATION & RENDER LOOP
+        // ==========================================
+        const clock = new THREE.Clock();
+        let lastSyncTime = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = Math.min(clock.getDelta(), 0.033);
+
+            // 1. UPDATE DYNAMIC HAZARDS
+            dynamicObstacles.forEach(ob => {
+                if (ob.type === 'sweeper') {
+                    ob.angle += ob.speed * dt;
+                    ob.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), ob.angle);
+                    ob.mesh.position.copy(ob.body.position);
+                    ob.mesh.quaternion.copy(ob.body.quaternion);
+                } else if (ob.type === 'pendulum') {
+                    ob.time += dt;
+                    const swingAngle = Math.sin((ob.time / ob.period) * Math.PI * 2) * 0.95;
+                    const py = ob.pivotY - Math.cos(swingAngle) * ob.armLength;
+                    const px = ob.x + Math.sin(swingAngle) * ob.armLength;
+                    ob.body.position.set(px, py, ob.z);
+                    ob.mesh.position.copy(ob.body.position);
+
+                    // Update visual cable
+                    const points = [
+                        new THREE.Vector3(ob.x, ob.pivotY, ob.z),
+                        new THREE.Vector3(px, py, ob.z)
+                    ];
+                    ob.cable.geometry.setFromPoints(points);
+                }
+            });
+
+            // 2. PLAYER LOCOMOTION IN CAMERA SPACE
+            const forward = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw));
+            const right = new THREE.Vector3(Math.cos(camYaw), 0, -Math.sin(camYaw));
+            let moveDir = new THREE.Vector3();
+
+            if (keys.w) moveDir.add(forward);
+            if (keys.s) moveDir.sub(forward);
+            if (keys.d) moveDir.add(right);
+            if (keys.a) moveDir.sub(right);
+
+            const speed = keys.shift ? 24 : 14;
+
+            if (!myPlayer.isFalling) {
+                // Active upright balancing stabilizer
+                myPlayer.torso.angularVelocity.x *= 0.85;
+                myPlayer.torso.angularVelocity.z *= 0.85;
+
+                if (moveDir.lengthSq() > 0.001) {
+                    moveDir.normalize();
+                    myPlayer.torso.velocity.x += moveDir.x * speed * dt * 4;
+                    myPlayer.torso.velocity.z += moveDir.z * speed * dt * 4;
+
+                    // Smooth character facing
+                    const targetAngle = Math.atan2(moveDir.x, moveDir.z);
+                    const currentQ = myPlayer.torso.quaternion;
+                    const targetQ = new CANNON.Quaternion();
+                    targetQ.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), targetAngle);
+                    currentQ.slerp(targetQ, 0.15, currentQ);
+                }
+
+                // Upright restorative spring (keeps torso standing tall at proper height above floor)
+                if (myPlayer.torso.position.y < 2.9) {
+                    const lift = (2.9 - myPlayer.torso.position.y) * 45;
+                    myPlayer.torso.velocity.y = Math.max(myPlayer.torso.velocity.y, lift);
+                }
+            } else {
+                // Ragdoll tumble steering
+                if (moveDir.lengthSq() > 0.001) {
+                    moveDir.normalize();
+                    myPlayer.torso.applyForce(new CANNON.Vec3(moveDir.x * 200, 0, moveDir.z * 200), myPlayer.torso.position);
+                }
+            }
+
+            // Global Floor Safeguard: Absolute hard floor boundary so no body part ever sinks into ground (y < 0.25)
+            function enforceFloorFloor(r) {
+                for (let i = 0; i < r.bodies.length; i++) {
+                    const b = r.bodies[i];
+                    if (b.position.y < 0.35) {
+                        b.position.y = 0.35;
+                        if (b.velocity.y < 0) b.velocity.y = 0;
+                    }
+                }
+            }
+            enforceFloorFloor(myPlayer);
+            remotePlayers.forEach(r => enforceFloorFloor(r));
+
+            // Trampoline / Jump Pad bounce detection
+            trampolines.forEach(t => {
+                const distToBounce = new THREE.Vector2(myPlayer.torso.position.x - t.x, myPlayer.torso.position.z - t.z).length();
+                if (distToBounce < t.radius && myPlayer.torso.position.y < 3.2 && myPlayer.torso.velocity.y < 0) {
+                    myPlayer.torso.velocity.y = 28; // Massive bounce into the air!
+                    bumpCount++;
+                    bumpEl.innerText = bumpCount;
+                }
+            });
+
+            // Step Cannon Physics
+            world.step(1 / 60, dt, 6);
+
+            // Re-enforce floor post-step as safety barrier
+            enforceFloorFloor(myPlayer);
+            remotePlayers.forEach(r => enforceFloorFloor(r));
+
+            // Sync visual meshes with Cannon rigid bodies
+            function syncRagdoll(r) {
+                for (let i = 0; i < r.bodies.length; i++) {
+                    r.meshes[i].position.copy(r.bodies[i].position);
+                    r.meshes[i].quaternion.copy(r.bodies[i].quaternion);
+                }
+            }
+            syncRagdoll(myPlayer);
+            remotePlayers.forEach(r => syncRagdoll(r));
+
+            // Sync interactive props
+            playgroundProps.forEach(prop => {
+                if (prop.isHeld) {
+                    // Float right in front of player
+                    const pPos = myPlayer.torsoMesh.position;
+                    const fwd = new THREE.Vector3();
+                    camera.getWorldDirection(fwd);
+                    fwd.y = 0;
+                    fwd.normalize();
+
+                    prop.body.position.set(pPos.x + fwd.x * 2.2, pPos.y + 0.5, pPos.z + fwd.z * 2.2);
+                    prop.body.quaternion.copy(myPlayer.torso.quaternion);
+                }
+                prop.mesh.position.copy(prop.body.position);
+                prop.mesh.quaternion.copy(prop.body.quaternion);
+            });
+
+            // Update rope tethers
+            updateTethers();
+
+            // 3. SMOOTH THIRD-PERSON CAMERA
+            const targetPos = myPlayer.torsoMesh.position;
+            const camOffsetX = Math.sin(camYaw) * Math.cos(camPitch) * camDist;
+            const camOffsetY = Math.sin(camPitch) * camDist;
+            const camOffsetZ = Math.cos(camYaw) * Math.cos(camPitch) * camDist;
+
+            const desiredCamPos = new THREE.Vector3(
+                targetPos.x + camOffsetX,
+                targetPos.y + camOffsetY + 1.5,
+                targetPos.z + camOffsetZ
+            );
+            camera.position.lerp(desiredCamPos, 0.14);
+            camera.lookAt(new THREE.Vector3(targetPos.x, targetPos.y + 1.2, targetPos.z));
+
+            // Grab Hint UI
+            if (!heldProp) {
+                let nearProp = false;
+                playgroundProps.forEach(p => {
+                    if (p.mesh.position.distanceTo(targetPos) < 7.0) nearProp = true;
+                });
+                grabHint.classList.toggle('active', nearProp);
+                if (nearProp) grabHint.innerText = 'CLICK TO GRAB OBJECT';
+            }
+
+            // Sync over Socket.IO to real players (15 Hz)
+            const now = performance.now();
+            if (socket && socket.connected && now - lastSyncTime > 65) {
+                lastSyncTime = now;
+                socket.emit('syncState', {
+                    ragdoll: {
+                        torso: {
+                            x: myPlayer.torso.position.x,
+                            y: myPlayer.torso.position.y,
+                            z: myPlayer.torso.position.z,
+                            qx: myPlayer.torso.quaternion.x,
+                            qy: myPlayer.torso.quaternion.y,
+                            qz: myPlayer.torso.quaternion.z,
+                            qw: myPlayer.torso.quaternion.w
+                        },
+                        head: {
+                            x: myPlayer.head.position.x,
+                            y: myPlayer.head.position.y,
+                            z: myPlayer.head.position.z,
+                            qx: myPlayer.head.quaternion.x,
+                            qy: myPlayer.head.quaternion.y,
+                            qz: myPlayer.head.quaternion.z,
+                            qw: myPlayer.head.quaternion.w
+                        }
+                    },
+                    aim: { dirX: forward.x, dirY: forward.y, dirZ: forward.z }
+                });
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

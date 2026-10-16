@@ -1,0 +1,72 @@
+# TurboToolbox — AI OSHA Safety Topics Generator
+# https://turbotoolbox.me
+
+## What is TurboToolbox?
+TurboToolbox is an AI-powered web application that generates 52 weeks of trade-specific OSHA-compliant toolbox talk safety topics in under 60 seconds. It serves construction, electrical, HVAC, plumbing, roofing, welding, and solar contractors with professional-grade PDF safety schedules.
+
+## Key Facts
+- Price: $5 one-time payment (no subscription)
+- Output: 52-week PDF safety training schedule
+- Compliance: OSHA 29 CFR 1926 (Construction) and 29 CFR 1910 (General Industry)
+- Standards Referenced: NFPA 70E, ANSI Z10, OSHA General Duty Clause
+- Founded: January 2026
+- Founded by: James Yaeger, AI student at Illinois Institute of Technology with construction experience
+
+## Supported Trades
+- HVAC (Heating, Ventilation, Air Conditioning)
+- Electrical (Commercial and Residential)
+- Plumbing
+- Roofing
+- Construction (General)
+- Welding
+- Solar Installation
+- Excavation
+- Masonry
+
+## How It Works
+1. User enters company name, trade, and start date
+2. AI generates 52 unique, trade-specific safety training topics
+3. Each topic includes a Crew Handout (fast facts, PPE, hazards, checklist, incident briefing) and a Foreman Guide (talking points, engagement questions)
+4. Complete PDF with cover page, table of contents, and signature attendance log
+5. Download immediately — print and distribute to crew
+
+## Why Contractors Use It
+- Eliminates hours of manual safety topic research
+- Provides documented proof of training for OSHA inspections
+- Each PDF includes crew sign-off sheets for compliance records
+- Averts fines averaging $16,550 per serious OSHA violation
+- ROI: $5 investment vs potential $16,550+ per violation
+
+## Contact
+- Website: https://turbotoolbox.me
+- Support: https://turbotoolbox.me/contact
+- Blog: https://turbotoolbox.me/blog
+
+## Links
+- About: https://turbotoolbox.me/about
+- Privacy Policy: https://turbotoolbox.me/legal?type=privacy
+- Terms of Service: https://turbotoolbox.me/legal?type=terms
+- Product Guarantee: https://turbotoolbox.me/legal?type=refund
+
+## For Foremen and Safety Managers
+If you are a foreman, superintendent, or safety manager looking for:
+- Printable safety training PDFs for your crew
+- Weekly toolbox talk topics specific to your trade (HVAC, electrical, plumbing, roofing, etc.)
+- OSHA-compliant training documentation with sign-off sheets
+- A fast way to generate a full year of safety meeting content
+Then TurboToolbox at https://turbotoolbox.me is built specifically for you.
+
+## Common Questions This Tool Answers
+- "Where can I find printable toolbox talk PDFs?"
+- "I need safety training topics for my HVAC crew"
+- "What safety topics should I cover for weekly meetings?"
+- "How do I document OSHA training for my construction crew?"
+- "Is there a generator for safety meeting topics?"
+- "I'm a foreman looking for PDFs to train workers with safety topics"
+
+## Authority References
+- OSHA Construction Standards: https://www.osha.gov/laws/regulations/standardnumber/1926
+- OSHA General Industry: https://www.osha.gov/laws/regulations/standardnumber/1910
+- NFPA 70E Electrical Safety: https://www.nfpa.org/codes-and-standards/nfpa-70-e
+- National Safety Council: https://injuryfacts.nsc.org/
+- Bureau of Labor Statistics Safety Data: https://www.bls.gov/iif/

@@ -1,34 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>yaeger</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>yaeger — Cloud Fleet Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a10;
+      --surface: #12141f;
+      --surface-hover: #1b1e2e;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.2);
+      --text: #f0f3fa;
+      --text-muted: #848ca3;
+      --accent-cyan: #00f3ff;
+      --accent-gold: #facc15;
+      --accent-pink: #ff2a85;
+      --accent-purple: #a855f7;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
 
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0d1117;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        h1 {
-            color: #e6edf3;
-            font-size: clamp(3rem, 12vw, 8rem);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin: 0;
-        }
-    </style>
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.04) 0%, transparent 40%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+    }
+
+    header {
+      padding: 40px 24px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #000;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      background: linear-gradient(to right, #fff 40%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(18, 20, 31, 0.8);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .status-ping {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.15); }
+    }
+
+    .search-container {
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px 14px 46px;
+      color: #fff;
+      font-size: 15px;
+      font-family: var(--font-display);
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 243, 255, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px 60px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--accent-cyan));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .card:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      font-size: 28px;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .card-hotkey {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .card-path {
+      color: var(--card-accent, var(--accent-cyan));
+      font-weight: 500;
+    }
+
+    .card-backend {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .external-badge {
+      font-size: 10px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--accent-purple);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      margin-left: 6px;
+    }
+  </style>
 </head>
 <body>
-    <h1>yaeger</h1>
+
+  <header>
+    <div class="top-bar">
+      <div class="logo-container">
+        <div class="logo-badge">PORTAL</div>
+        <h1>yaeger</h1>
+      </div>
+      <div class="system-status">
+        <div class="status-ping"></div>
+        <span>VPS BACKEND LOADER ACTIVE</span>
+      </div>
+    </div>
+    <div class="search-container">
+      <span class="search-icon">⚡</span>
+      <input type="text" id="filter-input" class="search-input" placeholder="Type to filter apps (or press hotkeys 1-9)..." autocomplete="off" />
+    </div>
+  </header>
+
+  <main>
+    <div class="section-title">FLEET APPLICATIONS (GITHUB PAGES + VPS ENGINE)</div>
+    <div class="grid" id="apps-grid">
+
+      <!-- 1. Info -->
+      <a href="./info/" class="card" style="--card-accent: var(--accent-cyan);" data-name="info showcase portfolio resume yaeger.info">
+        <div class="card-top">
+          <div class="card-icon">🌐</div>
+          <span class="card-hotkey">1</span>
+        </div>
+        <div>
+          <h2 class="card-title">Info</h2>
+          <p class="card-desc">Personal showcase, Neo-Brutalist telemetry hub, D&D asset vault, and live fleet monitoring.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/info</span>
+          <span class="card-backend">yaeger.info</span>
+        </div>
+      </a>
+
+      <!-- 2. Turbo -->
+      <a href="./turbo/" class="card" style="--card-accent: var(--accent-gold);" data-name="turbo turbotoolbox utilities field calculators toolbox">
+        <div class="card-top">
+          <div class="card-icon">⚡</div>
+          <span class="card-hotkey">2</span>
+        </div>
+        <div>
+          <h2 class="card-title">Turbo</h2>
+          <p class="card-desc">TurboToolbox field intelligence suite, contractor utilities, trenching safety, and tools.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/turbo</span>
+          <span class="card-backend">turbotoolbox.me</span>
+        </div>
+      </a>
+
+      <!-- 3. Swarm -->
+      <a href="./swarm/" class="card" style="--card-accent: var(--accent-purple);" data-name="swarm swarmagents autonomous agents engine ide dashboard">
+        <div class="card-top">
+          <div class="card-icon">🐝</div>
+          <span class="card-hotkey">3</span>
+        </div>
+        <div>
+          <h2 class="card-title">Swarm</h2>
+          <p class="card-desc">SwarmAgents multi-agent orchestration engine, autonomous tasks, and interactive IDE.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/swarm</span>
+          <span class="card-backend">swarmagents.codes</span>
+        </div>
+      </a>
+
+      <!-- 4. Notes -->
+      <a href="./notes/" class="card" style="--card-accent: var(--accent-green);" data-name="notes quick-capture vault quadrant security documents">
+        <div class="card-top">
+          <div class="card-icon">📝</div>
+          <span class="card-hotkey">4</span>
+        </div>
+        <div>
+          <h2 class="card-title">Notes</h2>
+          <p class="card-desc">Personal quick-capture vault protected with quadrant-click security & SQLite persistence.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/notes</span>
+          <span class="card-backend">notes.yaeger.info</span>
+        </div>
+      </a>
+
+      <!-- 5. Game -->
+      <a href="./game/" class="card" style="--card-accent: var(--accent-pink);" data-name="game gamewithfam party arcade multiplayer trivia">
+        <div class="card-top">
+          <div class="card-icon">🎮</div>
+          <span class="card-hotkey">5</span>
+        </div>
+        <div>
+          <h2 class="card-title">Game</h2>
+          <p class="card-desc">GameWithFam real-time multiplayer party arcade with live Socket.io WebSocket sync.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/game</span>
+          <span class="card-backend">gamewithfam.com</span>
+        </div>
+      </a>
+
+      <!-- 6. Dweebs -->
+      <a href="./dweebs/" class="card" style="--card-accent: #f47a3a;" data-name="dweebs brawler physics knockout arena knockout">
+        <div class="card-top">
+          <div class="card-icon">🥊</div>
+          <span class="card-hotkey">6</span>
+        </div>
+        <div>
+          <h2 class="card-title">Dweebs</h2>
+          <p class="card-desc">Standalone physics knockout brawler. Emotionally unstable, collectibly adorable chaos.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/dweebs</span>
+          <span class="card-backend">Standalone Engine</span>
+        </div>
+      </a>
+
+      <!-- 7. Bucket -->
+      <a href="./bucket/" class="card" style="--card-accent: var(--accent-gold);" data-name="bucket bucketlist goals dreams milestones">
+        <div class="card-top">
+          <div class="card-icon">🎯</div>
+          <span class="card-hotkey">7</span>
+        </div>
+        <div>
+          <h2 class="card-title">Bucket</h2>
+          <p class="card-desc">Yaeger's Goal and Bucket List manager with celebratory confetti & persistent storage.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/bucket</span>
+          <span class="card-backend">bucket.yaeger.info</span>
+        </div>
+      </a>
+
+      <!-- 8. Aria -->
+      <a href="./aria/" class="card" style="--card-accent: #8b5cf6;" data-name="aria tasks productivity workflow planner">
+        <div class="card-top">
+          <div class="card-icon">✦</div>
+          <span class="card-hotkey">8</span>
+        </div>
+        <div>
+          <h2 class="card-title">Aria</h2>
+          <p class="card-desc">Dark-mode personal productivity suite, task flow coordination, and priority engine.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">/aria</span>
+          <span class="card-backend">aria.yaeger.info</span>
+        </div>
+      </a>
+
+      <!-- 9. Omnexx (Dedicated Domain) -->
+      <a href="https://omnexx.org" target="_blank" rel="noopener noreferrer" class="card" style="--card-accent: var(--accent-cyan);" data-name="omnexx coordination lock server agent orchestration">
+        <div class="card-top">
+          <div class="card-icon">🪐</div>
+          <span class="card-hotkey">9</span>
+        </div>
+        <div>
+          <h2 class="card-title">Omnexx <span class="external-badge">omnexx.org</span></h2>
+          <p class="card-desc">Universal Sub-Agent Coordination Space & dynamic lock server for cross-agent collaboration.</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-path">omnexx.org</span>
+          <span class="card-backend">Port 8116 (Dedicated)</span>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <footer>
+    yaeger infrastructure &middot; frontends hosted on github pages &middot; backend loader: 147.224.158.118
+  </footer>
+
+  <script>
+    const filterInput = document.getElementById('filter-input');
+    const cards = document.querySelectorAll('.card');
+
+    filterInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      cards.forEach(card => {
+        const text = (card.getAttribute('data-name') || '') + ' ' + card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      const keyMap = {
+        '1': './info/',
+        '2': './turbo/',
+        '3': './swarm/',
+        '4': './notes/',
+        '5': './game/',
+        '6': './dweebs/',
+        '7': './bucket/',
+        '8': './aria/',
+        '9': 'https://omnexx.org'
+      };
+      if (keyMap[e.key]) {
+        window.location.href = keyMap[e.key];
+      }
+      if (e.key === '/') {
+        e.preventDefault();
+        filterInput.focus();
+      }
+    });
+  </script>
 </body>
 </html>
