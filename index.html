@@ -344,43 +344,11 @@
         </div>
       </a>
 
-      <!-- 2. Turbo -->
-      <a href="./turbo/" class="card" style="--card-accent: var(--accent-gold);" data-name="turbo turbotoolbox utilities field calculators toolbox">
-        <div class="card-top">
-          <div class="card-icon">⚡</div>
-          <span class="card-hotkey">2</span>
-        </div>
-        <div>
-          <h2 class="card-title">Turbo</h2>
-          <p class="card-desc">TurboToolbox field intelligence suite, contractor utilities, trenching safety, and tools.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/turbo</span>
-          <span class="card-backend">turbotoolbox.me</span>
-        </div>
-      </a>
-
-      <!-- 3. Swarm -->
-      <a href="./swarm/" class="card" style="--card-accent: var(--accent-purple);" data-name="swarm swarmagents autonomous agents engine ide dashboard">
-        <div class="card-top">
-          <div class="card-icon">🐝</div>
-          <span class="card-hotkey">3</span>
-        </div>
-        <div>
-          <h2 class="card-title">Swarm</h2>
-          <p class="card-desc">SwarmAgents multi-agent orchestration engine, autonomous tasks, and interactive IDE.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/swarm</span>
-          <span class="card-backend">swarmagents.codes</span>
-        </div>
-      </a>
-
-      <!-- 4. Notes -->
+      <!-- 2. Notes -->
       <a href="./notes/" class="card" style="--card-accent: var(--accent-green);" data-name="notes quick-capture vault quadrant security documents">
         <div class="card-top">
           <div class="card-icon">📝</div>
-          <span class="card-hotkey">4</span>
+          <span class="card-hotkey">2</span>
         </div>
         <div>
           <h2 class="card-title">Notes</h2>
@@ -392,11 +360,11 @@
         </div>
       </a>
 
-      <!-- 5. Game -->
+      <!-- 3. Game -->
       <a href="./game/" class="card" style="--card-accent: var(--accent-pink);" data-name="game gamewithfam party arcade multiplayer trivia">
         <div class="card-top">
           <div class="card-icon">🎮</div>
-          <span class="card-hotkey">5</span>
+          <span class="card-hotkey">3</span>
         </div>
         <div>
           <h2 class="card-title">Game</h2>
@@ -408,11 +376,11 @@
         </div>
       </a>
 
-      <!-- 6. Dweebs -->
+      <!-- 4. Dweebs -->
       <a href="./dweebs/" class="card" style="--card-accent: #f47a3a;" data-name="dweebs brawler physics knockout arena knockout">
         <div class="card-top">
           <div class="card-icon">🥊</div>
-          <span class="card-hotkey">6</span>
+          <span class="card-hotkey">4</span>
         </div>
         <div>
           <h2 class="card-title">Dweebs</h2>
@@ -424,11 +392,11 @@
         </div>
       </a>
 
-      <!-- 7. Bucket -->
+      <!-- 5. Bucket -->
       <a href="./bucket/" class="card" style="--card-accent: var(--accent-gold);" data-name="bucket bucketlist goals dreams milestones">
         <div class="card-top">
           <div class="card-icon">🎯</div>
-          <span class="card-hotkey">7</span>
+          <span class="card-hotkey">5</span>
         </div>
         <div>
           <h2 class="card-title">Bucket</h2>
@@ -440,11 +408,11 @@
         </div>
       </a>
 
-      <!-- 8. Aria -->
+      <!-- 6. Aria -->
       <a href="./aria/" class="card" style="--card-accent: #8b5cf6;" data-name="aria tasks productivity workflow planner">
         <div class="card-top">
           <div class="card-icon">✦</div>
-          <span class="card-hotkey">8</span>
+          <span class="card-hotkey">6</span>
         </div>
         <div>
           <h2 class="card-title">Aria</h2>
@@ -456,11 +424,11 @@
         </div>
       </a>
 
-      <!-- 9. Omnexx (Dedicated Domain) -->
+      <!-- 7. Omnexx (Dedicated Domain) -->
       <a href="https://omnexx.org" target="_blank" rel="noopener noreferrer" class="card" style="--card-accent: var(--accent-cyan);" data-name="omnexx coordination lock server agent orchestration">
         <div class="card-top">
           <div class="card-icon">🪐</div>
-          <span class="card-hotkey">9</span>
+          <span class="card-hotkey">7</span>
         </div>
         <div>
           <h2 class="card-title">Omnexx <span class="external-badge">omnexx.org</span></h2>
@@ -495,14 +463,12 @@
       if (e.target.tagName === 'INPUT') return;
       const keyMap = {
         '1': './info/',
-        '2': './turbo/',
-        '3': './swarm/',
-        '4': './notes/',
-        '5': './game/',
-        '6': './dweebs/',
-        '7': './bucket/',
-        '8': './aria/',
-        '9': 'https://omnexx.org'
+        '2': './notes/',
+        '3': './game/',
+        '4': './dweebs/',
+        '5': './bucket/',
+        '6': './aria/',
+        '7': 'https://omnexx.org'
       };
       if (keyMap[e.key]) {
         window.location.href = keyMap[e.key];
