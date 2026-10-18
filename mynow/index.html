@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyNow — Activity Stream</title>
+  <link rel="icon" href="../info/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a10;
+      --surface: #12141f;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #00f3ff;
+      --text: #f0f3fa;
+      --text-muted: #848ca3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-bar {
+      height: 48px;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 13px;
+    }
+    .back-btn {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .container {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+    .header {
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, #fff, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: rgba(0, 243, 255, 0.1);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 16px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00ff88;
+      box-shadow: 0 0 8px #00ff88;
+    }
+    .now-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .now-item:last-child { border-bottom: none; }
+    .icon { font-size: 20px; }
+    .item-title { font-weight: 600; margin-bottom: 4px; font-size: 16px; }
+    .item-desc { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+    .time { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <a href="../" class="back-btn">← Hub</a>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted);">mynow.stream</span>
+  </div>
+  <div class="container">
+    <div class="header">
+      <div class="status-badge"><div class="dot"></div> LIVE REALTIME STATUS</div>
+      <h1>What I'm Doing Now</h1>
+      <p style="color: var(--text-muted);">Current priorities, autonomous agent fleet monitoring, and active coding tracks.</p>
+    </div>
+
+    <div class="status-card">
+      <div class="now-item">
+        <div class="icon">🚀</div>
+        <div>
+          <div class="item-title">Consolidating Autonomous Architecture</div>
+          <div class="item-desc">Unified all personal applications into GitHub Pages with decentralized VPS backends and free-tier LLM routing via LiteLLM & Gemini Flash.</div>
+          <div class="time">UPDATED JUST NOW</div>
+        </div>
+      </div>
+      <div class="now-item">
+        <div class="icon">🐝</div>
+        <div>
+          <div class="item-title">Autonomous Fleet & Omnexx Protocol</div>
+          <div class="item-desc">Executing background agent swarm loops and multi-agent coordination locks across distributed nodes.</div>
+          <div class="time">ACTIVE BACKGROUND TRACK</div>
+        </div>
+      </div>
+      <div class="now-item">
+        <div class="icon">🎮</div>
+        <div>
+          <div class="item-title">GameWithFam & Interactive Web Spaces</div>
+          <div class="item-desc">Real-time WebSockets party games and standalone physics knockout arena (Dweebs).</div>
+          <div class="time">PERSISTENT WORKSPACE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

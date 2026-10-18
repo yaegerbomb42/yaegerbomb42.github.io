@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AICoach — Autonomous Performance & Reflection</title>
+  <link rel="icon" href="../info/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a10;
+      --surface: #12141f;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #10b981;
+      --text: #f0f3fa;
+      --text-muted: #848ca3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-bar {
+      height: 48px;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 13px;
+    }
+    .back-btn {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    h1 {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .chat-box {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 400px;
+    }
+    .message {
+      padding: 14px 18px;
+      border-radius: 12px;
+      max-width: 80%;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .coach-msg {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      align-self: flex-start;
+      color: #e2e8f0;
+    }
+    .user-msg {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      align-self: flex-end;
+    }
+    .input-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 0 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <a href="../" class="back-btn">← Hub</a>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted);">aicoach.agent</span>
+  </div>
+  <div class="container">
+    <div>
+      <h1>AI Executive & Performance Coach</h1>
+      <p style="color: var(--text-muted);">Self-reflection, daily mental clarity, strategic prioritizing, and execution feedback.</p>
+    </div>
+    <div class="chat-box" id="chat">
+      <div class="message coach-msg">
+        👋 Welcome back, Yaeger. What strategic objective, mental hurdle, or system architecture decision are we tackling today?
+      </div>
+    </div>
+    <div class="input-bar">
+      <input type="text" id="userInput" placeholder="Ask your coach anything..." autocomplete="off">
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+  <script>
+    function send() {
+      const input = document.getElementById('userInput');
+      const val = input.value.trim();
+      if (!val) return;
+      const chat = document.getElementById('chat');
+      const uMsg = document.createElement('div');
+      uMsg.className = 'message user-msg';
+      uMsg.innerText = val;
+      chat.appendChild(uMsg);
+      input.value = '';
+
+      setTimeout(() => {
+        const cMsg = document.createElement('div');
+        cMsg.className = 'message coach-msg';
+        cMsg.innerText = "Analyzing your objective through first principles: prioritize high-leverage bottlenecks and keep execution loops under 15 minutes. How can we break this down into the immediate next action?";
+        chat.appendChild(cMsg);
+        chat.scrollTop = chat.scrollHeight;
+      }, 500);
+    }
+    document.getElementById('userInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') send();
+    });
+  </script>
+</body>
+</html>

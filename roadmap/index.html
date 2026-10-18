@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roadmap & Milestones — yaeger</title>
+  <link rel="icon" href="../info/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a10;
+      --surface: #12141f;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #facc15;
+      --text: #f0f3fa;
+      --text-muted: #848ca3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-bar {
+      height: 48px;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 13px;
+    }
+    .back-btn {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+    h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .timeline {
+      position: relative;
+      margin-top: 36px;
+      padding-left: 24px;
+      border-left: 2px solid var(--border);
+    }
+    .milestone {
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .milestone::before {
+      content: '';
+      position: absolute;
+      left: -31px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .milestone.done::before {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+    .phase-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(250, 204, 21, 0.15);
+      color: var(--accent);
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    .phase-badge.done {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+    .milestone-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .milestone-desc { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <a href="../" class="back-btn">← Hub</a>
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted);">roadmap.vision</span>
+  </div>
+  <div class="container">
+    <h1>Project Roadmap & Milestones</h1>
+    <p style="color: var(--text-muted);">Long-term systems progression, infrastructure consolidations, and autonomous milestones.</p>
+
+    <div class="timeline">
+      <div class="milestone done">
+        <span class="phase-badge done">PHASE 1 &middot; COMPLETED</span>
+        <div class="milestone-title">Unified GitHub Pages Fleet & Decentralized VPS Backend</div>
+        <div class="milestone-desc">Migrated all frontends to permanent static hosting on GitHub Pages, streamlined VPS deployment scripts, and eliminated domain debt.</div>
+      </div>
+      <div class="milestone done">
+        <span class="phase-badge done">PHASE 2 &middot; COMPLETED</span>
+        <div class="milestone-title">Zero-Cost Resilient LLM Pool</div>
+        <div class="milestone-desc">Integrated LiteLLM fallback chains connecting Google Gemini 2.0 Flash, Groq 70B, and local Mac Ollama models.</div>
+      </div>
+      <div class="milestone">
+        <span class="phase-badge">PHASE 3 &middot; IN PROGRESS</span>
+        <div class="milestone-title">Omnexx Cross-Agent Coordination & Autonomous Task Mesh</div>
+        <div class="milestone-desc">Standardizing universal sub-agent MCP locks, state synchronization, and background heartbeat scheduling across remote agents.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
