@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>AGENT O · substrate</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="theme-holo">
+
+  <!-- Diagnostic scanline + grain overlay -->
+  <div class="overlay scanlines" aria-hidden="true"></div>
+  <div class="overlay grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-mark">◉</span>
+      <span class="brand-name">AGENT&nbsp;O</span>
+      <span class="brand-tag">substrate</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="status-strip" id="status-strip">
+      <span class="status-cell" id="status-provider">provider —</span>
+      <span class="sep">·</span>
+      <span class="status-cell" id="status-sandbox">sandbox —</span>
+      <span class="sep">·</span>
+      <span class="status-cell" id="status-tools">tools —</span>
+      <span class="sep">·</span>
+      <span class="status-cell" id="status-clock">—</span>
+    </div>
+    <div class="topbar-controls">
+      <button class="ctrl" id="btn-self-improve" title="Toggle self-improvement (idle work)">
+        <span class="dot"></span> SELF&nbsp;IMPROVE
+      </button>
+      <button class="ctrl ctrl-halt" id="btn-halt"
+              title="HALT — immediately stop the agent and freeze the queue.">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="10" height="10" fill="currentColor" />
+        </svg>
+        <span id="btn-halt-label">HALT</span>
+      </button>
+    </div>
+  </header>
+  <div class="halted-strip hidden" id="halted-strip">
+    <span class="halted-pulse"></span>
+    <span class="halted-text">AGENT HALTED · queue frozen · no LLM calls will be issued</span>
+    <button class="ctrl ctrl-primary" id="btn-resume-inline">RESUME</button>
+  </div>
+
+  <main class="layout">
+
+    <!-- LEFT RAIL — queue -->
+    <aside class="rail rail-left">
+      <section class="panel panel-queue">
+        <div class="panel-head">
+          <h2>QUEUE</h2>
+          <span class="badge" id="queue-count">0</span>
+        </div>
+        <div class="queue-list" id="queue-list"></div>
+      </section>
+
+      <section class="panel panel-recent">
+        <div class="panel-head">
+          <h2>RECENT</h2>
+          <span class="panel-hint">archive to hide</span>
+        </div>
+        <div class="recent-list" id="recent-list"></div>
+      </section>
+    </aside>
+
+    <!-- CENTER — single scrollable cockpit -->
+    <section class="center unified-mode" id="center-pane">
+      <div class="center-head">
+        <div class="active-meta">
+          <div class="active-title" id="active-title">no task running</div>
+          <div class="active-sub" id="active-sub">submit a task to begin</div>
+          <button type="button" class="ctrl ctrl-primary hidden" id="btn-resume-stalled"
+            title="Re-queue a STALLED task — workspace + scratchpad preserved">RESUME STALLED</button>
+        </div>
+        <div class="engine-indicator" id="engine-indicator">
+          <span class="engine-label">ENGINE</span>
+          <span class="engine-value" id="engine-value">—</span>
+          <div class="engine-pulse" aria-hidden="true"></div>
+        </div>
+        <div class="budget-cluster">
+          <div class="budget-bars">
+            <div class="bar-wrap">
+              <span class="bar-label">TIME</span>
+              <div class="bar"><div class="bar-fill" id="bar-time"></div></div>
+            </div>
+            <div class="bar-wrap">
+              <span class="bar-label">STEPS</span>
+              <div class="bar"><div class="bar-fill" id="bar-steps"></div></div>
+            </div>
+          </div>
+          <button type="button" class="ctrl ctrl-new-task" id="btn-new-task"
+            title="Clear stream, plan, desk, and live rate sparklines. Does not erase today’s daily counters.">
+            NEW&nbsp;TASK
+          </button>
+        </div>
+      </div>
+
+      <div class="unified-scroll" id="unified-scroll">
+      <div class="plan-panel hidden" id="plan-panel">
+        <div class="plan-head">
+          <span class="plan-label">PLAN</span>
+          <span class="plan-ambition" id="plan-ambition">—</span>
+          <span class="plan-meta" id="plan-meta"></span>
+          <button class="iconbtn" id="btn-plan-toggle" title="Toggle brief/timeline">▾</button>
+        </div>
+        <div class="plan-brief" id="plan-brief"></div>
+        <div class="plan-phases" id="plan-phases"></div>
+      </div>
+
+      <!-- Main display area (stacked in unified scroll) -->
+      <div class="stream-wrap" id="stream-wrap">
+        <div class="stream" id="stream"></div>
+      </div>
+      <div id="fused-embeds" class="fused-embeds">
+        <div class="fused-cell">
+          <div class="fused-cell-head">PREVIEW</div>
+          <iframe id="fused-preview-iframe" title="Fused live preview"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        </div>
+        <div class="fused-cell">
+          <div class="fused-cell-head">DESKTOP</div>
+          <iframe id="fused-desktop-iframe" title="Fused sandbox desktop"
+            allow="clipboard-read; clipboard-write; fullscreen; display-capture"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals allow-pointer-lock allow-popups-to-escape-sandbox"></iframe>
+        </div>
+      </div>
+      <div class="desk" id="desk">
+        <div class="desk-tree">
+          <div class="desk-tree-head">
+            <span>WORKSPACE</span>
+            <button class="iconbtn" id="btn-tree-refresh" title="Refresh tree">↻</button>
+          </div>
+          <div class="desk-tree-body" id="desk-tree-body">
+            <div class="muted">no task selected</div>
+          </div>
+        </div>
+        <div class="desk-file">
+          <div class="desk-file-head">
+            <span id="desk-file-path">—</span>
+            <span class="desk-file-meta" id="desk-file-meta"></span>
+          </div>
+          <pre class="desk-file-body" id="desk-file-body">(select a file)</pre>
+        </div>
+        <div class="desk-feed">
+          <div class="desk-feed-head">LIVE EDITS</div>
+          <div class="desk-feed-body" id="desk-feed-body"></div>
+        </div>
+      </div>
+      <div class="vm-view" id="vm-view">
+        <div class="vm-head">
+          <div class="vm-head-row">
+            <span class="vm-label">SANDBOX VM</span>
+            <span class="vm-meta" id="vm-meta">—</span>
+            <button type="button" class="iconbtn" id="btn-vm-clear" title="Clear on-screen log only">CLEAR</button>
+          </div>
+          <div class="vm-stats" id="vm-stats"></div>
+        </div>
+        <pre class="vm-console" id="vm-console" tabindex="0">When a task is running, this panel streams sandbox commands (docker exec), stats, and process snapshots.</pre>
+      </div>
+      <div class="desktop-full" id="desktop-full">
+        <div class="desktop-toolbar">
+          <span class="desktop-toolbar-label">IN-CONTAINER OS · Webtop (KasmVNC)</span>
+          <a class="iconbtn hidden" id="btn-desktop-open-http" target="_blank" rel="noopener noreferrer" href="#">OPEN HTTP</a>
+          <a class="iconbtn hidden" id="btn-desktop-open-https" target="_blank" rel="noopener noreferrer" href="#">OPEN HTTPS</a>
+          <button type="button" class="iconbtn" id="btn-desktop-reload" title="Reload embedded desktop">↻</button>
+        </div>
+        <iframe id="desktop-iframe" title="Sandbox desktop (Webtop)"
+          allow="clipboard-read; clipboard-write; fullscreen; display-capture"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals allow-pointer-lock allow-popups-to-escape-sandbox"></iframe>
+      </div>
+      <div class="preview-expanded hidden" id="preview-expanded">
+        <iframe id="preview-iframe-main" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+      </div>
+      </div>
+
+      <!-- Confirmation / fix banner shown when AWAITING_USER / AWAITING_CONFIRM -->
+      <div class="pending-banner hidden" id="pending-banner"></div>
+
+      <!-- Input bar -->
+      <form class="composer" id="composer" autocomplete="off">
+        <div class="composer-row">
+          <textarea
+            id="composer-input"
+            placeholder="instruct agent O — anything from `clone repo X and add dark mode` to `plan a Hawaii trip`"
+            rows="2"></textarea>
+          <button type="submit" class="submit" id="composer-submit">
+            <span>DISPATCH</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="composer-row composer-options">
+          <div class="opt opt-autonomy">
+            <span class="opt-label">AUTONOMY</span>
+            <div class="segmented" id="opt-autonomy">
+              <button type="button" data-value="MANUAL">MANUAL</button>
+              <button type="button" data-value="SEMI">SEMI</button>
+              <button type="button" data-value="FULL" class="active">FULL</button>
+            </div>
+          </div>
+          <div class="opt opt-budget">
+            <span class="opt-label">TIME&nbsp;BUDGET</span>
+            <input type="range" id="opt-budget" min="2" max="240" value="5" step="1">
+            <span class="opt-readout" id="opt-budget-readout">5m</span>
+          </div>
+          <div class="opt opt-engine">
+            <span class="opt-label">SEED&nbsp;ENGINE</span>
+            <select id="opt-engine" title="AUTO infers from your prompt"></select>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- RIGHT — live preview + annotate -->
+    <aside class="rail rail-right">
+      <section class="panel panel-preview">
+        <div class="panel-head">
+          <h2>LIVE&nbsp;PREVIEW</h2>
+          <div class="preview-controls">
+            <button class="iconbtn" id="btn-annotate" title="Draw on preview">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 14l1-3 8-8 2 2-8 8-3 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              ANNOTATE
+            </button>
+            <button class="iconbtn" id="btn-preview-expand" title="Open preview in main area">⤢</button>
+            <button class="iconbtn" id="btn-preview-open" title="Open in new tab">↗</button>
+            <button class="iconbtn" id="btn-preview-reload" title="Reload">↻</button>
+          </div>
+        </div>
+        <div class="preview-frame" id="preview-frame">
+          <div class="preview-empty">no preview yet — when the agent runs <code>preview_start</code> the live page lands here</div>
+          <iframe id="preview-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" hidden></iframe>
+          <canvas id="annotate-canvas" hidden></canvas>
+        </div>
+        <div class="annotate-bar hidden" id="annotate-bar">
+          <input type="text" id="annotate-comment" placeholder="describe the change you want here…">
+          <button class="ctrl ctrl-primary" id="btn-annotate-send">SEND&nbsp;FIX</button>
+          <button class="ctrl" id="btn-annotate-clear">CLEAR</button>
+          <button class="ctrl" id="btn-annotate-cancel">CANCEL</button>
+        </div>
+      </section>
+
+      <section class="panel panel-metrics">
+        <div class="panel-head"><h2>METRICS</h2></div>
+        <div class="metrics-grid" id="metrics-grid"></div>
+        <div class="sparkline" id="sparkline"></div>
+        <div class="metric-foot" id="metric-foot"></div>
+      </section>
+
+      <section class="panel panel-tools">
+        <div class="panel-head">
+          <h2>TOOLS</h2>
+          <span class="badge" id="tools-count">0</span>
+        </div>
+        <div class="tools-list" id="tools-list"></div>
+      </section>
+    </aside>
+  </main>
+
+  <!-- Modal for confirmations -->
+  <div class="modal hidden" id="modal">
+    <div class="modal-card">
+      <div class="modal-title" id="modal-title">Confirm</div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+
+  <!-- Tool-inspect drawer -->
+  <div class="drawer hidden" id="tool-drawer">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title" id="tool-drawer-title">tool</div>
+        <div class="drawer-sub" id="tool-drawer-sub"></div>
+      </div>
+      <button class="iconbtn" id="tool-drawer-close" title="Close">✕</button>
+    </div>
+    <div class="drawer-body" id="tool-drawer-body"></div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
