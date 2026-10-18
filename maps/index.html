@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>3D Maps Explorer & FPS Arena — yaeger</title>
+  <link rel="icon" href="../info/favicon.svg" type="image/svg+xml" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #ffffff; font-family: 'Space Grotesk', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    #canvas-container {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+    }
+
+    /* Crosshair */
+    #crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px; height: 18px;
+      pointer-events: none;
+      z-index: 30;
+      transition: transform 0.08s ease-out;
+    }
+    #crosshair::before, #crosshair::after {
+      content: ''; position: absolute; background: rgba(15, 23, 42, 0.85); box-shadow: 0 0 4px rgba(255, 255, 255, 0.9);
+    }
+    #crosshair::before { top: 8px; left: 0; width: 18px; height: 2px; }
+    #crosshair::after { top: 0; left: 8px; width: 2px; height: 18px; }
+    #crosshair.firing {
+      transform: translate(-50%, -50%) scale(1.6);
+    }
+
+    /* Top HUD */
+    .hud-header {
+      position: absolute; top: 16px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 20; pointer-events: none;
+    }
+    .interactive { pointer-events: auto; }
+
+    /* Map Selector Drawer */
+    #map-modal {
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #map-modal.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -46%) scale(0.96);
+    }
+    #map-modal:not(.hidden) {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Muzzle Flash Overlay */
+    #muzzle-flash {
+      position: absolute; bottom: 80px; right: calc(50% - 220px);
+      width: 140px; height: 140px;
+      background: radial-gradient(circle, rgba(255,240,160,0.95) 0%, rgba(255,160,30,0.6) 40%, rgba(255,50,0,0) 70%);
+      pointer-events: none; z-index: 25; opacity: 0;
+      filter: blur(2px);
+      transform: scale(0.6);
+      transition: opacity 0.05s ease-out, transform 0.05s ease-out;
+    }
+
+    /* Click to Play Screen */
+    #blocker {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 40; cursor: pointer;
+    }
+  </style>
+
+  <!-- Import Three.js & Loaders from CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- 3D Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- FPS Crosshair -->
+  <div id="crosshair"></div>
+  <div id="muzzle-flash"></div>
+
+  <!-- Top Navigation HUD -->
+  <header class="hud-header">
+    <div class="flex items-center gap-3">
+      <a href="../" class="interactive px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold mono border border-slate-700 shadow-md hover:bg-slate-800 transition">
+        ← Hub
+      </a>
+      <div class="bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-slate-300 shadow-sm flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-bold tracking-tight text-slate-800" id="current-map-title">White Sandbox World</span>
+        <span class="mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200" id="map-asset-size">Procedural</span>
+      </div>
+    </div>
+
+    <!-- Right HUD: Stats & Map Selector Button -->
+    <div class="flex items-center gap-2">
+      <button id="btn-open-maps" class="interactive px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold mono shadow-md transition active:scale-95 flex items-center gap-1.5">
+        <span>🗺️ Choose Map (M)</span>
+      </button>
+      <div class="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-300 shadow-sm mono text-[11px] text-slate-700 flex items-center gap-3">
+        <span>AMMO: <strong id="hud-ammo" class="text-slate-900 font-bold">30 / ∞</strong></span>
+        <span>POS: <strong id="hud-pos" class="text-slate-600">0, 2, 0</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Gun Viewmodel (HTML5 Canvas Overlay for ultra-crisp responsive rendering) -->
+  <canvas id="gunCanvas" class="absolute bottom-0 right-[15%] w-72 h-72 pointer-events-none z-20"></canvas>
+
+  <!-- Click to Lock Pointer Overlay -->
+  <div id="blocker">
+    <div class="bg-white border border-slate-300 shadow-2xl rounded-3xl p-8 max-w-md text-center">
+      <div class="w-16 h-16 bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm">
+        🎯
+      </div>
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-2">3D WHITE WORLD & FPS MAPS</h1>
+      <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+        Click anywhere to enter first-person perspective. Move around, switch between 4 unique environments, and test firearm ballistics.
+      </p>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6 text-left text-xs mono space-y-1.5 text-slate-600">
+        <div class="flex justify-between"><strong class="text-slate-800">Move:</strong> <span>W, A, S, D / Arrows</span></div>
+        <div class="flex justify-between"><strong class="text-slate-800">Sprint / Jump:</strong> <span>Shift / Space</span></div>
+        <div class="flex justify-between"><strong class="text-slate-800">Fire / Reload:</strong> <span>Left Click / R</span></div>
+        <div class="flex justify-between"><strong class="text-slate-800">Switch Map:</strong> <span>Key 'M' or Tab</span></div>
+        <div class="flex justify-between"><strong class="text-slate-800">Exit Look:</strong> <span>Esc</span></div>
+      </div>
+
+      <button id="btn-start" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl shadow-lg transition active:scale-95">
+        CLICK TO ENTER FIRST PERSON
+      </button>
+    </div>
+  </div>
+
+  <!-- Map Picker Modal -->
+  <div id="map-modal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white border border-slate-300 shadow-2xl rounded-3xl p-6 z-50">
+    <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">Select 3D Environment</h2>
+        <p class="text-xs text-slate-500 mono">Instantly warp first-person operative to custom map</p>
+      </div>
+      <button id="btn-close-maps" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm">
+        ✕
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+
+      <!-- Map 0: White Sandbox World -->
+      <div class="map-card cursor-pointer p-4 rounded-2xl border-2 border-indigo-500 bg-indigo-50/40 hover:bg-indigo-50 transition" data-map="sandbox">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="font-bold text-sm text-slate-900">1. White Minimalist World</h3>
+          <span class="mono text-[10px] bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded font-semibold">Active</span>
+        </div>
+        <p class="text-xs text-slate-600">Pure white infinite grid with target towers, training columns, and ramp test tracks.</p>
+      </div>
+
+      <!-- Map 1: Marist Campus -->
+      <div class="map-card cursor-pointer p-4 rounded-2xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 transition" data-map="marist">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="font-bold text-sm text-slate-900">2. Marist Campus</h3>
+          <span class="mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">7.5 MB GLB</span>
+        </div>
+        <p class="text-xs text-slate-600">Master abandoned university campus, academic halls, pavilions, and collegiate grounds.</p>
+      </div>
+
+      <!-- Map 2: Erangel Battleground -->
+      <div class="map-card cursor-pointer p-4 rounded-2xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 transition" data-map="erangel">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="font-bold text-sm text-slate-900">3. Erangel Battleground</h3>
+          <span class="mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">40 MB GLB</span>
+        </div>
+        <p class="text-xs text-slate-600">PUBG mini tactical battleground with urban streets, church, cafes, and compound perimeters.</p>
+      </div>
+
+      <!-- Map 3: Faultline / Dustline -->
+      <div class="map-card cursor-pointer p-4 rounded-2xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 transition" data-map="dustline">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="font-bold text-sm text-slate-900">4. Dustline / Faultline</h3>
+          <span class="mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">29 MB GLB</span>
+        </div>
+        <p class="text-xs text-slate-600">Collapsed seismic rift zone, tilted cityscape, subterranean underground basement vaults.</p>
+      </div>
+
+      <!-- Map 4: Blackwell Estate -->
+      <div class="map-card cursor-pointer p-4 rounded-2xl border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 transition md:col-span-2" data-map="haunted">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="font-bold text-sm text-slate-900">5. Blackwell Estate (Haunted House)</h3>
+          <span class="mono text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">82 MB GLB</span>
+        </div>
+        <p class="text-xs text-slate-600">Victorian gothic estate featuring grand entrance hall, library, cellar, puppet theater, and attic corridors.</p>
+      </div>
+
+    </div>
+
+    <!-- Loading Bar Indicator -->
+    <div id="loading-container" class="hidden">
+      <div class="flex justify-between text-xs mono text-slate-600 mb-1">
+        <span id="loading-status">Streaming 3D Mesh Geometry...</span>
+        <span id="loading-pct">0%</span>
+      </div>
+      <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div id="loading-bar" class="h-full bg-indigo-600 transition-all duration-150" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Synthesis Engine & FPS Controller Logic -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    // =========================================================================
+    // AUDIO SYNTHESIS (Zero External Audio File Latency)
+    // =========================================================================
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playShoot() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+
+        // Gunshot punch (transient noise + decaying tone)
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.18);
+
+        gain.gain.setValueAtTime(0.7, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+
+        // Sub blast
+        const sub = this.ctx.createOscillator();
+        const subGain = this.ctx.createGain();
+        sub.type = 'triangle';
+        sub.frequency.setValueAtTime(140, now);
+        sub.frequency.exponentialRampToValueAtTime(15, now + 0.25);
+        subGain.gain.setValueAtTime(0.8, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        sub.connect(subGain);
+        subGain.connect(this.ctx.destination);
+        sub.start(now);
+        sub.stop(now + 0.26);
+      }
+      playHit() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      }
+      playReload() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.setValueAtTime(600, now + 0.15);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.36);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // =========================================================================
+    // MAP DEFINITIONS & METADATA
+    // =========================================================================
+    const MAPS = {
+      sandbox: {
+        title: "White Sandbox World",
+        size: "Procedural",
+        url: null,
+        spawn: new THREE.Vector3(0, 1.8, 0),
+        scale: 1,
+        yOffset: 0
+      },
+      marist: {
+        title: "Marist Campus Grounds",
+        size: "7.5 MB",
+        url: "./assets/marist_campus.glb",
+        spawn: new THREE.Vector3(0, 2.5, 0),
+        scale: 1,
+        yOffset: 0
+      },
+      erangel: {
+        title: "Erangel Mini Battleground",
+        size: "40 MB",
+        url: "./assets/erangel_battleground.glb",
+        spawn: new THREE.Vector3(0, 3.5, 0),
+        scale: 1,
+        yOffset: 0
+      },
+      dustline: {
+        title: "Faultline / Dustline City",
+        size: "29 MB",
+        url: "./assets/faultline_dustline.glb",
+        spawn: new THREE.Vector3(0, 5.0, 0),
+        scale: 1,
+        yOffset: 0
+      },
+      haunted: {
+        title: "Blackwell Estate (Haunted)",
+        size: "82 MB",
+        url: "./assets/haunted_estate.glb",
+        spawn: new THREE.Vector3(0, 2.0, 5),
+        scale: 1,
+        yOffset: 0
+      }
+    };
+
+    let activeMapKey = 'sandbox';
+    let loadedMapObject = null;
+    let collidableMeshes = [];
+
+    // =========================================================================
+    // SCENE, CAMERA, RENDERER SETUP (STYLIZED "WHITE WORLD")
+    // =========================================================================
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf4f6f9);
+    scene.fog = new THREE.FogExp2(0xf4f6f9, 0.008);
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.rotation.order = 'YXZ';
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    container.appendChild(renderer.domElement);
+
+    // Lighting (Crisp Studio Ambient + Sun)
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xd0d5dd, 0.85);
+    hemiLight.position.set(0, 50, 0);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(60, 100, 40);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 400;
+    const d = 120;
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+    scene.add(dirLight);
+
+    // =========================================================================
+    // PROCEDURAL WHITE SANDBOX WORLD GENERATOR
+    // =========================================================================
+    const sandboxGroup = new THREE.Group();
+
+    function buildWhiteSandbox() {
+      // Infinite stylized grid floor
+      const gridHelper = new THREE.GridHelper(400, 80, 0x94a3b8, 0xe2e8f0);
+      gridHelper.position.y = 0.01;
+      sandboxGroup.add(gridHelper);
+
+      // Floor plane (receives shadows)
+      const floorGeo = new THREE.PlaneGeometry(1000, 1000);
+      const floorMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc,
+        roughness: 0.8,
+        metalness: 0.1
+      });
+      const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+      floorMesh.rotation.x = -Math.PI / 2;
+      floorMesh.receiveShadow = true;
+      sandboxGroup.add(floorMesh);
+
+      // Minimalist white structures, target towers, stairs, obstacles
+      const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.1 });
+      const accentMat = new THREE.MeshStandardMaterial({ color: 0x4f46e5, roughness: 0.3 }); // Indigo
+      const targetMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, roughness: 0.3 }); // Red targets
+
+      // Central Portal Dais
+      const daisGeo = new THREE.CylinderGeometry(8, 9, 0.6, 32);
+      const dais = new THREE.Mesh(daisGeo, whiteMat);
+      dais.position.set(0, 0.3, 0);
+      dais.receiveShadow = true;
+      dais.castShadow = true;
+      sandboxGroup.add(dais);
+
+      // Surrounding monoliths
+      for (let i = 0; i < 16; i++) {
+        const angle = (i / 16) * Math.PI * 2;
+        const radius = 25 + (i % 2) * 12;
+        const h = 4 + (i % 5) * 3;
+        const colGeo = new THREE.BoxGeometry(2.5, h, 2.5);
+        const col = new THREE.Mesh(colGeo, i % 4 === 0 ? accentMat : whiteMat);
+        col.position.set(Math.cos(angle) * radius, h / 2, Math.sin(angle) * radius);
+        col.castShadow = true;
+        col.receiveShadow = true;
+        sandboxGroup.add(col);
+      }
+
+      // Ballistics shooting target dummies
+      for (let x = -20; x <= 20; x += 10) {
+        if (x === 0) continue;
+        const targetGeo = new THREE.CylinderGeometry(0.8, 0.8, 2.2, 16);
+        const target = new THREE.Mesh(targetGeo, targetMat);
+        target.position.set(x, 1.1, -25);
+        target.castShadow = true;
+        target.receiveShadow = true;
+        target.userData.isTarget = true;
+        sandboxGroup.add(target);
+      }
+
+      // Ramps & Elevated Platforms
+      const rampGeo = new THREE.BoxGeometry(6, 1, 20);
+      const ramp = new THREE.Mesh(rampGeo, whiteMat);
+      ramp.position.set(18, 2.5, 10);
+      ramp.rotation.x = 0.25;
+      ramp.castShadow = true;
+      ramp.receiveShadow = true;
+      sandboxGroup.add(ramp);
+
+      const platGeo = new THREE.BoxGeometry(14, 1, 14);
+      const plat = new THREE.Mesh(platGeo, whiteMat);
+      plat.position.set(18, 5, 25);
+      plat.castShadow = true;
+      plat.receiveShadow = true;
+      sandboxGroup.add(plat);
+
+      scene.add(sandboxGroup);
+    }
+
+    buildWhiteSandbox();
+
+    // =========================================================================
+    // FIRST-PERSON CHARACTER & BALLISTICS CONTROLLER
+    // =========================================================================
+    const player = {
+      position: new THREE.Vector3(0, 1.8, 0),
+      velocity: new THREE.Vector3(),
+      pitch: 0,
+      yaw: 0,
+      isGrounded: false,
+      speed: 12,
+      jumpSpeed: 9.5,
+      height: 1.8,
+      ammo: 30,
+      isReloading: false
+    };
+
+    const keys = {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      sprint: false,
+      jump: false
+    };
+
+    let isLocked = false;
+    const blocker = document.getElementById('blocker');
+
+    blocker.addEventListener('click', () => {
+      sound.init();
+      document.body.requestPointerLock();
+    });
+
+    document.addEventListener('pointerlockchange', () => {
+      isLocked = document.pointerLockElement === document.body;
+      if (isLocked) {
+        blocker.style.display = 'none';
+      } else {
+        blocker.style.display = 'flex';
+      }
+    });
+
+    // Mouse Look
+    document.addEventListener('mousemove', (e) => {
+      if (!isLocked) return;
+      const sensitivity = 0.0022;
+      player.yaw -= e.movementX * sensitivity;
+      player.pitch -= e.movementY * sensitivity;
+      player.pitch = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, player.pitch));
+
+      camera.rotation.set(player.pitch, player.yaw, 0);
+    });
+
+    // Keyboard controls
+    window.addEventListener('keydown', (e) => {
+      if (e.repeat) return;
+      switch (e.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          keys.forward = true; break;
+        case 'KeyS':
+        case 'ArrowDown':
+          keys.backward = true; break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          keys.left = true; break;
+        case 'KeyD':
+        case 'ArrowRight':
+          keys.right = true; break;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          keys.sprint = true; break;
+        case 'Space':
+          if (player.isGrounded) {
+            player.velocity.y = player.jumpSpeed;
+            player.isGrounded = false;
+          }
+          break;
+        case 'KeyR':
+          reloadGun();
+          break;
+        case 'KeyM':
+        case 'Tab':
+          e.preventDefault();
+          toggleMapModal();
+          break;
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      switch (e.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          keys.forward = false; break;
+        case 'KeyS':
+        case 'ArrowDown':
+          keys.backward = false; break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          keys.left = false; break;
+        case 'KeyD':
+        case 'ArrowRight':
+          keys.right = false; break;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          keys.sprint = false; break;
+      }
+    });
+
+    // =========================================================================
+    // GUN VIEWMODEL & SHOOTING MECHANICS
+    // =========================================================================
+    const gunCanvas = document.getElementById('gunCanvas');
+    const gunCtx = gunCanvas.getContext('2d');
+    gunCanvas.width = 320;
+    gunCanvas.height = 320;
+
+    let gunRecoil = 0;
+    let muzzleFlashTimer = 0;
+    const crosshairEl = document.getElementById('crosshair');
+    const muzzleFlashEl = document.getElementById('muzzle-flash');
+    const hudAmmo = document.getElementById('hud-ammo');
+
+    function drawGun(recoilOffset = 0, isFiring = false) {
+      gunCtx.clearRect(0, 0, gunCanvas.width, gunCanvas.height);
+
+      const baseX = 160 + Math.sin(Date.now() * 0.005) * 3;
+      const baseY = 240 + recoilOffset * 25 + Math.abs(Math.cos(Date.now() * 0.008)) * 3;
+
+      gunCtx.save();
+      gunCtx.translate(baseX, baseY);
+      gunCtx.rotate(-recoilOffset * 0.25);
+
+      // Gun Body Shadow
+      gunCtx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      gunCtx.fillRect(-35, -95, 74, 180);
+
+      // Receiver / Slide
+      gunCtx.fillStyle = '#0f172a'; // Deep obsidian
+      gunCtx.beginPath();
+      gunCtx.roundRect(-30, -100, 60, 160, 6);
+      gunCtx.fill();
+
+      // Metallic Upper Highlight
+      gunCtx.fillStyle = '#334155';
+      gunCtx.fillRect(-28, -98, 56, 18);
+
+      // Barrel Tip
+      gunCtx.fillStyle = '#020617';
+      gunCtx.fillRect(-12, -125, 24, 28);
+
+      // White futuristic racing stripe
+      gunCtx.fillStyle = '#ffffff';
+      gunCtx.fillRect(-4, -95, 8, 120);
+
+      // Sight
+      gunCtx.fillStyle = '#00f5d4'; // Cyan glowing reflex dot
+      gunCtx.fillRect(-2, -104, 4, 6);
+
+      gunCtx.restore();
+    }
+
+    drawGun();
+
+    // Raycast shooting impacts & particle effects
+    const raycaster = new THREE.Raycaster();
+    const sparks = [];
+
+    function spawnBulletImpact(point, normal) {
+      sound.playHit();
+
+      // Spark particles
+      for (let i = 0; i < 8; i++) {
+        const pGeo = new THREE.SphereGeometry(0.04, 4, 4);
+        const pMat = new THREE.MeshBasicMaterial({ color: 0xffd166 });
+        const p = new THREE.Mesh(pGeo, pMat);
+        p.position.copy(point);
+        const vel = new THREE.Vector3(
+          normal.x + (Math.random() - 0.5) * 1.5,
+          normal.y + (Math.random() - 0.5) * 1.5,
+          normal.z + (Math.random() - 0.5) * 1.5
+        ).normalize().multiplyScalar(Math.random() * 5 + 3);
+        scene.add(p);
+        sparks.push({ mesh: p, vel, life: 0.25 });
+      }
+
+      // Small impact decal ring
+      const decalGeo = new THREE.RingGeometry(0.05, 0.12, 12);
+      const decalMat = new THREE.MeshBasicMaterial({ color: 0x1e293b, side: THREE.DoubleSide });
+      const decal = new THREE.Mesh(decalGeo, decalMat);
+      decal.position.copy(point).addScaledVector(normal, 0.01);
+      decal.lookAt(point.clone().add(normal));
+      scene.add(decal);
+    }
+
+    function shoot() {
+      if (!isLocked || player.isReloading) return;
+      if (player.ammo <= 0) {
+        reloadGun();
+        return;
+      }
+
+      player.ammo--;
+      hudAmmo.textContent = `${player.ammo} / ∞`;
+      sound.playShoot();
+
+      // Recoil & Muzzle flash
+      gunRecoil = 1.0;
+      muzzleFlashTimer = 3;
+      crosshairEl.classList.add('firing');
+      muzzleFlashEl.style.opacity = '1';
+
+      setTimeout(() => {
+        crosshairEl.classList.remove('firing');
+        muzzleFlashEl.style.opacity = '0';
+      }, 70);
+
+      // Cast Ray from Camera Center
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const targets = [];
+      scene.traverse((obj) => {
+        if (obj.isMesh && obj !== loadedMapObject && !obj.userData.isParticle) {
+          targets.push(obj);
+        }
+      });
+
+      const intersects = raycaster.intersectObjects(targets, true);
+      if (intersects.length > 0) {
+        const hit = intersects[0];
+        spawnBulletImpact(hit.point, hit.face ? hit.face.normal : new THREE.Vector3(0, 1, 0));
+
+        // Knock target reaction if dummy
+        if (hit.object.userData.isTarget) {
+          hit.object.position.y -= 0.2;
+          setTimeout(() => { hit.object.position.y += 0.2; }, 180);
+        }
+      }
+    }
+
+    function reloadGun() {
+      if (player.isReloading || player.ammo === 30) return;
+      player.isReloading = true;
+      sound.playReload();
+      hudAmmo.textContent = 'RELOADING...';
+
+      setTimeout(() => {
+        player.ammo = 30;
+        player.isReloading = false;
+        hudAmmo.textContent = `${player.ammo} / ∞`;
+      }, 1000);
+    }
+
+    window.addEventListener('mousedown', (e) => {
+      if (e.button === 0 && isLocked) {
+        shoot();
+      }
+    });
+
+    // =========================================================================
+    // MAP LOADING & SWITCHING ENGINE
+    // =========================================================================
+    const gltfLoader = new GLTFLoader();
+    const mapModal = document.getElementById('map-modal');
+    const btnOpenMaps = document.getElementById('btn-open-maps');
+    const btnCloseMaps = document.getElementById('btn-close-maps');
+    const currentMapTitle = document.getElementById('current-map-title');
+    const mapAssetSize = document.getElementById('map-asset-size');
+    const loadingContainer = document.getElementById('loading-container');
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingPct = document.getElementById('loading-pct');
+    const loadingStatus = document.getElementById('loading-status');
+
+    function toggleMapModal() {
+      if (mapModal.classList.contains('hidden')) {
+        mapModal.classList.remove('hidden');
+        if (document.exitPointerLock) document.exitPointerLock();
+      } else {
+        mapModal.classList.add('hidden');
+      }
+    }
+
+    btnOpenMaps.addEventListener('click', toggleMapModal);
+    btnCloseMaps.addEventListener('click', toggleMapModal);
+
+    async function loadMap(mapKey) {
+      const config = MAPS[mapKey];
+      if (!config) return;
+
+      activeMapKey = mapKey;
+      currentMapTitle.textContent = config.title;
+      mapAssetSize.textContent = config.size;
+
+      // Update card UI highlights
+      document.querySelectorAll('.map-card').forEach(card => {
+        if (card.getAttribute('data-map') === mapKey) {
+          card.classList.add('border-indigo-500', 'bg-indigo-50/40');
+          card.classList.remove('border-slate-200');
+        } else {
+          card.classList.remove('border-indigo-500', 'bg-indigo-50/40');
+          card.classList.add('border-slate-200');
+        }
+      });
+
+      // Reset previous custom model
+      if (loadedMapObject) {
+        scene.remove(loadedMapObject);
+        loadedMapObject = null;
+      }
+
+      if (mapKey === 'sandbox') {
+        sandboxGroup.visible = true;
+        player.position.copy(config.spawn);
+        player.velocity.set(0, 0, 0);
+        mapModal.classList.add('hidden');
+        return;
+      }
+
+      // Hide sandbox when custom map is active
+      sandboxGroup.visible = false;
+      loadingContainer.classList.remove('hidden');
+      loadingBar.style.width = '0%';
+      loadingPct.textContent = '0%';
+      loadingStatus.textContent = `Streaming ${config.title}...`;
+
+      gltfLoader.load(
+        config.url,
+        (gltf) => {
+          loadingContainer.classList.add('hidden');
+          mapModal.classList.add('hidden');
+
+          loadedMapObject = gltf.scene;
+
+          // Apply white-world aesthetic + shadows to loaded meshes
+          loadedMapObject.traverse((node) => {
+            if (node.isMesh) {
+              node.castShadow = true;
+              node.receiveShadow = true;
+              if (node.material) {
+                node.material.roughness = Math.max(0.4, node.material.roughness || 0.5);
+              }
+            }
+          });
+
+          scene.add(loadedMapObject);
+
+          // Position player at map spawn
+          player.position.copy(config.spawn);
+          player.velocity.set(0, 0, 0);
+        },
+        (xhr) => {
+          if (xhr.lengthComputable) {
+            const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            loadingBar.style.width = pct + '%';
+            loadingPct.textContent = pct + '%';
+          }
+        },
+        (err) => {
+          console.error("Failed to load map:", err);
+          loadingStatus.textContent = "Error loading map mesh. Falling back to Sandbox.";
+          setTimeout(() => {
+            loadMap('sandbox');
+          }, 1500);
+        }
+      );
+    }
+
+    document.querySelectorAll('.map-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const mapKey = card.getAttribute('data-map');
+        loadMap(mapKey);
+      });
+    });
+
+    // =========================================================================
+    // MAIN PHYSICS & RENDER LOOP
+    // =========================================================================
+    let prevTime = performance.now();
+    const hudPos = document.getElementById('hud-pos');
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const time = performance.now();
+      const delta = Math.min((time - prevTime) / 1000, 0.1);
+      prevTime = time;
+
+      // 1. First-Person Movement Mechanics
+      const moveSpeed = keys.sprint ? player.speed * 1.6 : player.speed;
+      const moveDir = new THREE.Vector3();
+
+      if (keys.forward) moveDir.z -= 1;
+      if (keys.backward) moveDir.z += 1;
+      if (keys.left) moveDir.x -= 1;
+      if (keys.right) moveDir.x += 1;
+      moveDir.normalize();
+
+      // Transform direction by Camera Yaw
+      const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.yaw);
+      const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.yaw);
+
+      const targetVelX = (forward.x * -moveDir.z + right.x * moveDir.x) * moveSpeed;
+      const targetVelZ = (forward.z * -moveDir.z + right.z * moveDir.x) * moveSpeed;
+
+      // Damped horizontal acceleration
+      player.velocity.x += (targetVelX - player.velocity.x) * 12 * delta;
+      player.velocity.z += (targetVelZ - player.velocity.z) * 12 * delta;
+
+      // Gravity
+      player.velocity.y -= 24 * delta;
+
+      // Apply displacement
+      player.position.x += player.velocity.x * delta;
+      player.position.z += player.velocity.z * delta;
+      player.position.y += player.velocity.y * delta;
+
+      // Ground plane collision
+      const floorLimit = 1.8;
+      if (player.position.y <= floorLimit) {
+        player.position.y = floorLimit;
+        player.velocity.y = 0;
+        player.isGrounded = true;
+      }
+
+      // Sync Camera Position
+      camera.position.copy(player.position);
+
+      // 2. Gun Recoil & Viewmodel Rendering
+      if (gunRecoil > 0) {
+        gunRecoil = Math.max(0, gunRecoil - delta * 5);
+      }
+      drawGun(gunRecoil);
+
+      // 3. Update Impact Sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.life -= delta;
+        if (s.life <= 0) {
+          scene.remove(s.mesh);
+          sparks.splice(i, 1);
+        } else {
+          s.mesh.position.addScaledVector(s.vel, delta);
+        }
+      }
+
+      // 4. Update HUD Coordinates
+      hudPos.textContent = `${player.position.x.toFixed(1)}, ${player.position.y.toFixed(1)}, ${player.position.z.toFixed(1)}`;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Responsive Canvas Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
