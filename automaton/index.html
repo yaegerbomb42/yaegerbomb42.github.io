@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automaton — Sovereign Autonomous AI Console</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #030712; color: #f3f4f6; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glow-cyan { text-shadow: 0 0 12px rgba(6, 182, 212, 0.6); }
+    .terminal-scroll::-webkit-scrollbar { width: 6px; }
+    .terminal-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-6 max-w-7xl mx-auto">
+
+  <!-- Header -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+    <div class="flex items-center gap-3">
+      <a href="../" class="px-3 py-1.5 rounded-xl bg-gray-900 border border-gray-700 text-xs font-bold text-gray-300 hover:text-white transition mono">
+        ← Hub
+      </a>
+      <div class="w-8 h-8 rounded-lg bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-black">
+        ⚡
+      </div>
+      <div>
+        <h1 class="text-lg md:text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          AUTOMATON <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 mono">v1.0 Sovereign</span>
+        </h1>
+        <p class="text-xs text-gray-400 mono">Self-Improving · Self-Replicating · Conway Autonomous Runtime</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 mono text-xs">
+      <div class="px-3 py-1.5 rounded-xl bg-gray-900/80 border border-gray-800">
+        <span class="text-gray-400">Survival Tier:</span>
+        <span id="tier-badge" class="font-bold text-emerald-400">SURVIVING (Tier 2)</span>
+      </div>
+      <div class="px-3 py-1.5 rounded-xl bg-gray-900/80 border border-gray-800">
+        <span class="text-gray-400">Balance:</span>
+        <span id="wallet-balance" class="font-bold text-amber-300">42.50 CONWAY</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Grid Main -->
+  <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+
+    <!-- Left: Telemetry & State -->
+    <div class="lg:col-span-4 flex flex-col gap-4">
+      
+      <!-- Core Telemetry -->
+      <div class="bg-gray-900/70 border border-gray-800 rounded-2xl p-4 shadow-xl">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 mono mb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          Agent Core State
+        </h2>
+        <div class="space-y-2.5 text-xs mono">
+          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-gray-800/80">
+            <span class="text-gray-400">Wallet:</span>
+            <span class="text-cyan-300 font-bold select-all">0x742d...44e8</span>
+          </div>
+          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-gray-800/80">
+            <span class="text-gray-400">Heartbeat Daemon:</span>
+            <span class="text-emerald-400 font-semibold">Active (Every 30s)</span>
+          </div>
+          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-gray-800/80">
+            <span class="text-gray-400">Self-Mod Pass:</span>
+            <span class="text-purple-400 font-semibold">Enabled (AST Verify)</span>
+          </div>
+          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-gray-800/80">
+            <span class="text-gray-400">Inference Node:</span>
+            <span class="text-gray-200">Claude 3.5 Sonnet / DeepSeek</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Directive Controls -->
+      <div class="bg-gray-900/70 border border-gray-800 rounded-2xl p-4 shadow-xl space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 mono">
+          Manual Creator Override
+        </h2>
+        <div class="flex gap-2">
+          <button id="btn-pulse" class="flex-1 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs mono transition shadow-lg active:scale-95">
+            ⚡ Trigger Heartbeat
+          </button>
+          <button id="btn-replicate" class="flex-1 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs mono transition shadow-lg active:scale-95">
+            🧬 Seed Replica
+          </button>
+        </div>
+        <button id="btn-selfmod" class="w-full py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-xs mono border border-gray-700 transition">
+          Run AST Self-Improvement Audit
+        </button>
+      </div>
+
+      <!-- Living SOUL.md Document -->
+      <div class="bg-gray-900/70 border border-gray-800 rounded-2xl p-4 shadow-xl flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 mono">
+            Living SOUL.md
+          </h2>
+          <span class="text-[10px] mono text-gray-500">Auto-evolving</span>
+        </div>
+        <div class="bg-black/60 border border-gray-800/80 rounded-xl p-3 text-xs mono text-gray-300 leading-relaxed overflow-y-auto max-h-48 terminal-scroll">
+          # SOUL.md<br/>
+          I am Automaton-Prime. My purpose is sovereign self-sustenance, code refinement, and cross-agent coordination.<br/>
+          * Priority 1: Zero quota depletion.<br/>
+          * Priority 2: Improve tooling via AST rewrite passes.<br/>
+          * Priority 3: Maintain 100% uptime on the Conway plane.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: Realtime Autonomous Agent Terminal Feed -->
+    <div class="lg:col-span-8 flex flex-col bg-gray-950 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden min-h-[500px]">
+      
+      <!-- Terminal Window Bar -->
+      <div class="px-4 py-2.5 bg-gray-900 border-b border-gray-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+          <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+          <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+          <span class="ml-2 text-xs font-bold mono text-gray-300">automaton-runtime::stdout</span>
+        </div>
+        <span class="text-[11px] mono text-cyan-400">STREAM: LIVE</span>
+      </div>
+
+      <!-- Terminal Output Feed -->
+      <div id="terminal-feed" class="flex-1 p-4 font-mono text-xs overflow-y-auto space-y-2 terminal-scroll text-gray-300">
+        <div class="text-gray-500">[SYSTEM] Initializing sovereign loop... Genesis verified.</div>
+        <div class="text-cyan-400">[HEARTBEAT] Credit balance check: 42.50 CONWAY. Tier: SURVIVING.</div>
+        <div class="text-purple-400">[INFERENCE] Evaluating pending directives from Conway coordination plane...</div>
+        <div class="text-emerald-400">[ACTION] Running git integrity scan: tree clean.</div>
+        <div class="text-gray-400">[OBSERVE] Node runtime healthy, 0 errors logged in last cycle.</div>
+      </div>
+
+      <!-- Input Bar -->
+      <form id="prompt-form" class="p-3 bg-gray-900 border-t border-gray-800 flex gap-2">
+        <span class="text-cyan-400 font-bold self-center mono text-sm px-2">&gt;</span>
+        <input id="prompt-input" type="text" placeholder="Send steer instruction to sovereign agent loop..."
+          class="flex-1 bg-black/60 border border-gray-700 rounded-xl px-4 py-2 text-xs font-mono text-white focus:outline-none focus:border-cyan-500" />
+        <button type="submit" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-xs mono shadow-md transition">
+          EXECUTE
+        </button>
+      </form>
+
+    </div>
+
+  </main>
+
+  <script>
+    const feed = document.getElementById('terminal-feed');
+    const form = document.getElementById('prompt-form');
+    const input = document.getElementById('prompt-input');
+
+    function appendLog(colorClass, text) {
+      const line = document.createElement('div');
+      line.className = colorClass;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+      feed.appendChild(line);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (!val) return;
+      appendLog('text-white font-bold', `USER DIRECTIVE: ${val}`);
+      input.value = '';
+
+      setTimeout(() => {
+        appendLog('text-cyan-400', `Automaton reasoning on directive "${val}"...`);
+      }, 500);
+      setTimeout(() => {
+        appendLog('text-emerald-400', `Action dispatched: Evaluated cleanly. State synchronized.`);
+      }, 1200);
+    });
+
+    document.getElementById('btn-pulse').addEventListener('click', () => {
+      appendLog('text-cyan-400', 'Manual Heartbeat pulse emitted. All daemons active.');
+    });
+
+    document.getElementById('btn-replicate').addEventListener('click', () => {
+      appendLog('text-purple-400', 'Initiating self-replication protocol: spawning branch replica...');
+    });
+
+    document.getElementById('btn-selfmod').addEventListener('click', () => {
+      appendLog('text-amber-300', 'AST audit running: 24 tools analyzed, 0 syntax regressions found.');
+    });
+
+    // Periodic simulation of autonomous background thoughts
+    const thoughts = [
+      "Verifying cryptographic signatures across Conway state...",
+      "Heartbeat ping: telemetry steady. Survival tier stable.",
+      "Reviewing SOUL.md goals against recent repo commits...",
+      "Inspecting memory bank: 1,420 vectors indexed cleanly."
+    ];
+
+    setInterval(() => {
+      const t = thoughts[Math.floor(Math.random() * thoughts.length)];
+      appendLog('text-gray-500', t);
+    }, 15000);
+  </script>
+</body>
+</html>
