@@ -113,10 +113,20 @@
       </div>
     </div>
 
+    <!-- Center Quick Switch Bar -->
+    <div class="hidden sm:flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-2 py-1.5 rounded-2xl border border-slate-200 shadow-sm interactive">
+      <span class="text-[10px] mono font-bold text-slate-400 px-1">MAPS:</span>
+      <button class="quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-indigo-500 bg-indigo-50 text-indigo-700" data-map="sandbox">1·White</button>
+      <button class="quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-transparent text-slate-600 hover:bg-slate-100" data-map="marist">2·Marist</button>
+      <button class="quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-transparent text-slate-600 hover:bg-slate-100" data-map="erangel">3·Erangel</button>
+      <button class="quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-transparent text-slate-600 hover:bg-slate-100" data-map="dustline">4·Dustline</button>
+      <button class="quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-transparent text-slate-600 hover:bg-slate-100" data-map="haunted">5·Blackwell</button>
+    </div>
+
     <!-- Right HUD: Stats & Map Selector Button -->
     <div class="flex items-center gap-2">
       <button id="btn-open-maps" class="interactive px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold mono shadow-md transition active:scale-95 flex items-center gap-1.5">
-        <span>🗺️ Choose Map (M)</span>
+        <span>🗺️ Maps (M)</span>
       </button>
       <div class="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-300 shadow-sm mono text-[11px] text-slate-700 flex items-center gap-3">
         <span>AMMO: <strong id="hud-ammo" class="text-slate-900 font-bold">30 / ∞</strong></span>
@@ -136,14 +146,15 @@
       </div>
       <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-2">3D WHITE WORLD & FPS MAPS</h1>
       <p class="text-sm text-slate-600 mb-6 leading-relaxed">
-        Click anywhere to enter first-person perspective. Move around, switch between 4 unique environments, and test firearm ballistics.
+        Click anywhere to enter first-person perspective. Move around, switch between 5 unique environments, and test firearm ballistics.
       </p>
 
       <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6 text-left text-xs mono space-y-1.5 text-slate-600">
         <div class="flex justify-between"><strong class="text-slate-800">Move:</strong> <span>W, A, S, D / Arrows</span></div>
         <div class="flex justify-between"><strong class="text-slate-800">Sprint / Jump:</strong> <span>Shift / Space</span></div>
         <div class="flex justify-between"><strong class="text-slate-800">Fire / Reload:</strong> <span>Left Click / R</span></div>
-        <div class="flex justify-between"><strong class="text-slate-800">Switch Map:</strong> <span>Key 'M' or Tab</span></div>
+        <div class="flex justify-between"><strong class="text-slate-800">Quick Switch Map:</strong> <span>Keys 1, 2, 3, 4, 5</span></div>
+        <div class="flex justify-between"><strong class="text-slate-800">Map Menu:</strong> <span>Key 'M' or Tab</span></div>
         <div class="flex justify-between"><strong class="text-slate-800">Exit Look:</strong> <span>Esc</span></div>
       </div>
 
@@ -565,6 +576,26 @@
         case 'KeyR':
           reloadGun();
           break;
+        case 'Digit1':
+        case 'Numpad1':
+          loadMap('sandbox');
+          break;
+        case 'Digit2':
+        case 'Numpad2':
+          loadMap('marist');
+          break;
+        case 'Digit3':
+        case 'Numpad3':
+          loadMap('erangel');
+          break;
+        case 'Digit4':
+        case 'Numpad4':
+          loadMap('dustline');
+          break;
+        case 'Digit5':
+        case 'Numpad5':
+          loadMap('haunted');
+          break;
         case 'KeyM':
         case 'Tab':
           e.preventDefault();
@@ -768,15 +799,11 @@
     btnOpenMaps.addEventListener('click', toggleMapModal);
     btnCloseMaps.addEventListener('click', toggleMapModal);
 
-    async function loadMap(mapKey) {
-      const config = MAPS[mapKey];
-      if (!config) return;
+    // Cache for loaded GLTF scenes to allow instant switching without re-downloading
+    const mapCache = {};
 
-      activeMapKey = mapKey;
-      currentMapTitle.textContent = config.title;
-      mapAssetSize.textContent = config.size;
-
-      // Update card UI highlights
+    function updateActiveMapUI(mapKey) {
+      // Update modal cards
       document.querySelectorAll('.map-card').forEach(card => {
         if (card.getAttribute('data-map') === mapKey) {
           card.classList.add('border-indigo-500', 'bg-indigo-50/40');
@@ -786,6 +813,25 @@
           card.classList.add('border-slate-200');
         }
       });
+
+      // Update top quick-switch buttons
+      document.querySelectorAll('.quick-map-btn').forEach(btn => {
+        if (btn.getAttribute('data-map') === mapKey) {
+          btn.className = "quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm";
+        } else {
+          btn.className = "quick-map-btn px-2.5 py-1 rounded-xl text-xs font-semibold mono transition border border-transparent text-slate-600 hover:bg-slate-100";
+        }
+      });
+    }
+
+    async function loadMap(mapKey) {
+      const config = MAPS[mapKey];
+      if (!config) return;
+
+      activeMapKey = mapKey;
+      currentMapTitle.textContent = config.title;
+      mapAssetSize.textContent = config.size;
+      updateActiveMapUI(mapKey);
 
       // Reset previous custom model
       if (loadedMapObject) {
@@ -803,6 +849,17 @@
 
       // Hide sandbox when custom map is active
       sandboxGroup.visible = false;
+
+      // Use cached model if previously loaded
+      if (mapCache[mapKey]) {
+        mapModal.classList.add('hidden');
+        loadedMapObject = mapCache[mapKey];
+        scene.add(loadedMapObject);
+        player.position.copy(config.spawn);
+        player.velocity.set(0, 0, 0);
+        return;
+      }
+
       loadingContainer.classList.remove('hidden');
       loadingBar.style.width = '0%';
       loadingPct.textContent = '0%';
@@ -814,10 +871,10 @@
           loadingContainer.classList.add('hidden');
           mapModal.classList.add('hidden');
 
-          loadedMapObject = gltf.scene;
+          const mapScene = gltf.scene;
 
           // Apply white-world aesthetic + shadows to loaded meshes
-          loadedMapObject.traverse((node) => {
+          mapScene.traverse((node) => {
             if (node.isMesh) {
               node.castShadow = true;
               node.receiveShadow = true;
@@ -827,6 +884,8 @@
             }
           });
 
+          mapCache[mapKey] = mapScene;
+          loadedMapObject = mapScene;
           scene.add(loadedMapObject);
 
           // Position player at map spawn
@@ -834,7 +893,7 @@
           player.velocity.set(0, 0, 0);
         },
         (xhr) => {
-          if (xhr.lengthComputable) {
+          if (xhr.lengthComputable && xhr.total > 0) {
             const pct = Math.round((xhr.loaded / xhr.total) * 100);
             loadingBar.style.width = pct + '%';
             loadingPct.textContent = pct + '%';
@@ -853,6 +912,14 @@
     document.querySelectorAll('.map-card').forEach(card => {
       card.addEventListener('click', () => {
         const mapKey = card.getAttribute('data-map');
+        loadMap(mapKey);
+      });
+    });
+
+    document.querySelectorAll('.quick-map-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const mapKey = btn.getAttribute('data-map');
         loadMap(mapKey);
       });
     });
