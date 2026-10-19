@@ -391,27 +391,34 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // Lighting (Crisp Studio Ambient + Sun)
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xd0d5dd, 0.85);
-    hemiLight.position.set(0, 50, 0);
+    // Multi-Angle Ambient & Directional Lighting for rich shader/texture details
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0xb1b7c4, 0.95);
+    hemiLight.position.set(0, 80, 0);
     scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(60, 100, 40);
+    const dirLight = new THREE.DirectionalLight(0xfff8ee, 1.35);
+    dirLight.position.set(80, 140, 60);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     dirLight.shadow.camera.near = 0.5;
-    dirLight.shadow.camera.far = 400;
-    const d = 120;
+    dirLight.shadow.camera.far = 500;
+    dirLight.shadow.bias = -0.0005;
+    const d = 140;
     dirLight.shadow.camera.left = -d;
     dirLight.shadow.camera.right = d;
     dirLight.shadow.camera.top = d;
     dirLight.shadow.camera.bottom = -d;
     scene.add(dirLight);
+
+    // Fill Light from opposite direction
+    const fillLight = new THREE.DirectionalLight(0xdde5ed, 0.5);
+    fillLight.position.set(-60, 40, -60);
+    scene.add(fillLight);
 
     // =========================================================================
     // PROCEDURAL WHITE SANDBOX WORLD GENERATOR
@@ -732,11 +739,11 @@
         muzzleFlashEl.style.opacity = '0';
       }, 70);
 
-      // Cast Ray from Camera Center
+      // Cast Ray from Camera Center against both map geometry and interactive targets
       raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
       const targets = [];
       scene.traverse((obj) => {
-        if (obj.isMesh && obj !== loadedMapObject && !obj.userData.isParticle) {
+        if (obj.isMesh && !obj.userData.isParticle && !obj.userData.isMuzzleFlash) {
           targets.push(obj);
         }
       });
@@ -855,8 +862,15 @@
         mapModal.classList.add('hidden');
         loadedMapObject = mapCache[mapKey];
         scene.add(loadedMapObject);
+
+        collidableMeshes = [];
+        loadedMapObject.traverse((node) => {
+          if (node.isMesh) collidableMeshes.push(node);
+        });
+
         player.position.copy(config.spawn);
         player.velocity.set(0, 0, 0);
+        snapPlayerToGround();
         return;
       }
 
@@ -873,13 +887,28 @@
 
           const mapScene = gltf.scene;
 
-          // Apply white-world aesthetic + shadows to loaded meshes
+          // Clean collidable list
+          collidableMeshes = [];
+
+          // Preserve GLTF PBR textures, shaders, and assign shadow casting
           mapScene.traverse((node) => {
             if (node.isMesh) {
               node.castShadow = true;
               node.receiveShadow = true;
+              collidableMeshes.push(node);
+
               if (node.material) {
-                node.material.roughness = Math.max(0.4, node.material.roughness || 0.5);
+                // Ensure double-sided rendering for open geometry & roofs
+                node.material.side = THREE.DoubleSide;
+
+                // If texture exists, preserve sRGB encoding
+                if (node.material.map) {
+                  node.material.map.colorSpace = THREE.SRGBColorSpace;
+                }
+                if (node.material.roughnessMap) {
+                  node.material.roughness = Math.min(1.0, Math.max(0.15, node.material.roughness));
+                }
+                node.material.needsUpdate = true;
               }
             }
           });
@@ -888,9 +917,12 @@
           loadedMapObject = mapScene;
           scene.add(loadedMapObject);
 
-          // Position player at map spawn
+          // Position player at map spawn & snap to ground surface
           player.position.copy(config.spawn);
           player.velocity.set(0, 0, 0);
+
+          // Perform initial ground probe to ensure player spawns on floor
+          snapPlayerToGround();
         },
         (xhr) => {
           if (xhr.lengthComputable && xhr.total > 0) {
@@ -923,6 +955,23 @@
         loadMap(mapKey);
       });
     });
+
+    // =========================================================================
+    // 3D COLLISION & TERRAIN ELEVATION ENGINE
+    // =========================================================================
+    const downRaycaster = new THREE.Raycaster();
+    const downDirection = new THREE.Vector3(0, -1, 0);
+
+    function snapPlayerToGround() {
+      if (collidableMeshes.length === 0) return;
+      downRaycaster.set(new THREE.Vector3(player.position.x, player.position.y + 100, player.position.z), downDirection);
+      const hits = downRaycaster.intersectObjects(collidableMeshes, true);
+      if (hits.length > 0) {
+        player.position.y = hits[0].point.y + player.height;
+        player.velocity.y = 0;
+        player.isGrounded = true;
+      }
+    }
 
     // =========================================================================
     // MAIN PHYSICS & RENDER LOOP
@@ -959,19 +1008,74 @@
       player.velocity.z += (targetVelZ - player.velocity.z) * 12 * delta;
 
       // Gravity
-      player.velocity.y -= 24 * delta;
+      player.velocity.y -= 26 * delta;
 
-      // Apply displacement
-      player.position.x += player.velocity.x * delta;
-      player.position.z += player.velocity.z * delta;
+      // Proposed new horizontal positions
+      const newX = player.position.x + player.velocity.x * delta;
+      const newZ = player.position.z + player.velocity.z * delta;
+
+      // Horizontal obstacle collision check
+      let blockedX = false;
+      let blockedZ = false;
+
+      if (collidableMeshes.length > 0 && (Math.abs(player.velocity.x) > 0.01 || Math.abs(player.velocity.z) > 0.01)) {
+        const probeOrigin = new THREE.Vector3(player.position.x, player.position.y - player.height * 0.4, player.position.z);
+        if (Math.abs(player.velocity.x) > 0.01) {
+          const xDir = new THREE.Vector3(Math.sign(player.velocity.x), 0, 0);
+          const xRay = new THREE.Raycaster(probeOrigin, xDir, 0, 0.8);
+          const xHits = xRay.intersectObjects(collidableMeshes, true);
+          if (xHits.length > 0) blockedX = true;
+        }
+        if (Math.abs(player.velocity.z) > 0.01) {
+          const zDir = new THREE.Vector3(0, 0, Math.sign(player.velocity.z));
+          const zRay = new THREE.Raycaster(probeOrigin, zDir, 0, 0.8);
+          const zHits = zRay.intersectObjects(collidableMeshes, true);
+          if (zHits.length > 0) blockedZ = true;
+        }
+      }
+
+      if (!blockedX) player.position.x = newX;
+      else player.velocity.x = 0;
+
+      if (!blockedZ) player.position.z = newZ;
+      else player.velocity.z = 0;
+
+      // Apply vertical displacement
       player.position.y += player.velocity.y * delta;
 
-      // Ground plane collision
-      const floorLimit = 1.8;
-      if (player.position.y <= floorLimit) {
-        player.position.y = floorLimit;
+      // Dynamic Downward Raycast for 3D Terrain & Floor Mesh Collision
+      let groundFloorY = 1.8;
+      let hitMeshFloor = false;
+
+      if (collidableMeshes.length > 0) {
+        // Probe downwards from player head level
+        const rayStart = new THREE.Vector3(player.position.x, player.position.y + 0.5, player.position.z);
+        downRaycaster.set(rayStart, downDirection);
+        downRaycaster.far = player.height + 4.0;
+        const groundHits = downRaycaster.intersectObjects(collidableMeshes, true);
+
+        if (groundHits.length > 0) {
+          groundFloorY = groundHits[0].point.y + player.height;
+          hitMeshFloor = true;
+        }
+      }
+
+      // If in sandbox or fell below all meshes, default to flat baseline
+      if (!hitMeshFloor && activeMapKey === 'sandbox') {
+        groundFloorY = 1.8;
+      } else if (!hitMeshFloor && groundFloorY < -20) {
+        // Respawn if fell off edge
+        player.position.copy(MAPS[activeMapKey].spawn);
+        player.velocity.set(0, 0, 0);
+      }
+
+      // Step up / ground landing
+      if (player.position.y <= groundFloorY) {
+        player.position.y = groundFloorY;
         player.velocity.y = 0;
         player.isGrounded = true;
+      } else if (player.position.y - groundFloorY > 0.25) {
+        player.isGrounded = false;
       }
 
       // Sync Camera Position
