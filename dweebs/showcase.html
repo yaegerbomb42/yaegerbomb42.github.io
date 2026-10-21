@@ -2,245 +2,365 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DWEEBS — 26 Character 3D Showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DWEEBS — 26 Character 3D Roster Showcase</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      background: #0d0b14;
+      background: #0f0d1a;
       color: #fff;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     header {
-      padding: 24px;
+      background: linear-gradient(180deg, #1f1a38 0%, #141024 100%);
+      padding: 28px 20px;
       text-align: center;
-      background: #171226;
       border-bottom: 3px solid #ffd23f;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-    h1 {
-      margin: 0;
-      font-size: 32px;
+    .brand-title {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 900;
       color: #ffd23f;
+      text-shadow: 0 4px 0 #14101c, 0 8px 16px rgba(0,0,0,0.4);
       letter-spacing: 2px;
+      text-transform: uppercase;
     }
-    p { margin: 8px 0 0; color: #a98be0; font-size: 15px; }
-    .roster-grid {
+    .subtitle {
+      color: #bfa8ff;
+      margin-top: 6px;
+      font-size: clamp(14px, 2vw, 17px);
+      font-weight: 600;
+    }
+    .nav-bar {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+    .nav-btn {
+      background: #ffd23f;
+      color: #14101c;
+      font-weight: 800;
+      text-decoration: none;
+      padding: 8px 20px;
+      border-radius: 12px;
+      border: 2px solid #14101c;
+      box-shadow: 0 4px 0 #14101c;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #14101c;
+    }
+    .nav-btn.pink {
+      background: #ff6fb5;
+      color: #fff;
+    }
+    .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-      padding: 28px;
+      gap: 22px;
+      padding: 32px 24px;
       max-width: 1400px;
       margin: 0 auto;
+      width: 100%;
     }
     .card {
-      background: #191b33;
-      border: 3px solid #2f3661;
-      border-radius: 20px;
+      background: #19162e;
+      border: 3px solid #363259;
+      border-radius: 22px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding-bottom: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+      transition: transform 0.18s, border-color 0.18s;
     }
-    .vp {
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #ffd23f;
+    }
+    .canvas-box {
       width: 100%;
-      height: 230px;
-      background: radial-gradient(circle at 50% 50%, #2a3159 0%, #101224 85%);
+      height: 240px;
+      background: radial-gradient(circle at 50% 55%, #2a254d 0%, #120f21 80%);
       position: relative;
     }
-    canvas { width: 100%; height: 100%; display: block; }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .info {
+      padding: 16px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
     .name {
       font-size: 22px;
       font-weight: 800;
-      margin-top: 12px;
       color: #ffd84a;
-      letter-spacing: 0.5px;
+    }
+    .num {
+      font-size: 13px;
+      font-weight: 700;
+      color: #837baf;
     }
     .blurb {
       font-size: 13px;
-      color: #9cb3d9;
-      text-align: center;
-      padding: 0 16px;
-      margin-top: 4px;
-      line-height: 1.35;
-      min-height: 36px;
+      color: #b7b3d6;
+      line-height: 1.4;
+      flex-grow: 1;
+      margin-bottom: 14px;
     }
-    .tag {
-      background: #101224;
-      border: 1px solid #48538c;
-      color: #5ee06a;
+    .pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill {
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 12px;
-      margin-top: 10px;
-      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 10px;
+      background: #110e1f;
+      border: 1px solid #433c6e;
+      color: #5ee06a;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
   <header>
-    <h1>DWEEBS · 26-CHARACTER ROSTER</h1>
-    <p>Live interactive 3D procedural meshes, expressions, and physical appendages</p>
+    <div class="brand-title">DWEEBS · 26-CHARACTER 3D ROSTER</div>
+    <div class="subtitle">Emotionally unstable. Collectibly adorable. Live interactive 3D procedural characters.</div>
+    <div class="nav-bar">
+      <a href="./" class="nav-btn">PLAY GAME</a>
+      <a href="./#online" class="nav-btn pink">ONLINE MULTIPLAYER</a>
+    </div>
   </header>
-  <div class="roster-grid" id="roster-grid"></div>
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-  </script>
-  <script type="module">
-    import * as THREE from 'three';
-    import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+  <div class="grid" id="grid"></div>
 
-    const CHARACTERS = [
-      { id: 'cube', name: 'Cube', color: 0xffc53d, blurb: 'Balanced classic block brawler. Solid, dependable.' },
-      { id: 'blob', name: 'Blob', color: 0x5ee06a, blurb: 'Heavy round clay blob with swinging bobble antenna.' },
-      { id: 'spiky', name: 'Spiky', color: 0xb56cff, blurb: 'Urchin covered in 34 whipping, reacting tentacles.' },
-      { id: 'stalky', name: 'Stalky', color: 0x3fa9ff, blurb: 'Teal creature with twin periscope eye stalks.' },
-      { id: 'peep', name: 'Peep', color: 0xff4d5e, blurb: 'Giant cyclops eye with horns on 4 scurrying peg feet.' },
-      { id: 'tri_cloud', name: 'Tri-Cloud', color: 0xa98be0, blurb: 'Lavender tri-lobed floating cloud with 3 tracking eyes.' },
-      { id: 'bunny', name: 'Bunny', color: 0x8ef573, blurb: 'Lime bean with springy floppy bunny ears.' },
-      { id: 'puddle', name: 'Puddle', color: 0x3d94ff, blurb: 'Flat melting slime puddle pancake that slips under hits.' },
-      { id: 'blockhead', name: 'Blockhead', color: 0xff9a3c, blurb: 'Orange cube mounted with a top periscope turret eye.' },
-      { id: 'gumball', name: 'Gumball', color: 0xffd84a, blurb: 'Transparent belly dome packed with bouncy marbles.' },
-      { id: 'bumpy', name: 'Bumpy', color: 0x9855d4, blurb: 'Purple sphere covered in soft sensory bumps.' },
-      { id: 'cyclops', name: 'Cyclops', color: 0x2ed1b5, blurb: 'Round cyan puff with one massive expressive pupil.' },
-      { id: 'starry', name: 'Starry', color: 0xff6fb5, blurb: '5-pointed wobbly dancing star with dancing limbs.' },
-      { id: 'blink', name: 'Blink', color: 0xffa347, blurb: 'Pill capsule with twisting opposite eyes.' },
-      { id: 'bean', name: 'Bean', color: 0x8054c2, blurb: 'Tilted legume with asymmetrical diagonal eyes.' },
-      { id: 'tadpole', name: 'Tadpole', color: 0x48dfc4, blurb: 'Aquatic creature with a wagging spring tail.' },
-      { id: 'floppy', name: 'Floppy', color: 0xf5566b, blurb: 'Red bunny with massive heavy drooping ear lobes.' },
-      { id: 'chonk', name: 'Chonk', color: 0x28afc7, blurb: 'Heavy shock block supported on 4 stubby corner legs.' },
-      { id: 'ghosty', name: 'Ghosty', color: 0xf0efe6, blurb: 'Sheet specter with ruffled hem skirt.' },
-      { id: 'triclops', name: 'Tri-Clops', color: 0x62c949, blurb: 'Green triangle head with three mismatched sized eyes.' },
-      { id: 'rolling_eye', name: 'Roll-Eye', color: 0x7b58c7, blurb: 'Violet ball with a wide smiley grin and wandering gaze.' },
-      { id: 'sherbet', name: 'Sherbet', color: 0xff9ec7, blurb: 'Pastel swirl ball with impish horns.' },
-      { id: 'antenna', name: 'Antenna', color: 0xffd23f, blurb: 'Golden teardrop with a swinging radio transmitter top.' },
-      { id: 'boing', name: 'Boing', color: 0xfca921, blurb: 'Angry ball balancing on massive steel coil spring legs.' },
-      { id: 'boxer', name: 'Boxer', color: 0xe03838, blurb: 'Red brawler armed with two giant boxing gloves.' },
-      { id: 'plunger', name: 'Plunger', color: 0xded5be, blurb: 'Tofu block with flexible suction-cup plunger arms.' }
+  <script>
+    const ROSTER = [
+      { id: 'cube', num: '#01', name: 'Cube', color: 0xffc53d, blurb: 'The classic block brawler. Solid, dependable, and perfectly balanced.', mass: '3.0kg', speed: '1.0x', special: 'Chamfer Block' },
+      { id: 'blob', num: '#02', name: 'Blob', color: 0x5ee06a, blurb: 'Heavy round clay droplet with an animated swinging bobble antenna.', mass: '3.6kg', speed: '0.88x', special: 'Bobble Head' },
+      { id: 'spiky', num: '#03', name: 'Spiky', color: 0xb56cff, blurb: 'Wobbly urchin with 34 whipping tentacles that react to combat velocity.', mass: '2.6kg', speed: '1.12x', special: 'Tentacles' },
+      { id: 'stalky', num: '#04', name: 'Stalky', color: 0x3fa9ff, blurb: 'Goofy teal blob with twin periscope eye stalks that glance in 3D space.', mass: '2.9kg', speed: '1.02x', special: 'Dual Stalks' },
+      { id: 'peep', num: '#05', name: 'Peep', color: 0xff4d5e, blurb: 'Giant cyclops eye with forehead crest horns on 4 scurrying peg feet.', mass: '3.1kg', speed: '0.98x', special: '4-Peg Legs' },
+      { id: 'tri_cloud', num: '#06', name: 'Tri-Cloud', color: 0xa98be0, blurb: 'Floaty tri-lobed lavender cloud creature with three wide tracking eyes.', mass: '2.5kg', speed: '1.08x', special: '3-Lobed Cloud' },
+      { id: 'bunny', num: '#07', name: 'Bunny', color: 0x8ef573, blurb: 'Lime bean body with springy floppy bunny ears that wobble when moving.', mass: '2.7kg', speed: '1.15x', special: 'Spring Ears' },
+      { id: 'puddle', num: '#08', name: 'Puddle', color: 0x3d94ff, blurb: 'Flat melting slime puddle pancake that slides under incoming projectiles.', mass: '3.8kg', speed: '0.85x', special: 'Slime Pancake' },
+      { id: 'blockhead', num: '#09', name: 'Blockhead', color: 0xff9a3c, blurb: 'Orange cube mounted with an elevated top-deck periscope turret eye.', mass: '3.2kg', speed: '0.95x', special: 'Periscope Eye' },
+      { id: 'gumball', num: '#10', name: 'Gumball', color: 0xffd84a, blurb: 'Clear translucent belly dome packed with tumbling bouncy marbles.', mass: '3.4kg', speed: '0.94x', special: 'Marble Belly' },
+      { id: 'bumpy', num: '#11', name: 'Bumpy', color: 0x9855d4, blurb: 'Purple sphere covered in 12 soft knobby radial sensory bumps.', mass: '3.3kg', speed: '0.96x', special: '12 Knobs' },
+      { id: 'cyclops', num: '#12', name: 'Cyclops', color: 0x2ed1b5, blurb: 'Round cyan puff with one enormous expressive tracking pupil.', mass: '2.8kg', speed: '1.05x', special: 'Giant Pupil' },
+      { id: 'starry', num: '#13', name: 'Starry', color: 0xff6fb5, blurb: '5-pointed wobbly star with dancing noodle limbs and high jump height.', mass: '2.6kg', speed: '1.10x', special: '5-Star Shape' },
+      { id: 'blink', num: '#14', name: 'Blink', color: 0xffa347, blurb: 'Tall pill capsule body with asymmetrical opposite-facing side eyes.', mass: '2.9kg', speed: '1.02x', special: 'Side Eyes' },
+      { id: 'bean', num: '#15', name: 'Bean', color: 0x8054c2, blurb: 'Purple tilted legume with asymmetrical diagonal eyes and wobbly posture.', mass: '3.1kg', speed: '0.97x', special: 'Tilted Legume' },
+      { id: 'tadpole', num: '#16', name: 'Tadpole', color: 0x48dfc4, blurb: 'Aquatic polliwog creature with a physics-wagging rear spring tail.', mass: '2.7kg', speed: '1.08x', special: 'Wagging Tail' },
+      { id: 'floppy', num: '#17', name: 'Floppy', color: 0xf5566b, blurb: 'Coral red bunny creature with massive heavy drooping ear lobes.', mass: '3.0kg', speed: '1.00x', special: 'Heavy Lobes' },
+      { id: 'chonk', num: '#18', name: 'Chonk', color: 0x28afc7, blurb: 'Ultra-heavy cyan shock block supported on four thick corner legs.', mass: '4.0kg', speed: '0.82x', special: '4-Corner Legs' },
+      { id: 'ghosty', num: '#19', name: 'Ghosty', color: 0xf0efe6, blurb: 'Ivory floating sheet specter with a ruffled hem skirt at the base.', mass: '2.4kg', speed: '1.14x', special: 'Ruffled Skirt' },
+      { id: 'triclops', num: '#20', name: 'Tri-Clops', color: 0x62c949, blurb: 'Green triangle pyramid head with three mismatched sized eyes.', mass: '3.1kg', speed: '0.98x', special: '3 Sized Eyes' },
+      { id: 'rolling_eye', num: '#21', name: 'Roll-Eye', color: 0x7b58c7, blurb: 'Violet ball with a cheerful smiling mouth and off-axis wandering gaze.', mass: '2.9kg', speed: '1.04x', special: 'Wander Gaze' },
+      { id: 'sherbet', num: '#22', name: 'Sherbet', color: 0xff9ec7, blurb: 'Pastel cotton-candy swirl ball topped with twin impish horns.', mass: '2.8kg', speed: '1.06x', special: 'Impish Horns' },
+      { id: 'antenna', num: '#23', name: 'Antenna', color: 0xffd23f, blurb: 'Golden teardrop with an overhead swinging radio transmitter beacon.', mass: '2.7kg', speed: '1.07x', special: 'Radio Beacon' },
+      { id: 'boing', num: '#24', name: 'Boing', color: 0xfca921, blurb: 'Angry bowling ball balancing on heavy coiled steel spring legs.', mass: '3.0kg', speed: '1.10x', special: 'Spring Legs' },
+      { id: 'boxer', num: '#25', name: 'Boxer', color: 0xe03838, blurb: 'Red heavyweight brawler armed with two giant red boxing gloves.', mass: '3.5kg', speed: '0.95x', special: 'Boxing Gloves' },
+      { id: 'plunger', num: '#26', name: 'Plunger', color: 0xded5be, blurb: 'Tofu block body equipped with accordion suction-cup plunger arms.', mass: '3.1kg', speed: '1.00x', special: 'Plunger Arms' },
     ];
 
-    const grid = document.getElementById('roster-grid');
+    const grid = document.getElementById('grid');
 
-    CHARACTERS.forEach(char => {
+    ROSTER.forEach((char) => {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <div class="vp" id="vp-${char.id}"></div>
-        <div class="name">${char.name}</div>
-        <div class="blurb">${char.blurb}</div>
-        <div class="tag">PROCEDURAL 3D RIG</div>
+        <div class="canvas-box" id="box-${char.id}"></div>
+        <div class="info">
+          <div class="card-top">
+            <span class="name">${char.name}</span>
+            <span class="num">${char.num}</span>
+          </div>
+          <div class="blurb">${char.blurb}</div>
+          <div class="pills">
+            <span class="pill">MASS: ${char.mass}</span>
+            <span class="pill">SPD: ${char.speed}</span>
+            <span class="pill">${char.special}</span>
+          </div>
+        </div>
       `;
       grid.appendChild(card);
-
-      setupCharacterCard(char, document.getElementById(`vp-${char.id}`));
+      mount3DCard(char, document.getElementById(`box-${char.id}`));
     });
 
-    function setupCharacterCard(char, container) {
+    function mount3DCard(char, container) {
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 20);
-      camera.position.set(0, 0.6, 2.2);
+      const w = container.clientWidth || 300;
+      const h = container.clientHeight || 240;
+      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
+      camera.position.set(0, 0.7, 2.3);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(w, h);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
 
-      const amb = new THREE.AmbientLight(0xffffff, 0.75);
-      const dir = new THREE.DirectionalLight(0xffffff, 1.4);
-      dir.position.set(2, 4, 3);
-      scene.add(amb, dir);
+      const amb = new THREE.AmbientLight(0xffffff, 0.85);
+      const sun = new THREE.DirectionalLight(0xfff5e6, 1.2);
+      sun.position.set(2, 4, 3);
+      scene.add(amb, sun);
 
       const rig = new THREE.Group();
       scene.add(rig);
 
-      // Create model mesh
-      buildSimpleModel(rig, char);
+      // Body mesh
+      const bodyMat = new THREE.MeshToonMaterial({ color: char.color });
+      const limbMat = new THREE.MeshToonMaterial({ color: 0x1f1a30 });
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const pupilMat = new THREE.MeshBasicMaterial({ color: 0x14101c });
 
-      let t = 0;
-      function animate() {
-        requestAnimationFrame(animate);
-        t += 0.02;
-        rig.rotation.y = Math.sin(t * 0.8) * 0.45;
-        rig.position.y = Math.sin(t * 2) * 0.04;
-        renderer.render(scene, camera);
-      }
-      animate();
-    }
-
-    function buildSimpleModel(rig, char) {
-      const mat = new THREE.MeshToonMaterial({ color: char.color });
-      let body;
+      let bodyMesh;
       if (char.id === 'cube' || char.id === 'blockhead' || char.id === 'plunger') {
-        body = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.76, 0.64), mat);
+        bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.76, 0.64), bodyMat);
+        bodyMesh.position.y = 0.58;
       } else if (char.id === 'chonk') {
-        body = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.64, 0.74), mat);
+        bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.66, 0.76), bodyMat);
+        bodyMesh.position.y = 0.54;
       } else if (char.id === 'puddle') {
-        body = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.22, 16), mat);
+        bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.24, 16), bodyMat);
+        bodyMesh.position.y = 0.28;
       } else {
-        body = new THREE.Mesh(new THREE.IcosahedronGeometry(0.4, 2), mat);
+        bodyMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 2), bodyMat);
+        bodyMesh.position.y = 0.58;
       }
-      body.position.y = 0.55;
-      rig.add(body);
+      rig.add(bodyMesh);
 
-      // Limbs
-      const limbMat = new THREE.MeshToonMaterial({ color: 0x222233 });
-      for (const side of [-1, 1]) {
+      // Appendages & Special props
+      if (char.id === 'blob' || char.id === 'antenna') {
+        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.26, 6), limbMat);
+        stalk.position.set(0, 0.98, 0);
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), new THREE.MeshToonMaterial({ color: 0xffd23f }));
+        tip.position.set(0, 1.12, 0);
+        rig.add(stalk, tip);
+      } else if (char.id === 'peep') {
+        for (const s of [-1, 1]) {
+          const horn = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.16, 6), limbMat);
+          horn.position.set(s * 0.18, 0.94, 0);
+          horn.rotation.z = -s * 0.4;
+          rig.add(horn);
+        }
+      } else if (char.id === 'bunny' || char.id === 'floppy') {
+        for (const s of [-1, 1]) {
+          const ear = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, char.id === 'floppy' ? 0.42 : 0.32, 8), bodyMat);
+          ear.position.set(s * 0.2, 0.88, 0);
+          ear.rotation.z = s * (char.id === 'floppy' ? 0.75 : 0.3);
+          rig.add(ear);
+        }
+      } else if (char.id === 'gumball') {
+        const globeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, roughness: 0.1 });
+        const globe = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), globeMat);
+        globe.position.set(0, 0.52, 0.22);
+        rig.add(globe);
+        const marbleColors = [0xff4d5e, 0x3fa9ff, 0xffd23f, 0x5ee06a, 0xff6fb5];
+        for (let i = 0; i < 5; i++) {
+          const m = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6), new THREE.MeshToonMaterial({ color: marbleColors[i] }));
+          m.position.set((i % 2 === 0 ? 1 : -1) * 0.08, 0.48 + i * 0.02, 0.22);
+          rig.add(m);
+        }
+      } else if (char.id === 'spiky') {
+        for (let i = 0; i < 18; i++) {
+          const a = (i / 18) * Math.PI * 2;
+          const t = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.26, 5), bodyMat);
+          t.position.set(Math.cos(a) * 0.4, 0.58 + Math.sin(a * 2) * 0.12, Math.sin(a) * 0.4);
+          t.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), t.position.clone().sub(new THREE.Vector3(0, 0.58, 0)).normalize());
+          rig.add(t);
+        }
+      }
+
+      // Legs / Springs
+      for (const s of [-1, 1]) {
         if (char.id === 'boing') {
-          // Spring
-          const spr = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.35, 8), new THREE.MeshStandardMaterial({ color: 0x8894a8, metalness: 0.8 }));
-          spr.position.set(side * 0.16, 0.18, 0);
+          const spr = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.36, 10), new THREE.MeshStandardMaterial({ color: 0xa5b0c2, metalness: 0.9 }));
+          spr.position.set(s * 0.16, 0.2, 0);
           rig.add(spr);
+        } else if (char.id === 'peep' || char.id === 'chonk') {
+          for (const z of [-0.12, 0.12]) {
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.03, 0.16, 6), limbMat);
+            leg.position.set(s * 0.18, 0.16, z);
+            rig.add(leg);
+          }
         } else {
-          const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.025, 0.22, 6), limbMat);
-          leg.position.set(side * 0.16, 0.18, 0);
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.025, 0.2, 6), limbMat);
+          leg.position.set(s * 0.15, 0.18, 0);
           rig.add(leg);
         }
 
-        // Arms / Special
+        // Arms / Boxing Gloves / Plungers
         if (char.id === 'boxer') {
-          const arm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshToonMaterial({ color: 0xff384b }));
-          arm.position.set(side * 0.44, 0.5, 0.1);
-          rig.add(arm);
+          const glove = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshToonMaterial({ color: 0xff384b }));
+          glove.position.set(s * 0.46, 0.52, 0.1);
+          rig.add(glove);
         } else if (char.id === 'plunger') {
-          const arm = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.14, 10), new THREE.MeshToonMaterial({ color: 0xff4d8d }));
-          arm.rotation.x = Math.PI / 2;
-          arm.position.set(side * 0.42, 0.5, 0.1);
-          rig.add(arm);
+          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.28, 6), limbMat);
+          arm.position.set(s * 0.38, 0.52, 0);
+          const cup = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.12, 10), new THREE.MeshToonMaterial({ color: 0xff4d8d }));
+          cup.rotation.x = Math.PI / 2;
+          cup.position.set(s * 0.45, 0.46, 0.15);
+          rig.add(arm, cup);
         } else {
-          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.02, 0.24, 6), limbMat);
-          arm.position.set(side * 0.38, 0.5, 0);
-          arm.rotation.z = side * 0.4;
+          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.022, 0.26, 6), limbMat);
+          arm.position.set(s * 0.38, 0.52, 0);
+          arm.rotation.z = s * 0.35;
           rig.add(arm);
         }
       }
 
       // Eyes
-      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const pupilMat = new THREE.MeshBasicMaterial({ color: 0x14101c });
       if (char.id === 'peep' || char.id === 'cyclops' || char.id === 'antenna' || char.id === 'blockhead') {
-        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 10), eyeMat);
-        eye.position.set(0, 0.62, 0.35);
-        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), pupilMat);
-        pupil.position.set(0, 0, 0.14);
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), eyeMat);
+        eye.position.set(0, char.id === 'blockhead' ? 0.9 : 0.62, 0.36);
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), pupilMat);
+        pupil.position.set(0, 0, 0.15);
         eye.add(pupil);
         rig.add(eye);
       } else {
-        for (const side of [-1, 1]) {
+        for (const s of [-1, 1]) {
           const eye = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), eyeMat);
-          eye.position.set(side * 0.14, 0.62, 0.35);
+          eye.position.set(s * 0.14, 0.64, 0.35);
           const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), pupilMat);
           pupil.position.set(0, 0, 0.08);
           eye.add(pupil);
           rig.add(eye);
         }
       }
+
+      // Mouth
+      const mouth = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.04), new THREE.MeshBasicMaterial({ color: 0x14101c, side: THREE.DoubleSide }));
+      mouth.position.set(0, 0.46, 0.42);
+      rig.add(mouth);
+
+      let t = Math.random() * 10;
+      function render() {
+        requestAnimationFrame(render);
+        t += 0.02;
+        rig.rotation.y = Math.sin(t * 0.9) * 0.45;
+        rig.position.y = Math.sin(t * 1.8) * 0.035;
+        renderer.render(scene, camera);
+      }
+      render();
     }
   </script>
 </body>
