@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DWEEBS — 26 Character 3D Roster Showcase</title>
+  <title>DWEEBS · 26-Character Roster Showcase</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0f0d1a;
+      background: #0d0a17;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       min-height: 100vh;
@@ -15,48 +15,49 @@
       flex-direction: column;
     }
     header {
-      background: linear-gradient(180deg, #1f1a38 0%, #141024 100%);
-      padding: 28px 20px;
+      background: linear-gradient(180deg, #1c1533 0%, #110d21 100%);
+      padding: 30px 20px 24px;
       text-align: center;
       border-bottom: 3px solid #ffd23f;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
     }
-    .brand-title {
-      font-size: clamp(28px, 5vw, 42px);
+    .title {
+      font-size: clamp(28px, 5vw, 44px);
       font-weight: 900;
       color: #ffd23f;
-      text-shadow: 0 4px 0 #14101c, 0 8px 16px rgba(0,0,0,0.4);
       letter-spacing: 2px;
       text-transform: uppercase;
+      text-shadow: 0 4px 0 #14101c, 0 8px 18px rgba(0,0,0,0.5);
     }
     .subtitle {
-      color: #bfa8ff;
-      margin-top: 6px;
+      color: #b7a4f5;
+      margin-top: 8px;
       font-size: clamp(14px, 2vw, 17px);
       font-weight: 600;
     }
-    .nav-bar {
-      margin-top: 16px;
+    .nav-buttons {
+      margin-top: 18px;
       display: flex;
       justify-content: center;
-      gap: 12px;
+      gap: 14px;
     }
-    .nav-btn {
+    .btn {
       background: #ffd23f;
       color: #14101c;
-      font-weight: 800;
+      font-weight: 900;
+      font-size: 15px;
       text-decoration: none;
-      padding: 8px 20px;
-      border-radius: 12px;
-      border: 2px solid #14101c;
-      box-shadow: 0 4px 0 #14101c;
+      padding: 10px 24px;
+      border-radius: 14px;
+      border: 3px solid #14101c;
+      box-shadow: 0 5px 0 #14101c;
       transition: transform 0.1s, box-shadow 0.1s;
     }
-    .nav-btn:hover {
+    .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 0 #14101c;
+      box-shadow: 0 7px 0 #14101c;
     }
-    .nav-btn.pink {
+    .btn.pink {
       background: #ff6fb5;
       color: #fff;
     }
@@ -64,64 +65,64 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 22px;
-      padding: 32px 24px;
+      padding: 36px 24px;
       max-width: 1400px;
       margin: 0 auto;
       width: 100%;
     }
     .card {
-      background: #19162e;
-      border: 3px solid #363259;
+      background: #171329;
+      border: 3px solid #332b57;
       border-radius: 22px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
-      transition: transform 0.18s, border-color 0.18s;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
     }
     .card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       border-color: #ffd23f;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.6);
     }
-    .canvas-box {
+    .card-visual {
       width: 100%;
       height: 240px;
-      background: radial-gradient(circle at 50% 55%, #2a254d 0%, #120f21 80%);
-      position: relative;
+      background: radial-gradient(circle at 50% 55%, #2a224a 0%, #0e0a1a 85%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
     }
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    .info {
-      padding: 16px 18px 20px;
+    .card-body {
+      padding: 18px 20px 22px;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      background: #171329;
     }
-    .card-top {
+    .card-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       margin-bottom: 6px;
     }
     .name {
-      font-size: 22px;
-      font-weight: 800;
+      font-size: 24px;
+      font-weight: 900;
       color: #ffd84a;
     }
     .num {
       font-size: 13px;
-      font-weight: 700;
-      color: #837baf;
+      font-weight: 800;
+      color: #8c80ba;
     }
     .blurb {
       font-size: 13px;
-      color: #b7b3d6;
-      line-height: 1.4;
+      color: #b5aed4;
+      line-height: 1.45;
+      margin-bottom: 16px;
       flex-grow: 1;
-      margin-bottom: 14px;
     }
     .pills {
       display: flex;
@@ -130,238 +131,447 @@
     }
     .pill {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       padding: 4px 10px;
       border-radius: 10px;
-      background: #110e1f;
-      border: 1px solid #433c6e;
+      background: #0f0c1c;
+      border: 1px solid #453c6e;
       color: #5ee06a;
     }
+    .pill.highlight {
+      color: #ffd23f;
+      border-color: #7d6b31;
+    }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
   <header>
-    <div class="brand-title">DWEEBS · 26-CHARACTER 3D ROSTER</div>
-    <div class="subtitle">Emotionally unstable. Collectibly adorable. Live interactive 3D procedural characters.</div>
-    <div class="nav-bar">
-      <a href="./" class="nav-btn">PLAY GAME</a>
-      <a href="./#online" class="nav-btn pink">ONLINE MULTIPLAYER</a>
+    <h1 class="title">DWEEBS · 26-CHARACTER ROSTER</h1>
+    <p class="subtitle">Emotionally unstable. Collectibly adorable. 100% vector rendered cards.</p>
+    <div class="nav-buttons">
+      <a href="./" class="btn">PLAY GAME</a>
+      <a href="./#online" class="btn pink">ONLINE MULTIPLAYER</a>
     </div>
   </header>
 
-  <div class="grid" id="grid"></div>
-
-  <script>
-    const ROSTER = [
-      { id: 'cube', num: '#01', name: 'Cube', color: 0xffc53d, blurb: 'The classic block brawler. Solid, dependable, and perfectly balanced.', mass: '3.0kg', speed: '1.0x', special: 'Chamfer Block' },
-      { id: 'blob', num: '#02', name: 'Blob', color: 0x5ee06a, blurb: 'Heavy round clay droplet with an animated swinging bobble antenna.', mass: '3.6kg', speed: '0.88x', special: 'Bobble Head' },
-      { id: 'spiky', num: '#03', name: 'Spiky', color: 0xb56cff, blurb: 'Wobbly urchin with 34 whipping tentacles that react to combat velocity.', mass: '2.6kg', speed: '1.12x', special: 'Tentacles' },
-      { id: 'stalky', num: '#04', name: 'Stalky', color: 0x3fa9ff, blurb: 'Goofy teal blob with twin periscope eye stalks that glance in 3D space.', mass: '2.9kg', speed: '1.02x', special: 'Dual Stalks' },
-      { id: 'peep', num: '#05', name: 'Peep', color: 0xff4d5e, blurb: 'Giant cyclops eye with forehead crest horns on 4 scurrying peg feet.', mass: '3.1kg', speed: '0.98x', special: '4-Peg Legs' },
-      { id: 'tri_cloud', num: '#06', name: 'Tri-Cloud', color: 0xa98be0, blurb: 'Floaty tri-lobed lavender cloud creature with three wide tracking eyes.', mass: '2.5kg', speed: '1.08x', special: '3-Lobed Cloud' },
-      { id: 'bunny', num: '#07', name: 'Bunny', color: 0x8ef573, blurb: 'Lime bean body with springy floppy bunny ears that wobble when moving.', mass: '2.7kg', speed: '1.15x', special: 'Spring Ears' },
-      { id: 'puddle', num: '#08', name: 'Puddle', color: 0x3d94ff, blurb: 'Flat melting slime puddle pancake that slides under incoming projectiles.', mass: '3.8kg', speed: '0.85x', special: 'Slime Pancake' },
-      { id: 'blockhead', num: '#09', name: 'Blockhead', color: 0xff9a3c, blurb: 'Orange cube mounted with an elevated top-deck periscope turret eye.', mass: '3.2kg', speed: '0.95x', special: 'Periscope Eye' },
-      { id: 'gumball', num: '#10', name: 'Gumball', color: 0xffd84a, blurb: 'Clear translucent belly dome packed with tumbling bouncy marbles.', mass: '3.4kg', speed: '0.94x', special: 'Marble Belly' },
-      { id: 'bumpy', num: '#11', name: 'Bumpy', color: 0x9855d4, blurb: 'Purple sphere covered in 12 soft knobby radial sensory bumps.', mass: '3.3kg', speed: '0.96x', special: '12 Knobs' },
-      { id: 'cyclops', num: '#12', name: 'Cyclops', color: 0x2ed1b5, blurb: 'Round cyan puff with one enormous expressive tracking pupil.', mass: '2.8kg', speed: '1.05x', special: 'Giant Pupil' },
-      { id: 'starry', num: '#13', name: 'Starry', color: 0xff6fb5, blurb: '5-pointed wobbly star with dancing noodle limbs and high jump height.', mass: '2.6kg', speed: '1.10x', special: '5-Star Shape' },
-      { id: 'blink', num: '#14', name: 'Blink', color: 0xffa347, blurb: 'Tall pill capsule body with asymmetrical opposite-facing side eyes.', mass: '2.9kg', speed: '1.02x', special: 'Side Eyes' },
-      { id: 'bean', num: '#15', name: 'Bean', color: 0x8054c2, blurb: 'Purple tilted legume with asymmetrical diagonal eyes and wobbly posture.', mass: '3.1kg', speed: '0.97x', special: 'Tilted Legume' },
-      { id: 'tadpole', num: '#16', name: 'Tadpole', color: 0x48dfc4, blurb: 'Aquatic polliwog creature with a physics-wagging rear spring tail.', mass: '2.7kg', speed: '1.08x', special: 'Wagging Tail' },
-      { id: 'floppy', num: '#17', name: 'Floppy', color: 0xf5566b, blurb: 'Coral red bunny creature with massive heavy drooping ear lobes.', mass: '3.0kg', speed: '1.00x', special: 'Heavy Lobes' },
-      { id: 'chonk', num: '#18', name: 'Chonk', color: 0x28afc7, blurb: 'Ultra-heavy cyan shock block supported on four thick corner legs.', mass: '4.0kg', speed: '0.82x', special: '4-Corner Legs' },
-      { id: 'ghosty', num: '#19', name: 'Ghosty', color: 0xf0efe6, blurb: 'Ivory floating sheet specter with a ruffled hem skirt at the base.', mass: '2.4kg', speed: '1.14x', special: 'Ruffled Skirt' },
-      { id: 'triclops', num: '#20', name: 'Tri-Clops', color: 0x62c949, blurb: 'Green triangle pyramid head with three mismatched sized eyes.', mass: '3.1kg', speed: '0.98x', special: '3 Sized Eyes' },
-      { id: 'rolling_eye', num: '#21', name: 'Roll-Eye', color: 0x7b58c7, blurb: 'Violet ball with a cheerful smiling mouth and off-axis wandering gaze.', mass: '2.9kg', speed: '1.04x', special: 'Wander Gaze' },
-      { id: 'sherbet', num: '#22', name: 'Sherbet', color: 0xff9ec7, blurb: 'Pastel cotton-candy swirl ball topped with twin impish horns.', mass: '2.8kg', speed: '1.06x', special: 'Impish Horns' },
-      { id: 'antenna', num: '#23', name: 'Antenna', color: 0xffd23f, blurb: 'Golden teardrop with an overhead swinging radio transmitter beacon.', mass: '2.7kg', speed: '1.07x', special: 'Radio Beacon' },
-      { id: 'boing', num: '#24', name: 'Boing', color: 0xfca921, blurb: 'Angry bowling ball balancing on heavy coiled steel spring legs.', mass: '3.0kg', speed: '1.10x', special: 'Spring Legs' },
-      { id: 'boxer', num: '#25', name: 'Boxer', color: 0xe03838, blurb: 'Red heavyweight brawler armed with two giant red boxing gloves.', mass: '3.5kg', speed: '0.95x', special: 'Boxing Gloves' },
-      { id: 'plunger', num: '#26', name: 'Plunger', color: 0xded5be, blurb: 'Tofu block body equipped with accordion suction-cup plunger arms.', mass: '3.1kg', speed: '1.00x', special: 'Plunger Arms' },
-    ];
-
-    const grid = document.getElementById('grid');
-
-    ROSTER.forEach((char) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="canvas-box" id="box-${char.id}"></div>
-        <div class="info">
-          <div class="card-top">
-            <span class="name">${char.name}</span>
-            <span class="num">${char.num}</span>
-          </div>
-          <div class="blurb">${char.blurb}</div>
-          <div class="pills">
-            <span class="pill">MASS: ${char.mass}</span>
-            <span class="pill">SPD: ${char.speed}</span>
-            <span class="pill">${char.special}</span>
-          </div>
+  <main class="grid">
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#e6ad1c" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#e6ad1c" stroke="#14101c" stroke-width="4"/><rect x="65" y="70" width="110" height="110" rx="22" fill="#ffc53d" stroke="#14101c" stroke-width="5"/><path d="M 75 80 L 165 80 Q 165 95 155 95 L 85 95 Q 75 95 75 80 Z" fill="#ffffff" opacity="0.25"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#e6ad1c" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#e6ad1c" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="115" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="115" r="8" fill="#14101c"/><circle cx="105" cy="112" r="3" fill="#ffffff"/><circle cx="138" cy="115" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="115" r="8" fill="#14101c"/><circle cx="141" cy="112" r="3" fill="#ffffff"/><line x1="88" y1="98" x2="114" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><line x1="152" y1="98" x2="126" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><path d="M 108 152 Q 120 144 132 152" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Cube</h2>
+          <span class="num">#01</span>
         </div>
-      `;
-      grid.appendChild(card);
-      mount3DCard(char, document.getElementById(`box-${char.id}`));
-    });
-
-    function mount3DCard(char, container) {
-      const scene = new THREE.Scene();
-      const w = container.clientWidth || 300;
-      const h = container.clientHeight || 240;
-      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
-      camera.position.set(0, 0.7, 2.3);
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(w, h);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      container.appendChild(renderer.domElement);
-
-      const amb = new THREE.AmbientLight(0xffffff, 0.85);
-      const sun = new THREE.DirectionalLight(0xfff5e6, 1.2);
-      sun.position.set(2, 4, 3);
-      scene.add(amb, sun);
-
-      const rig = new THREE.Group();
-      scene.add(rig);
-
-      // Body mesh
-      const bodyMat = new THREE.MeshToonMaterial({ color: char.color });
-      const limbMat = new THREE.MeshToonMaterial({ color: 0x1f1a30 });
-      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const pupilMat = new THREE.MeshBasicMaterial({ color: 0x14101c });
-
-      let bodyMesh;
-      if (char.id === 'cube' || char.id === 'blockhead' || char.id === 'plunger') {
-        bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.76, 0.64), bodyMat);
-        bodyMesh.position.y = 0.58;
-      } else if (char.id === 'chonk') {
-        bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.66, 0.76), bodyMat);
-        bodyMesh.position.y = 0.54;
-      } else if (char.id === 'puddle') {
-        bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.24, 16), bodyMat);
-        bodyMesh.position.y = 0.28;
-      } else {
-        bodyMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 2), bodyMat);
-        bodyMesh.position.y = 0.58;
-      }
-      rig.add(bodyMesh);
-
-      // Appendages & Special props
-      if (char.id === 'blob' || char.id === 'antenna') {
-        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.26, 6), limbMat);
-        stalk.position.set(0, 0.98, 0);
-        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), new THREE.MeshToonMaterial({ color: 0xffd23f }));
-        tip.position.set(0, 1.12, 0);
-        rig.add(stalk, tip);
-      } else if (char.id === 'peep') {
-        for (const s of [-1, 1]) {
-          const horn = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.16, 6), limbMat);
-          horn.position.set(s * 0.18, 0.94, 0);
-          horn.rotation.z = -s * 0.4;
-          rig.add(horn);
-        }
-      } else if (char.id === 'bunny' || char.id === 'floppy') {
-        for (const s of [-1, 1]) {
-          const ear = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, char.id === 'floppy' ? 0.42 : 0.32, 8), bodyMat);
-          ear.position.set(s * 0.2, 0.88, 0);
-          ear.rotation.z = s * (char.id === 'floppy' ? 0.75 : 0.3);
-          rig.add(ear);
-        }
-      } else if (char.id === 'gumball') {
-        const globeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, roughness: 0.1 });
-        const globe = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), globeMat);
-        globe.position.set(0, 0.52, 0.22);
-        rig.add(globe);
-        const marbleColors = [0xff4d5e, 0x3fa9ff, 0xffd23f, 0x5ee06a, 0xff6fb5];
-        for (let i = 0; i < 5; i++) {
-          const m = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6), new THREE.MeshToonMaterial({ color: marbleColors[i] }));
-          m.position.set((i % 2 === 0 ? 1 : -1) * 0.08, 0.48 + i * 0.02, 0.22);
-          rig.add(m);
-        }
-      } else if (char.id === 'spiky') {
-        for (let i = 0; i < 18; i++) {
-          const a = (i / 18) * Math.PI * 2;
-          const t = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.26, 5), bodyMat);
-          t.position.set(Math.cos(a) * 0.4, 0.58 + Math.sin(a * 2) * 0.12, Math.sin(a) * 0.4);
-          t.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), t.position.clone().sub(new THREE.Vector3(0, 0.58, 0)).normalize());
-          rig.add(t);
-        }
-      }
-
-      // Legs / Springs
-      for (const s of [-1, 1]) {
-        if (char.id === 'boing') {
-          const spr = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.36, 10), new THREE.MeshStandardMaterial({ color: 0xa5b0c2, metalness: 0.9 }));
-          spr.position.set(s * 0.16, 0.2, 0);
-          rig.add(spr);
-        } else if (char.id === 'peep' || char.id === 'chonk') {
-          for (const z of [-0.12, 0.12]) {
-            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.03, 0.16, 6), limbMat);
-            leg.position.set(s * 0.18, 0.16, z);
-            rig.add(leg);
-          }
-        } else {
-          const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.025, 0.2, 6), limbMat);
-          leg.position.set(s * 0.15, 0.18, 0);
-          rig.add(leg);
-        }
-
-        // Arms / Boxing Gloves / Plungers
-        if (char.id === 'boxer') {
-          const glove = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshToonMaterial({ color: 0xff384b }));
-          glove.position.set(s * 0.46, 0.52, 0.1);
-          rig.add(glove);
-        } else if (char.id === 'plunger') {
-          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.28, 6), limbMat);
-          arm.position.set(s * 0.38, 0.52, 0);
-          const cup = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.12, 10), new THREE.MeshToonMaterial({ color: 0xff4d8d }));
-          cup.rotation.x = Math.PI / 2;
-          cup.position.set(s * 0.45, 0.46, 0.15);
-          rig.add(arm, cup);
-        } else {
-          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.022, 0.26, 6), limbMat);
-          arm.position.set(s * 0.38, 0.52, 0);
-          arm.rotation.z = s * 0.35;
-          rig.add(arm);
-        }
-      }
-
-      // Eyes
-      if (char.id === 'peep' || char.id === 'cyclops' || char.id === 'antenna' || char.id === 'blockhead') {
-        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), eyeMat);
-        eye.position.set(0, char.id === 'blockhead' ? 0.9 : 0.62, 0.36);
-        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), pupilMat);
-        pupil.position.set(0, 0, 0.15);
-        eye.add(pupil);
-        rig.add(eye);
-      } else {
-        for (const s of [-1, 1]) {
-          const eye = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), eyeMat);
-          eye.position.set(s * 0.14, 0.64, 0.35);
-          const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), pupilMat);
-          pupil.position.set(0, 0, 0.08);
-          eye.add(pupil);
-          rig.add(eye);
-        }
-      }
-
-      // Mouth
-      const mouth = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.04), new THREE.MeshBasicMaterial({ color: 0x14101c, side: THREE.DoubleSide }));
-      mouth.position.set(0, 0.46, 0.42);
-      rig.add(mouth);
-
-      let t = Math.random() * 10;
-      function render() {
-        requestAnimationFrame(render);
-        t += 0.02;
-        rig.rotation.y = Math.sin(t * 0.9) * 0.45;
-        rig.position.y = Math.sin(t * 1.8) * 0.035;
-        renderer.render(scene, camera);
-      }
-      render();
-    }
-  </script>
+        <p class="blurb">The classic block brawler. Solid, dependable, and perfectly balanced.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.0kg</span>
+          <span class="pill">SPD 1.0x</span>
+          <span class="pill highlight">Chamfer Block</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 120 70 Q 120 35 135 25" fill="none" stroke="#1f1a30" stroke-width="6" stroke-linecap="round"/><circle cx="136" cy="24" r="14" fill="#ffd23f" stroke="#14101c" stroke-width="4"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#3cb848" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#3cb848" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#5ee06a" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#3cb848" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#3cb848" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Blob</h2>
+          <span class="num">#02</span>
+        </div>
+        <p class="blurb">Heavy round clay droplet with an animated swinging bobble antenna.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.6kg</span>
+          <span class="pill">SPD 0.88x</span>
+          <span class="pill highlight">Bobble Head</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 165.0 130.0 Q 206.0 126.0 198.0 130.0" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="198.0" cy="130.0" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 154.471999940354 158.92544243589427 Q 187.75146656328027 176.13743355555005 179.75146656328027 180.13743355555005" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="179.75146656328027" cy="180.13743355555005" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 127.81416799501187 174.31634888554936 Q 141.54455785802057 202.81500473495223 133.54455785802057 206.81500473495223" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="133.54455785802057" cy="206.81500473495223" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 97.5 168.97114317029974 Q 89.00000000000001 193.54998149518622 81.00000000000001 197.54998149518622" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="81.00000000000001" cy="197.54998149518622" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 77.71383206463412 145.3909064496551 Q 54.70397557869916 152.67757117940218 46.70397557869916 156.67757117940218" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="46.70397557869916" cy="156.67757117940218" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 77.71383206463412 114.60909355034491 Q 54.70397557869914 99.32242882059785 46.70397557869914 103.32242882059785" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="46.70397557869914" cy="103.32242882059785" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 97.49999999999997 91.02885682970027 Q 88.99999999999997 58.45001850481381 80.99999999999997 62.45001850481381" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="80.99999999999997" cy="62.45001850481381" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 127.81416799501184 85.68365111445064 Q 141.54455785802054 49.18499526504776 133.54455785802054 53.18499526504776" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="133.54455785802054" cy="53.18499526504776" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><path d="M 154.471999940354 101.07455756410572 Q 187.75146656328027 75.86256644444991 179.75146656328027 79.86256644444991" fill="none" stroke="#b56cff" stroke-width="12" stroke-linecap="round"/><circle cx="179.75146656328027" cy="79.86256644444991" r="5" fill="#ffd23f" stroke="#14101c" stroke-width="3"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#8e44de" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#8e44de" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#b56cff" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#8e44de" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#8e44de" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Spiky</h2>
+          <span class="num">#03</span>
+        </div>
+        <p class="blurb">Wobbly urchin with 34 whipping tentacles that react to combat velocity.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.6kg</span>
+          <span class="pill">SPD 1.12x</span>
+          <span class="pill highlight">Tentacles</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 90 90 Q 75 40 85 30" fill="none" stroke="#3fa9ff" stroke-width="14" stroke-linecap="round"/><circle cx="85" cy="30" r="16" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="87" cy="30" r="7" fill="#14101c"/><circle cx="89" cy="27" r="2.5" fill="#fff"/><path d="M 150 90 Q 165 40 155 30" fill="none" stroke="#3fa9ff" stroke-width="14" stroke-linecap="round"/><circle cx="155" cy="30" r="16" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="153" cy="30" r="7" fill="#14101c"/><circle cx="155" cy="27" r="2.5" fill="#fff"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#2184d6" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#2184d6" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#3fa9ff" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#2184d6" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#2184d6" stroke-width="12" stroke-linecap="round"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Stalky</h2>
+          <span class="num">#04</span>
+        </div>
+        <p class="blurb">Goofy teal blob with twin periscope eye stalks that glance in 3D space.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.9kg</span>
+          <span class="pill">SPD 1.02x</span>
+          <span class="pill highlight">Dual Stalks</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><polygon points="90,75 80,45 105,65" fill="#d92b3c" stroke="#14101c" stroke-width="4" stroke-linejoin="round"/><polygon points="150,75 160,45 135,65" fill="#d92b3c" stroke="#14101c" stroke-width="4" stroke-linejoin="round"/><rect x="75" y="172" width="16" height="36" rx="8" fill="#d92b3c" stroke="#14101c" stroke-width="4"/><rect x="98" y="176" width="16" height="34" rx="8" fill="#d92b3c" stroke="#14101c" stroke-width="4"/><rect x="126" y="176" width="16" height="34" rx="8" fill="#d92b3c" stroke="#14101c" stroke-width="4"/><rect x="149" y="172" width="16" height="36" rx="8" fill="#d92b3c" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#ff4d5e" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d92b3c" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d92b3c" stroke-width="12" stroke-linecap="round"/><circle cx="120" cy="120" r="28" fill="#ffffff" stroke="#14101c" stroke-width="5"/><circle cx="120" cy="120" r="14" fill="#14101c"/><circle cx="125" cy="115" r="5" fill="#ffffff"/><line x1="88" y1="98" x2="114" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><line x1="152" y1="98" x2="126" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Peep</h2>
+          <span class="num">#05</span>
+        </div>
+        <p class="blurb">Giant cyclops eye with forehead crest horns on 4 scurrying peg feet.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.1kg</span>
+          <span class="pill">SPD 0.98x</span>
+          <span class="pill highlight">4-Peg Legs</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#8564c4" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#8564c4" stroke="#14101c" stroke-width="4"/><circle cx="85" cy="135" r="42" fill="#a98be0" stroke="#14101c" stroke-width="5"/><circle cx="155" cy="135" r="42" fill="#a98be0" stroke="#14101c" stroke-width="5"/><circle cx="120" cy="110" r="48" fill="#a98be0" stroke="#14101c" stroke-width="5"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#8564c4" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#8564c4" stroke-width="12" stroke-linecap="round"/><circle cx="85" cy="130" r="14" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="85" cy="130" r="7" fill="#14101c"/><circle cx="87" cy="128" r="2.5" fill="#fff"/><circle cx="120" cy="105" r="16" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="105" r="8" fill="#14101c"/><circle cx="123" cy="103" r="3" fill="#fff"/><circle cx="155" cy="130" r="14" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="155" cy="130" r="7" fill="#14101c"/><circle cx="157" cy="128" r="2.5" fill="#fff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Tri-Cloud</h2>
+          <span class="num">#06</span>
+        </div>
+        <p class="blurb">Floaty tri-lobed lavender cloud creature with three wide tracking eyes.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.5kg</span>
+          <span class="pill">SPD 1.08x</span>
+          <span class="pill highlight">3-Lobed Cloud</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 85 85 C 60 30, 45 40, 75 145 Z" fill="#69cf4e" stroke="#14101c" stroke-width="4" stroke-linejoin="round"/><path d="M 155 85 C 180 30, 195 40, 165 145 Z" fill="#8ef573" stroke="#14101c" stroke-width="4" stroke-linejoin="round"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#69cf4e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#69cf4e" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#8ef573" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#69cf4e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#69cf4e" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 106 148 Q 120 162 134 148 Z" fill="#ff4d5e" stroke="#14101c" stroke-width="3"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Bunny</h2>
+          <span class="num">#07</span>
+        </div>
+        <p class="blurb">Lime bean body with springy floppy bunny ears that wobble when moving.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.7kg</span>
+          <span class="pill">SPD 1.15x</span>
+          <span class="pill highlight">Spring Ears</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 40 180 C 40 135, 75 110, 120 110 C 165 110, 200 135, 200 180 C 215 195, 195 210, 175 208 C 145 212, 95 212, 65 208 C 45 210, 25 195, 40 180 Z" fill="#3d94ff" stroke="#14101c" stroke-width="5"/><circle cx="102" cy="150" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="150" r="8" fill="#14101c"/><circle cx="105" cy="147" r="3" fill="#ffffff"/><circle cx="138" cy="150" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="150" r="8" fill="#14101c"/><circle cx="141" cy="147" r="3" fill="#ffffff"/><path d="M 110 168 Q 120 178 130 168" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Puddle</h2>
+          <span class="num">#08</span>
+        </div>
+        <p class="blurb">Flat melting slime puddle pancake that slides under incoming projectiles.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.8kg</span>
+          <span class="pill">SPD 0.85x</span>
+          <span class="pill highlight">Slime Pancake</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="108" y="42" width="24" height="30" rx="4" fill="#d67318" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="40" r="18" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="40" r="8" fill="#14101c"/><circle cx="123" cy="37" r="3" fill="#fff"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#d67318" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#d67318" stroke="#14101c" stroke-width="4"/><rect x="65" y="70" width="110" height="110" rx="22" fill="#ff9a3c" stroke="#14101c" stroke-width="5"/><path d="M 75 80 L 165 80 Q 165 95 155 95 L 85 95 Q 75 95 75 80 Z" fill="#ffffff" opacity="0.25"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d67318" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d67318" stroke-width="12" stroke-linecap="round"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Blockhead</h2>
+          <span class="num">#09</span>
+        </div>
+        <p class="blurb">Orange cube mounted with an elevated top-deck periscope turret eye.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.2kg</span>
+          <span class="pill">SPD 0.95x</span>
+          <span class="pill highlight">Periscope Eye</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#d9b325" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#d9b325" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#ffd84a" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><circle cx="120" cy="142" r="32" fill="#ffffff" fill-opacity="0.5" stroke="#14101c" stroke-width="4"/><circle cx="110" cy="148" r="8" fill="#ff4d5e" stroke="#14101c" stroke-width="2"/><circle cx="130" cy="146" r="8" fill="#3fa9ff" stroke="#14101c" stroke-width="2"/><circle cx="120" cy="134" r="8" fill="#5ee06a" stroke="#14101c" stroke-width="2"/><circle cx="120" cy="154" r="7" fill="#ff6fb5" stroke="#14101c" stroke-width="2"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d9b325" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d9b325" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Gumball</h2>
+          <span class="num">#10</span>
+        </div>
+        <p class="blurb">Clear translucent belly dome packed with tumbling bouncy marbles.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.4kg</span>
+          <span class="pill">SPD 0.94x</span>
+          <span class="pill highlight">Marble Belly</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#7633b0" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#7633b0" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#9855d4" stroke="#14101c" stroke-width="5"/><circle cx="175.0" cy="130.0" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="158.89087296526012" cy="168.89087296526012" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="120.0" cy="185.0" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="81.10912703473988" cy="168.89087296526012" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="65.0" cy="130.0" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="81.10912703473988" cy="91.10912703473988" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="119.99999999999999" cy="75.0" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><circle cx="158.8908729652601" cy="91.10912703473988" r="12" fill="#7633b0" stroke="#14101c" stroke-width="3"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#7633b0" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#7633b0" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Bumpy</h2>
+          <span class="num">#11</span>
+        </div>
+        <p class="blurb">Purple sphere covered in 12 soft knobby radial sensory bumps.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.3kg</span>
+          <span class="pill">SPD 0.96x</span>
+          <span class="pill highlight">12 Knobs</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#19a68e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#19a68e" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#2ed1b5" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#19a68e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#19a68e" stroke-width="12" stroke-linecap="round"/><circle cx="120" cy="125" r="28" fill="#ffffff" stroke="#14101c" stroke-width="5"/><circle cx="120" cy="125" r="14" fill="#14101c"/><circle cx="125" cy="120" r="5" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Cyclops</h2>
+          <span class="num">#12</span>
+        </div>
+        <p class="blurb">Round cyan puff with one enormous expressive tracking pupil.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.8kg</span>
+          <span class="pill">SPD 1.05x</span>
+          <span class="pill highlight">Giant Pupil</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#d6478c" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#d6478c" stroke="#14101c" stroke-width="4"/><polygon points="120,55 142,98 190,105 155,140 163,188 120,165 77,188 85,140 50,105 98,98" fill="#ff6fb5" stroke="#14101c" stroke-width="5" stroke-linejoin="round"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d6478c" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d6478c" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Starry</h2>
+          <span class="num">#13</span>
+        </div>
+        <p class="blurb">5-pointed wobbly star with dancing noodle limbs and high jump height.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.6kg</span>
+          <span class="pill">SPD 1.10x</span>
+          <span class="pill highlight">5-Star Shape</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#d97b1e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#d97b1e" stroke="#14101c" stroke-width="4"/><rect x="75" y="65" width="90" height="120" rx="45" fill="#ffa347" stroke="#14101c" stroke-width="5"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d97b1e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d97b1e" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Blink</h2>
+          <span class="num">#14</span>
+        </div>
+        <p class="blurb">Tall pill capsule body with asymmetrical opposite-facing side eyes.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.9kg</span>
+          <span class="pill">SPD 1.02x</span>
+          <span class="pill highlight">Side Eyes</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#5d359e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#5d359e" stroke="#14101c" stroke-width="4"/><path d="M 90 70 C 130 55, 175 75, 160 135 C 150 175, 100 190, 80 155 C 65 125, 70 80, 90 70 Z" fill="#8054c2" stroke="#14101c" stroke-width="5"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#5d359e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#5d359e" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Bean</h2>
+          <span class="num">#15</span>
+        </div>
+        <p class="blurb">Purple tilted legume with asymmetrical diagonal eyes and wobbly posture.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.1kg</span>
+          <span class="pill">SPD 0.97x</span>
+          <span class="pill highlight">Tilted Legume</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 120 160 C 150 180, 200 170, 215 135 C 190 145, 160 150, 120 160 Z" fill="#25b89e" stroke="#14101c" stroke-width="4"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#25b89e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#25b89e" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#48dfc4" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#25b89e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#25b89e" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Tadpole</h2>
+          <span class="num">#16</span>
+        </div>
+        <p class="blurb">Aquatic polliwog creature with a physics-wagging rear spring tail.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.7kg</span>
+          <span class="pill">SPD 1.08x</span>
+          <span class="pill highlight">Wagging Tail</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 85 85 C 60 30, 45 40, 75 160 Z" fill="#cc2f44" stroke="#14101c" stroke-width="4" stroke-linejoin="round"/><path d="M 155 85 C 180 30, 195 40, 165 160 Z" fill="#f5566b" stroke="#14101c" stroke-width="4" stroke-linejoin="round"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#cc2f44" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#cc2f44" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#f5566b" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#cc2f44" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#cc2f44" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Floppy</h2>
+          <span class="num">#17</span>
+        </div>
+        <p class="blurb">Coral red bunny creature with massive heavy drooping ear lobes.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.0kg</span>
+          <span class="pill">SPD 1.00x</span>
+          <span class="pill highlight">Heavy Lobes</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="75" y="172" width="16" height="36" rx="8" fill="#168499" stroke="#14101c" stroke-width="4"/><rect x="98" y="176" width="16" height="34" rx="8" fill="#168499" stroke="#14101c" stroke-width="4"/><rect x="126" y="176" width="16" height="34" rx="8" fill="#168499" stroke="#14101c" stroke-width="4"/><rect x="149" y="172" width="16" height="36" rx="8" fill="#168499" stroke="#14101c" stroke-width="4"/><rect x="55" y="75" width="130" height="105" rx="26" fill="#28afc7" stroke="#14101c" stroke-width="5"/><path d="M 65 85 L 175 85 Q 175 100 165 100 L 75 100 Q 65 100 65 85 Z" fill="#ffffff" opacity="0.25"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#168499" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#168499" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><line x1="88" y1="98" x2="114" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><line x1="152" y1="98" x2="126" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Chonk</h2>
+          <span class="num">#18</span>
+        </div>
+        <p class="blurb">Ultra-heavy cyan shock block supported on four thick corner legs.</p>
+        <div class="pills">
+          <span class="pill">MASS 4.0kg</span>
+          <span class="pill">SPD 0.82x</span>
+          <span class="pill highlight">4-Corner Legs</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 70 120 C 70 65, 170 65, 170 120 L 170 190 Q 155 178 145 190 Q 130 178 120 190 Q 110 178 95 190 Q 85 178 70 190 Z" fill="#f0efe6" stroke="#14101c" stroke-width="5"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#c4c2b5" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#c4c2b5" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Ghosty</h2>
+          <span class="num">#19</span>
+        </div>
+        <p class="blurb">Ivory floating sheet specter with a ruffled hem skirt at the base.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.4kg</span>
+          <span class="pill">SPD 1.14x</span>
+          <span class="pill highlight">Ruffled Skirt</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#439e2e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#439e2e" stroke="#14101c" stroke-width="4"/><polygon points="120,60 185,175 55,175" fill="#62c949" stroke="#14101c" stroke-width="5" stroke-linejoin="round"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#439e2e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#439e2e" stroke-width="12" stroke-linecap="round"/><circle cx="120" cy="105" r="15" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="105" r="7" fill="#14101c"/><circle cx="123" cy="103" r="2.5" fill="#fff"/><circle cx="95" cy="138" r="14" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="95" cy="138" r="6" fill="#14101c"/><circle cx="97" cy="136" r="2" fill="#fff"/><circle cx="145" cy="138" r="14" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="145" cy="138" r="6" fill="#14101c"/><circle cx="147" cy="136" r="2" fill="#fff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Tri-Clops</h2>
+          <span class="num">#20</span>
+        </div>
+        <p class="blurb">Green triangle pyramid head with three mismatched sized eyes.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.1kg</span>
+          <span class="pill">SPD 0.98x</span>
+          <span class="pill highlight">3 Sized Eyes</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#5937a3" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#5937a3" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#7b58c7" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#5937a3" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#5937a3" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 106 148 Q 120 162 134 148 Z" fill="#ff4d5e" stroke="#14101c" stroke-width="3"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Roll-Eye</h2>
+          <span class="num">#21</span>
+        </div>
+        <p class="blurb">Violet ball with a cheerful smiling mouth and off-axis wandering gaze.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.9kg</span>
+          <span class="pill">SPD 1.04x</span>
+          <span class="pill highlight">Wander Gaze</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><polygon points="92,72 82,48 102,66" fill="#ff6fb5" stroke="#14101c" stroke-width="4"/><polygon points="148,72 158,48 138,66" fill="#ff6fb5" stroke="#14101c" stroke-width="4"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#d96f9c" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#d96f9c" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#ff9ec7" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d96f9c" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d96f9c" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><path d="M 106 148 Q 120 162 134 148 Z" fill="#ff4d5e" stroke="#14101c" stroke-width="3"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Sherbet</h2>
+          <span class="num">#22</span>
+        </div>
+        <p class="blurb">Pastel cotton-candy swirl ball topped with twin impish horns.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.8kg</span>
+          <span class="pill">SPD 1.06x</span>
+          <span class="pill highlight">Impish Horns</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 120 70 Q 120 35 135 25" fill="none" stroke="#1f1a30" stroke-width="6" stroke-linecap="round"/><circle cx="136" cy="24" r="14" fill="#ffd23f" stroke="#14101c" stroke-width="4"/><rect x="92" y="170" width="18" height="38" rx="9" fill="#d6ab1e" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#d6ab1e" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#ffd23f" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d6ab1e" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d6ab1e" stroke-width="12" stroke-linecap="round"/><circle cx="120" cy="125" r="28" fill="#ffffff" stroke="#14101c" stroke-width="5"/><circle cx="120" cy="125" r="14" fill="#14101c"/><circle cx="125" cy="120" r="5" fill="#ffffff"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Antenna</h2>
+          <span class="num">#23</span>
+        </div>
+        <p class="blurb">Golden teardrop with an overhead swinging radio transmitter beacon.</p>
+        <div class="pills">
+          <span class="pill">MASS 2.7kg</span>
+          <span class="pill">SPD 1.07x</span>
+          <span class="pill highlight">Radio Beacon</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><path d="M 95 160 C 80 170, 110 180, 95 190 C 80 200, 110 205, 95 212" fill="none" stroke="#9da9bd" stroke-width="8" stroke-linecap="round"/><path d="M 145 160 C 130 170, 160 180, 145 190 C 130 200, 160 205, 145 212" fill="none" stroke="#9da9bd" stroke-width="8" stroke-linecap="round"/><rect x="85" y="208" width="22" height="10" rx="4" fill="#d18106" stroke="#14101c" stroke-width="3"/><rect x="135" y="208" width="22" height="10" rx="4" fill="#d18106" stroke="#14101c" stroke-width="3"/><circle cx="120" cy="130" r="58" fill="#fca921" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><path d="M 65 130 Q 40 140 45 160" fill="none" stroke="#d18106" stroke-width="12" stroke-linecap="round"/><path d="M 175 130 Q 200 140 195 160" fill="none" stroke="#d18106" stroke-width="12" stroke-linecap="round"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><line x1="88" y1="98" x2="114" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><line x1="152" y1="98" x2="126" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><path d="M 108 152 Q 120 144 132 152" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Boing</h2>
+          <span class="num">#24</span>
+        </div>
+        <p class="blurb">Angry bowling ball balancing on heavy coiled steel spring legs.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.0kg</span>
+          <span class="pill">SPD 1.10x</span>
+          <span class="pill highlight">Spring Legs</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#b51b1b" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#b51b1b" stroke="#14101c" stroke-width="4"/><circle cx="120" cy="130" r="58" fill="#e03838" stroke="#14101c" stroke-width="5"/><ellipse cx="120" cy="85" rx="36" ry="12" fill="#ffffff" opacity="0.22"/><circle cx="50" cy="135" r="24" fill="#ff384b" stroke="#14101c" stroke-width="5"/><rect x="42" y="118" width="16" height="10" rx="4" fill="#d91e32"/><circle cx="190" cy="135" r="24" fill="#ff384b" stroke="#14101c" stroke-width="5"/><rect x="182" y="118" width="16" height="10" rx="4" fill="#d91e32"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><line x1="88" y1="98" x2="114" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><line x1="152" y1="98" x2="126" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><path d="M 108 152 Q 120 144 132 152" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Boxer</h2>
+          <span class="num">#25</span>
+        </div>
+        <p class="blurb">Red heavyweight brawler armed with two giant red boxing gloves.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.5kg</span>
+          <span class="pill">SPD 0.95x</span>
+          <span class="pill highlight">Boxing Gloves</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-visual"><svg viewBox="0 0 240 240" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><ellipse cx="120" cy="215" rx="55" ry="12" fill="#090812" opacity="0.65" /><rect x="92" y="170" width="18" height="38" rx="9" fill="#b8ab8d" stroke="#14101c" stroke-width="4"/><rect x="130" y="170" width="18" height="38" rx="9" fill="#b8ab8d" stroke="#14101c" stroke-width="4"/><rect x="68" y="75" width="104" height="104" rx="18" fill="#ded5be" stroke="#14101c" stroke-width="5"/><path d="M 68 125 C 45 110, 30 140, 35 155" fill="none" stroke="#1f1a30" stroke-width="8" stroke-linecap="round"/><path d="M 22 150 L 45 142 L 35 168 Z" fill="#ff4d8d" stroke="#14101c" stroke-width="4"/><path d="M 172 125 C 195 110, 210 140, 205 155" fill="none" stroke="#1f1a30" stroke-width="8" stroke-linecap="round"/><path d="M 218 150 L 195 142 L 205 168 Z" fill="#ff4d8d" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="102" cy="120" r="8" fill="#14101c"/><circle cx="105" cy="117" r="3" fill="#ffffff"/><circle cx="138" cy="120" r="17" fill="#ffffff" stroke="#14101c" stroke-width="4"/><circle cx="138" cy="120" r="8" fill="#14101c"/><circle cx="141" cy="117" r="3" fill="#ffffff"/><line x1="88" y1="98" x2="114" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><line x1="152" y1="98" x2="126" y2="105" stroke="#14101c" stroke-width="5" stroke-linecap="round"/><path d="M 110 148 Q 120 158 130 148" fill="none" stroke="#14101c" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <div class="card-body">
+        <div class="card-header">
+          <h2 class="name">Plunger</h2>
+          <span class="num">#26</span>
+        </div>
+        <p class="blurb">Tofu block body equipped with accordion suction-cup plunger arms.</p>
+        <div class="pills">
+          <span class="pill">MASS 3.1kg</span>
+          <span class="pill">SPD 1.00x</span>
+          <span class="pill highlight">Plunger Arms</span>
+        </div>
+      </div>
+    </div>
+    
+  </main>
 </body>
 </html>
