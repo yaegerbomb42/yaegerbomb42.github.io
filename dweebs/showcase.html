@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DWEEBS — 26 Character 3D Showcase</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0b14;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    header {
+      padding: 24px;
+      text-align: center;
+      background: #171226;
+      border-bottom: 3px solid #ffd23f;
+    }
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      color: #ffd23f;
+      letter-spacing: 2px;
+    }
+    p { margin: 8px 0 0; color: #a98be0; font-size: 15px; }
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #191b33;
+      border: 3px solid #2f3661;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .vp {
+      width: 100%;
+      height: 230px;
+      background: radial-gradient(circle at 50% 50%, #2a3159 0%, #101224 85%);
+      position: relative;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+    .name {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 12px;
+      color: #ffd84a;
+      letter-spacing: 0.5px;
+    }
+    .blurb {
+      font-size: 13px;
+      color: #9cb3d9;
+      text-align: center;
+      padding: 0 16px;
+      margin-top: 4px;
+      line-height: 1.35;
+      min-height: 36px;
+    }
+    .tag {
+      background: #101224;
+      border: 1px solid #48538c;
+      color: #5ee06a;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DWEEBS · 26-CHARACTER ROSTER</h1>
+    <p>Live interactive 3D procedural meshes, expressions, and physical appendages</p>
+  </header>
+  <div class="roster-grid" id="roster-grid"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+
+    const CHARACTERS = [
+      { id: 'cube', name: 'Cube', color: 0xffc53d, blurb: 'Balanced classic block brawler. Solid, dependable.' },
+      { id: 'blob', name: 'Blob', color: 0x5ee06a, blurb: 'Heavy round clay blob with swinging bobble antenna.' },
+      { id: 'spiky', name: 'Spiky', color: 0xb56cff, blurb: 'Urchin covered in 34 whipping, reacting tentacles.' },
+      { id: 'stalky', name: 'Stalky', color: 0x3fa9ff, blurb: 'Teal creature with twin periscope eye stalks.' },
+      { id: 'peep', name: 'Peep', color: 0xff4d5e, blurb: 'Giant cyclops eye with horns on 4 scurrying peg feet.' },
+      { id: 'tri_cloud', name: 'Tri-Cloud', color: 0xa98be0, blurb: 'Lavender tri-lobed floating cloud with 3 tracking eyes.' },
+      { id: 'bunny', name: 'Bunny', color: 0x8ef573, blurb: 'Lime bean with springy floppy bunny ears.' },
+      { id: 'puddle', name: 'Puddle', color: 0x3d94ff, blurb: 'Flat melting slime puddle pancake that slips under hits.' },
+      { id: 'blockhead', name: 'Blockhead', color: 0xff9a3c, blurb: 'Orange cube mounted with a top periscope turret eye.' },
+      { id: 'gumball', name: 'Gumball', color: 0xffd84a, blurb: 'Transparent belly dome packed with bouncy marbles.' },
+      { id: 'bumpy', name: 'Bumpy', color: 0x9855d4, blurb: 'Purple sphere covered in soft sensory bumps.' },
+      { id: 'cyclops', name: 'Cyclops', color: 0x2ed1b5, blurb: 'Round cyan puff with one massive expressive pupil.' },
+      { id: 'starry', name: 'Starry', color: 0xff6fb5, blurb: '5-pointed wobbly dancing star with dancing limbs.' },
+      { id: 'blink', name: 'Blink', color: 0xffa347, blurb: 'Pill capsule with twisting opposite eyes.' },
+      { id: 'bean', name: 'Bean', color: 0x8054c2, blurb: 'Tilted legume with asymmetrical diagonal eyes.' },
+      { id: 'tadpole', name: 'Tadpole', color: 0x48dfc4, blurb: 'Aquatic creature with a wagging spring tail.' },
+      { id: 'floppy', name: 'Floppy', color: 0xf5566b, blurb: 'Red bunny with massive heavy drooping ear lobes.' },
+      { id: 'chonk', name: 'Chonk', color: 0x28afc7, blurb: 'Heavy shock block supported on 4 stubby corner legs.' },
+      { id: 'ghosty', name: 'Ghosty', color: 0xf0efe6, blurb: 'Sheet specter with ruffled hem skirt.' },
+      { id: 'triclops', name: 'Tri-Clops', color: 0x62c949, blurb: 'Green triangle head with three mismatched sized eyes.' },
+      { id: 'rolling_eye', name: 'Roll-Eye', color: 0x7b58c7, blurb: 'Violet ball with a wide smiley grin and wandering gaze.' },
+      { id: 'sherbet', name: 'Sherbet', color: 0xff9ec7, blurb: 'Pastel swirl ball with impish horns.' },
+      { id: 'antenna', name: 'Antenna', color: 0xffd23f, blurb: 'Golden teardrop with a swinging radio transmitter top.' },
+      { id: 'boing', name: 'Boing', color: 0xfca921, blurb: 'Angry ball balancing on massive steel coil spring legs.' },
+      { id: 'boxer', name: 'Boxer', color: 0xe03838, blurb: 'Red brawler armed with two giant boxing gloves.' },
+      { id: 'plunger', name: 'Plunger', color: 0xded5be, blurb: 'Tofu block with flexible suction-cup plunger arms.' }
+    ];
+
+    const grid = document.getElementById('roster-grid');
+
+    CHARACTERS.forEach(char => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="vp" id="vp-${char.id}"></div>
+        <div class="name">${char.name}</div>
+        <div class="blurb">${char.blurb}</div>
+        <div class="tag">PROCEDURAL 3D RIG</div>
+      `;
+      grid.appendChild(card);
+
+      setupCharacterCard(char, document.getElementById(`vp-${char.id}`));
+    });
+
+    function setupCharacterCard(char, container) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 20);
+      camera.position.set(0, 0.6, 2.2);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      const amb = new THREE.AmbientLight(0xffffff, 0.75);
+      const dir = new THREE.DirectionalLight(0xffffff, 1.4);
+      dir.position.set(2, 4, 3);
+      scene.add(amb, dir);
+
+      const rig = new THREE.Group();
+      scene.add(rig);
+
+      // Create model mesh
+      buildSimpleModel(rig, char);
+
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.02;
+        rig.rotation.y = Math.sin(t * 0.8) * 0.45;
+        rig.position.y = Math.sin(t * 2) * 0.04;
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    function buildSimpleModel(rig, char) {
+      const mat = new THREE.MeshToonMaterial({ color: char.color });
+      let body;
+      if (char.id === 'cube' || char.id === 'blockhead' || char.id === 'plunger') {
+        body = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.76, 0.64), mat);
+      } else if (char.id === 'chonk') {
+        body = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.64, 0.74), mat);
+      } else if (char.id === 'puddle') {
+        body = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.22, 16), mat);
+      } else {
+        body = new THREE.Mesh(new THREE.IcosahedronGeometry(0.4, 2), mat);
+      }
+      body.position.y = 0.55;
+      rig.add(body);
+
+      // Limbs
+      const limbMat = new THREE.MeshToonMaterial({ color: 0x222233 });
+      for (const side of [-1, 1]) {
+        if (char.id === 'boing') {
+          // Spring
+          const spr = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.35, 8), new THREE.MeshStandardMaterial({ color: 0x8894a8, metalness: 0.8 }));
+          spr.position.set(side * 0.16, 0.18, 0);
+          rig.add(spr);
+        } else {
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.025, 0.22, 6), limbMat);
+          leg.position.set(side * 0.16, 0.18, 0);
+          rig.add(leg);
+        }
+
+        // Arms / Special
+        if (char.id === 'boxer') {
+          const arm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshToonMaterial({ color: 0xff384b }));
+          arm.position.set(side * 0.44, 0.5, 0.1);
+          rig.add(arm);
+        } else if (char.id === 'plunger') {
+          const arm = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.14, 10), new THREE.MeshToonMaterial({ color: 0xff4d8d }));
+          arm.rotation.x = Math.PI / 2;
+          arm.position.set(side * 0.42, 0.5, 0.1);
+          rig.add(arm);
+        } else {
+          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.02, 0.24, 6), limbMat);
+          arm.position.set(side * 0.38, 0.5, 0);
+          arm.rotation.z = side * 0.4;
+          rig.add(arm);
+        }
+      }
+
+      // Eyes
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const pupilMat = new THREE.MeshBasicMaterial({ color: 0x14101c });
+      if (char.id === 'peep' || char.id === 'cyclops' || char.id === 'antenna' || char.id === 'blockhead') {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 10), eyeMat);
+        eye.position.set(0, 0.62, 0.35);
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), pupilMat);
+        pupil.position.set(0, 0, 0.14);
+        eye.add(pupil);
+        rig.add(eye);
+      } else {
+        for (const side of [-1, 1]) {
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), eyeMat);
+          eye.position.set(side * 0.14, 0.62, 0.35);
+          const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), pupilMat);
+          pupil.position.set(0, 0, 0.08);
+          eye.add(pupil);
+          rig.add(eye);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
