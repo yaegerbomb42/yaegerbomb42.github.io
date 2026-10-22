@@ -6,7 +6,7 @@
 (() => {
   "use strict";
 
-  const API = window.location.origin.includes("github.io") ? "https://sugar.yaeger.info" : "";
+  const API = "";
 const USERS = ["alex", "julie", "jimmy", "christine", "gregg", "tom", "valentina"];
 const AVATARS = ["avatar-0", "avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5", "avatar-6"];
 

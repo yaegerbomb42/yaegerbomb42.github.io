@@ -1,0 +1,23 @@
+{
+  "name": "AI Coach",
+  "short_name": "AI Coach",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0c0a1a",
+  "theme_color": "#0c0a1a",
+  "description": "Master any conversation before it happens. AI-powered role-playing coach for interviews, negotiations, and more.",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

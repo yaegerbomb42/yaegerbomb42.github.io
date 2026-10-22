@@ -1,165 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AICoach — Autonomous Performance & Reflection</title>
-  <link rel="icon" href="../info/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #090a10;
-      --surface: #12141f;
-      --border: rgba(255, 255, 255, 0.08);
-      --accent: #10b981;
-      --text: #f0f3fa;
-      --text-muted: #848ca3;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Space Grotesk', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .nav-bar {
-      height: 48px;
-      background: rgba(10, 10, 15, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      font-size: 13px;
-    }
-    .back-btn {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 20px;
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    h1 {
-      font-size: 30px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .chat-box {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 400px;
-    }
-    .message {
-      padding: 14px 18px;
-      border-radius: 12px;
-      max-width: 80%;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-    .coach-msg {
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      align-self: flex-start;
-      color: #e2e8f0;
-    }
-    .user-msg {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-      align-self: flex-end;
-    }
-    .input-bar {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-    }
-    input {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 20px;
-      color: #fff;
-      font-family: inherit;
-      font-size: 15px;
-    }
-    input:focus { outline: none; border-color: var(--accent); }
-    button {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 0 24px;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Coach | Master Any Role, Any Scenario</title>
+    <meta name="description" content="AI Coach is your intelligent role-playing partner. Practice job interviews, difficult conversations, public speaking, and more with adaptive AI scenarios.">
+
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AI Coach">
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0c0a1a">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <div class="nav-bar">
-    <a href="../" class="back-btn">← Hub</a>
-    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted);">aicoach.agent</span>
-  </div>
-  <div class="container">
-    <div>
-      <h1>AI Executive & Performance Coach</h1>
-      <p style="color: var(--text-muted);">Self-reflection, daily mental clarity, strategic prioritizing, and execution feedback.</p>
-    </div>
-    <div class="chat-box" id="chat">
-      <div class="message coach-msg">
-        👋 Welcome back, Yaeger. What strategic objective, mental hurdle, or system architecture decision are we tackling today?
-      </div>
-    </div>
-    <div class="input-bar">
-      <input type="text" id="userInput" placeholder="Ask your coach anything..." autocomplete="off">
-      <button onclick="send()">Send</button>
-    </div>
-  </div>
-  <script>
-    function send() {
-      const input = document.getElementById('userInput');
-      const val = input.value.trim();
-      if (!val) return;
-      const chat = document.getElementById('chat');
-      const uMsg = document.createElement('div');
-      uMsg.className = 'message user-msg';
-      uMsg.innerText = val;
-      chat.appendChild(uMsg);
-      input.value = '';
+    <div class="background-blob blob-1"></div>
+    <div class="background-blob blob-2"></div>
+    <div class="background-blob blob-3"></div>
 
-      setTimeout(() => {
-        const cMsg = document.createElement('div');
-        cMsg.className = 'message coach-msg';
-        cMsg.innerText = "Analyzing your objective through first principles: prioritize high-leverage bottlenecks and keep execution loops under 15 minutes. How can we break this down into the immediate next action?";
-        chat.appendChild(cMsg);
-        chat.scrollTop = chat.scrollHeight;
-      }, 500);
-    }
-    document.getElementById('userInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') send();
-    });
-  </script>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <main class="container">
+        <!-- Hero -->
+        <header class="hero" id="home">
+            <div class="hero-content fade-in">
+                <div class="logo-container">
+                    <div class="logo-ring"></div>
+                    <img src="assets/logo.png" alt="AI Coach App Logo" class="app-logo">
+                </div>
+                <h1 class="app-name">AI Coach</h1>
+                <p class="tagline">Master any conversation, role, or high-stakes scenario before it happens. Powered by adaptive AI coaching.</p>
+
+                <div class="cta-group">
+                    <button class="btn btn-primary" id="cta-start" onclick="document.getElementById('scenarios').scrollIntoView({behavior: 'smooth'})">
+                        <span class="btn-glow"></span>
+                        Start Practicing
+                    </button>
+                    <a href="#about" class="btn btn-secondary" id="cta-learn">Learn More</a>
+                </div>
+            </div>
+
+            <div class="hero-visual fade-in">
+                <div class="visual-glow"></div>
+                <div class="hero-preview-wrapper">
+                    <img src="assets/preview.png" alt="AI Coach Mobile Preview" class="hero-preview">
+                </div>
+            </div>
+
+            <div class="scroll-indicator" id="scroll-indicator">
+                <div class="scroll-line"></div>
+            </div>
+        </header>
+
+        <!-- About -->
+        <section id="about" class="section">
+            <div class="glass-card fade-in">
+                <div class="section-label">What is AI Coach?</div>
+                <h2>Your Personal Role-Playing Partner</h2>
+                <p class="section-desc">AI Coach creates realistic, adaptive scenarios so you can practice high-stakes conversations in a safe environment. Every session adapts to your responses — no scripts, no judgment, just real growth.</p>
+                <div class="features-grid">
+                    <div class="feature-item" id="feature-adaptive">
+                        <span class="icon">🧠</span>
+                        <h3>Adaptive AI</h3>
+                        <p>Characters that respond dynamically to your choices, creating authentic conversational flow.</p>
+                    </div>
+                    <div class="feature-item" id="feature-feedback">
+                        <span class="icon">📈</span>
+                        <h3>Live Feedback</h3>
+                        <p>Get real-time coaching on tone, strategy, and persuasion after each exchange.</p>
+                    </div>
+                    <div class="feature-item" id="feature-scenarios">
+                        <span class="icon">🎭</span>
+                        <h3>Infinite Roles</h3>
+                        <p>From job interviews to conflict resolution — unlimited scenarios, always fresh.</p>
+                    </div>
+                    <div class="feature-item" id="feature-private">
+                        <span class="icon">🔐</span>
+                        <h3>Private & Secure</h3>
+                        <p>Your sessions stay yours. Zero data sold. Zero judgment. Practice freely.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Demo -->
+        <section id="demo" class="section">
+            <div class="section-label center">Live Experience</div>
+            <h2 class="section-title">See Alex in Action</h2>
+            
+            <div class="chat-demo-container glass-card">
+                <div class="chat-demo-header">
+                    <div class="status-dot"></div>
+                    <span style="font-weight: 600; font-size: 0.9rem;">Coach Alex</span>
+                    <span style="color: var(--text-dim); font-size: 0.8rem; margin-left: auto;">Interactive Demo</span>
+                </div>
+                <div class="chat-demo-body" id="chat-demo-body">
+                    <!-- Messages will be injected by JS -->
+                    <div class="demo-placeholder">Alex is preparing the scenario...</div>
+                </div>
+                <div class="demo-controls">
+                    <button class="btn btn-secondary btn-sm" id="restart-demo">Restart Demo</button>
+                    <button class="btn btn-primary btn-sm" onclick="startSession('Demo Start')">Try Live Practice</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario Showcase -->
+        <section id="scenarios" class="section">
+            <div class="section-label center">Practical Applications</div>
+            <h2 class="section-title">What would you like to practice?</h2>
+            <div class="scenario-grid">
+                <div class="scenario-card fade-in" onclick="startSession('Job Interview')">
+                    <div class="scenario-icon">💼</div>
+                    <h3>Job Interview</h3>
+                    <p>Behavioral questions & salary negotiation.</p>
+                    <div class="scenario-tag">Start Now</div>
+                </div>
+                <div class="scenario-card fade-in" onclick="startSession('Conflict Resolution')">
+                    <div class="scenario-icon">🤝</div>
+                    <h3>Conflict</h3>
+                    <p>Handle tough workplace feedback.</p>
+                    <div class="scenario-tag">Start Now</div>
+                </div>
+                <div class="scenario-card fade-in" onclick="startSession('Public Speaking')">
+                    <div class="scenario-icon">🎤</div>
+                    <h3>Speaking</h3>
+                    <p>Master presentations & Q&A.</p>
+                    <div class="scenario-tag">Start Now</div>
+                </div>
+                <div class="scenario-card fade-in" onclick="startSession('Social Skills')">
+                    <div class="scenario-icon">💬</div>
+                    <h3>Social Skills</h3>
+                    <p>Small talk & charisma building.</p>
+                    <div class="scenario-tag">Start Now</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section id="pricing" class="section">
+            <div class="section-label center">Investment</div>
+            <h2 class="section-title">Transparent Pricing</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card trial fade-in">
+                    <div class="pricing-header">
+                        <span class="pricing-name">The Free Trial</span>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">0</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>20 Minutes Free Practice</li>
+                        <li>Full Adaptive AI Access</li>
+                        <li>All Scenarios Unlocked</li>
+                        <li>Detailed Performance Feedback</li>
+                    </ul>
+                    <button class="btn btn-secondary w-full" onclick="document.getElementById('scenarios').scrollIntoView({behavior: 'smooth'})">Try for Free</button>
+                </div>
+                <div class="pricing-card premium fade-in featured">
+                    <div class="pricing-header">
+                        <span class="pricing-name">Unlimited Practice</span>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">0.08</span>
+                            <span class="period">/min</span>
+                        </div>
+                        <div class="price-subtitle">($5.00 per hour)</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Pay only for what you use</li>
+                        <li>Zero monthly subscription fees</li>
+                        <li>Priority Character Processing</li>
+                        <li>Save Session Transcripts</li>
+                    </ul>
+                    <button class="btn btn-primary w-full" id="pricing-start">Start Practicing</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Install / CTA -->
+        <section id="install" class="section">
+            <div class="glass-card install-card fade-in">
+                <h2>Ready to Level Up?</h2>
+                <p>Add AI Coach to your home screen for instant access — no app store needed.</p>
+
+                <div class="install-steps">
+                    <div class="step">
+                        <span class="install-step-num">1</span>
+                        <p>Tap the <strong>Share</strong> icon in Safari (or ⋮ in Chrome).</p>
+                    </div>
+                    <div class="step">
+                        <span class="install-step-num">2</span>
+                        <p>Select <strong>"Add to Home Screen"</strong>.</p>
+                    </div>
+                    <div class="step">
+                        <span class="install-step-num">3</span>
+                        <p>Launch <strong>AI Coach</strong> and start your first session.</p>
+                    </div>
+                </div>
+
+                <div class="badge-container">
+                    <div class="store-badge-placeholder">App Store &amp; Play Store Coming Soon</div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2026 AI Coach | <a href="https://yaeger.info" class="footer-link">yaeger.info</a></p>
+        </footer>
+    </main>
+
+    <!-- Modals -->
+    <div id="login-modal" class="modal" style="display:none;">
+        <div class="glass-card modal-card">
+            <h2>Sign In to AI Coach</h2>
+            <p>Enter your email to track your 20 free minutes.</p>
+            <input type="email" id="user-email" placeholder="email@example.com" class="modal-input">
+            <button class="btn btn-primary" id="btn-login" style="margin-top: 1rem; width: 100%;">Continue</button>
+        </div>
+    </div>
+
+    <div id="payment-modal" class="modal" style="display:none;">
+        <div class="glass-card modal-card">
+            <h2>Payment Method Required</h2>
+            <p>You've utilized your 20 free minutes. Add a card to continue practicing for $0.08/minute ($5/hour).</p>
+            <div id="card-element" style="padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 12px; margin: 1.5rem 0;"></div>
+            <div id="card-errors" role="alert" style="color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem;"></div>
+            <button class="btn btn-primary" id="btn-save-card" style="width: 100%;">
+                <span class="btn-glow"></span>
+                Save Card & Continue
+            </button>
+            <button class="btn btn-secondary" onclick="document.getElementById('payment-modal').style.display='none'" style="margin-top: 1rem; width: 100%;">Maybe Later</button>
+        </div>
+    </div>
+
+    <!-- Practice Environment Modal -->
+    <div id="practice-modal" class="modal" style="display:none;">
+        <div class="practice-container">
+            <div class="practice-sidebar">
+                <div class="session-info">
+                    <div class="logo-sm">
+                        <img src="assets/logo.png" alt="AI Coach">
+                        <span>AI Coach</span>
+                    </div>
+                    <h3 id="session-role">Job Interview</h3>
+                    <div id="session-timer">00:00</div>
+                </div>
+                <div id="gemini-key-container" class="key-field-container" style="display: none; margin-top: 1rem;">
+                    <label style="font-size: 0.7rem; color: var(--text-dim);">GEMINI API KEY (FREE TIER)</label>
+                    <input type="password" id="user-gemini-key" placeholder="Enter Gemini Key" class="modal-input sm">
+                </div>
+                <div class="coaching-tips">
+                    <h4>ALEX'S TIPS</h4>
+                    <ul id="live-tips">
+                        <li>Listen closely to the question.</li>
+                        <li>Take a breath before responding.</li>
+                    </ul>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-end-session">End Session</button>
+            </div>
+            <div class="practice-main">
+                <div id="practice-chat-body" class="chat-body"></div>
+                <div class="practice-input-area">
+                    <div class="typing-indicator" id="practice-typing" style="display: none;">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <form id="practice-form" class="input-form">
+                        <input type="text" id="practice-input" placeholder="Type your response..." autocomplete="off">
+                        <button type="submit" class="btn-send">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>

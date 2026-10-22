@@ -3,21 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D Starry Sphere — yaeger</title>
+  <title>Sphere Quest — a cosmic mining game · yaeger</title>
+  <meta name="description" content="Click-to-mine cosmic idle game on a 3D starry sphere: upgrades, achievements, daily missions, and a full User Explorer. Save data stays in your browser." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-    .glass-nav {
-      position: absolute; top: 16px; left: 20px; right: 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      z-index: 50; pointer-events: none;
-    }
-    .interactive { pointer-events: auto; }
-  </style>
-
+  <link rel="stylesheet" href="styles.css" />
   <script type="importmap">
     {
       "imports": {
@@ -28,132 +17,126 @@
   </script>
 </head>
 <body>
-  <div class="glass-nav">
-    <a href="../" class="interactive px-3.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-white text-xs font-bold border border-slate-700 backdrop-blur-md transition shadow-lg">
-      ← Hub
-    </a>
-    <div class="px-4 py-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 backdrop-blur-md text-slate-300 text-xs font-mono shadow-lg flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
-      <span>3D Starry Sphere · Drag to Orbit · Scroll to Zoom</span>
-    </div>
-  </div>
-
   <div id="canvas-container"></div>
 
-  <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  <!-- ===== HUD top bar ===== -->
+  <header class="hud">
+    <div class="hud-block hud-left">
+      <div class="hud-crystals"><span id="hud-crystals">0</span><span class="hud-crystal-icon">💎</span></div>
+      <div class="hud-sub">
+        <span class="hud-sub-item">⛏️ <b id="hud-pow">+1 / click</b></span>
+        <span class="hud-sub-item">🛰️ <b id="hud-rate">0 /s</b></span>
+      </div>
+    </div>
 
-    const container = document.getElementById('canvas-container');
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
-    scene.fog = new THREE.FogExp2(0x000000, 0.015);
+    <div class="hud-block hud-center">
+      <div class="hud-levelchip">
+        <span class="hud-rank" id="hud-rank">Star Rodent</span>
+        <span class="hud-level">Lv <b id="hud-level">1</b></span>
+      </div>
+      <div class="hud-xp">
+        <div class="hud-xp-track"><div class="hud-xp-fill" id="hud-xp-fill"></div></div>
+        <span class="hud-xp-text" id="hud-xp-text">0 / 40 XP</span>
+      </div>
+    </div>
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 5.5);
+    <nav class="hud-block hud-right">
+      <button id="btn-mute" class="hud-btn" title="Toggle sound (M)">🔊</button>
+      <button id="btn-help" class="hud-btn" title="How to play (H)">❓</button>
+      <button id="btn-store" class="hud-btn hud-btn-accent" title="Store (S)">🛒 Store</button>
+      <button id="btn-explorer" class="hud-btn hud-btn-accent" title="User Explorer (E)">🧑‍🚀 Explorer</button>
+    </nav>
+  </header>
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    container.appendChild(renderer.domElement);
+  <!-- ===== Floating text / feedback layers ===== -->
+  <div id="float-layer"></div>
+  <div id="toasts"></div>
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
+  <!-- ===== Missions strip ===== -->
+  <div id="missions-row" class="missions-row"></div>
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
+  <!-- ===== User Explorer panel ===== -->
+  <aside class="panel" id="panel-explorer">
+    <div class="panel-head">
+      <h2>🧑‍🚀 User Explorer</h2>
+      <button class="panel-close" data-close>✕</button>
+    </div>
 
-    const pointLight1 = new THREE.PointLight(0xffffff, 2.5, 50);
-    pointLight1.position.set(10, 10, 10);
-    scene.add(pointLight1);
+    <section class="panel-section profile-section">
+      <div class="profile-row">
+        <input id="exp-name-input" class="exp-name" maxlength="18" placeholder="Explorer name" />
+        <input type="color" id="exp-color" title="Explorer color" />
+      </div>
+      <div class="exp-rank" id="exp-rank">Star Rodent</div>
+    </section>
 
-    const pointLight2 = new THREE.PointLight(0x3b82f6, 3, 50);
-    pointLight2.position.set(-10, -10, -10);
-    scene.add(pointLight2);
+    <section class="panel-section">
+      <h3>Stats</h3>
+      <div id="stats-grid" class="stats-grid"></div>
+    </section>
 
-    // Starfield Particles
-    const starCount = 6000;
-    const starGeo = new THREE.BufferGeometry();
-    const starPos = new Float32Array(starCount * 3);
-    const starColors = new Float32Array(starCount * 3);
+    <section class="panel-section">
+      <h3>Achievements <span class="ach-count" id="ach-count"></span></h3>
+      <div id="ach-grid" class="ach-grid"></div>
+    </section>
 
-    for (let i = 0; i < starCount * 3; i += 3) {
-      const r = 50 + Math.random() * 80;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+    <section class="panel-section">
+      <h3>Journey Log</h3>
+      <ul id="log-list" class="log-list"></ul>
+    </section>
 
-      starPos[i] = r * Math.sin(phi) * Math.cos(theta);
-      starPos[i + 1] = r * Math.sin(phi) * Math.sin(theta);
-      starPos[i + 2] = r * Math.cos(phi);
+    <section class="panel-section">
+      <h3>Data</h3>
+      <div class="data-row">
+        <button id="btn-export" class="btn">⤓ Export save</button>
+        <label class="btn btn-outline" for="import-file">⤒ Import save</label>
+        <input type="file" id="import-file" accept=".json,application/json" hidden />
+        <button id="btn-reset" class="btn btn-danger">♻️ Reset</button>
+      </div>
+    </section>
 
-      const color = new THREE.Color();
-      color.setHSL(0.6 + Math.random() * 0.1, 0.8, 0.7 + Math.random() * 0.3);
-      starColors[i] = color.r;
-      starColors[i + 1] = color.g;
-      starColors[i + 2] = color.b;
-    }
+    <section class="panel-section">
+      <h3>Settings</h3>
+      <div class="settings-row">
+        <label class="toggle-label"><input type="checkbox" id="sound-toggle" /> Sound effects</label>
+        <label class="toggle-label">Particles
+          <select id="particles-select">
+            <option value="high">High</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+      </div>
+    </section>
+  </aside>
 
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+  <!-- ===== Store panel ===== -->
+  <aside class="panel panel-store" id="panel-store">
+    <div class="panel-head">
+      <h2>🛒 Store</h2>
+      <button class="panel-close" data-close>✕</button>
+    </div>
+    <p class="panel-note">Spend 💎 crystals on upgrades. Prices rise with each level.</p>
+    <div id="store-grid" class="store-grid"></div>
+  </aside>
 
-    const starMat = new THREE.PointsMaterial({
-      size: 0.35,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85
-    });
+  <!-- ===== Help panel ===== -->
+  <aside class="panel panel-help" id="panel-help">
+    <div class="panel-head">
+      <h2>❓ How to Play</h2>
+      <button class="panel-close" data-close>✕</button>
+    </div>
+    <div class="help-body">
+      <p><b>⛏️ Mine.</b> Click the sphere to harvest crystals. Rapid clicks build a <b>combo</b> multiplier — chain clicks to multiply your yield.</p>
+      <p><b>☄️ Comets.</b> Golden comets occasionally fly past. Click one while it is visible for a big crystal jackpot.</p>
+      <p><b>🛒 Upgrade.</b> Buy Mining Lasers (per click), Auto-Miner drones (per second), and Charge Cores (global % bonus). Themes just look gorgeous.</p>
+      <p><b>🧑‍🚀 Explorer.</b> Track your stats, unlock 18 achievements, and read your journey log.</p>
+      <p><b>🎯 Daily missions.</b> Three objectives refresh every day — claim their rewards in the bar at the bottom.</p>
+      <p><b>🌙 Offline.</b> Your drones keep working while you are away (up to 8h, at half efficiency).</p>
+      <p><b>💾 Save.</b> Everything is stored in your browser (localStorage). Use the Explorer → Data panel to back up or transfer your save.</p>
+      <p class="help-keys"><b>Keys:</b> E explorer · S store · H help · M mute · Esc close</p>
+    </div>
+  </aside>
 
-    const starField = new THREE.Points(starGeo, starMat);
-    scene.add(starField);
-
-    // 3D Sphere Mesh
-    const sphereGeo = new THREE.SphereGeometry(2, 64, 64);
-    const sphereMat = new THREE.MeshStandardMaterial({
-      color: 0x1e3a8a,
-      roughness: 0.25,
-      metalness: 0.6,
-      wireframe: false
-    });
-
-    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    scene.add(sphere);
-
-    // Atmosphere halo
-    const glowGeo = new THREE.SphereGeometry(2.08, 64, 64);
-    const glowMat = new THREE.MeshBasicMaterial({
-      color: 0x60a5fa,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.12
-    });
-    const glow = new THREE.Mesh(glowGeo, glowMat);
-    scene.add(glow);
-
-    // Animation Loop
-    function animate() {
-      requestAnimationFrame(animate);
-
-      sphere.rotation.y += 0.006;
-      sphere.rotation.x += 0.003;
-      glow.rotation.y += 0.004;
-
-      starField.rotation.y -= 0.0003;
-
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
