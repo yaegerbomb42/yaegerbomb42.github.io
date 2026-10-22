@@ -343,7 +343,7 @@
     <div class="grid" id="apps-grid">
 
       <!-- 1. Info -->
-      <a href="./info/" class="card" style="--card-accent: var(--accent-cyan);" data-name="info showcase portfolio resume yaeger.info">
+      <a href="./info/" class="card" style="--card-accent: var(--accent-cyan);" data-name="info showcase portfolio resume portfolio">
         <div class="card-top">
           <div class="card-icon">🌐</div>
           <span class="card-hotkey">1</span>
@@ -354,12 +354,12 @@
         </div>
         <div class="card-bottom">
           <span class="card-path">/info</span>
-          <span class="card-backend">yaeger.info</span>
+          <span class="card-backend">github.io/info</span>
         </div>
       </a>
 
       <!-- 2. Notes -->
-      <a href="https://notes.yaeger.info/" class="card" style="--card-accent: var(--accent-green);" data-name="notes quick-capture vault quadrant security documents">
+      <a href="./notes/" class="card" style="--card-accent: var(--accent-green);" data-name="notes quick-capture vault quadrant security documents">
         <div class="card-top">
           <div class="card-icon">📝</div>
           <span class="card-hotkey">2</span>
@@ -370,7 +370,7 @@
         </div>
         <div class="card-bottom">
           <span class="card-path">/notes</span>
-          <span class="card-backend">notes.yaeger.info</span>
+          <span class="card-backend">github.io/notes</span>
         </div>
       </a>
 
@@ -386,7 +386,7 @@
         </div>
         <div class="card-bottom">
           <span class="card-path">/game</span>
-          <span class="card-backend">gamewithfam.com</span>
+          <span class="card-backend">github.io/game</span>
         </div>
       </a>
 
@@ -403,12 +403,12 @@
         </div>
         <div class="card-bottom">
           <span class="card-path">/bucket</span>
-          <span class="card-backend">bucket.yaeger.info</span>
+          <span class="card-backend">github.io/bucket</span>
         </div>
       </a>
 
       <!-- 6. Aria -->
-      <a href="https://aria.yaeger.info/" class="card" style="--card-accent: #8b5cf6;" data-name="aria tasks productivity workflow planner">
+      <a href="./aria/" class="card" style="--card-accent: #8b5cf6;" data-name="aria tasks productivity workflow planner">
         <div class="card-top">
           <div class="card-icon">✦</div>
           <span class="card-hotkey">6</span>
@@ -419,7 +419,7 @@
         </div>
         <div class="card-bottom">
           <span class="card-path">/aria</span>
-          <span class="card-backend">aria.yaeger.info</span>
+          <span class="card-backend">github.io/aria</span>
         </div>
       </a>
 
@@ -506,7 +506,7 @@
       </a>
 
       <!-- 15. Loop -->
-      <a href="https://loop.yaeger.info/" class="card" style="--card-accent: #a855f7;" data-name="loop video knowledge graph 3d threejs youtube streaming discovery">
+      <a href="./loop/" class="card" style="--card-accent: #a855f7;" data-name="loop video knowledge graph 3d threejs youtube streaming discovery">
         <div class="card-top">
           <div class="card-icon">🌀</div>
           <span class="card-hotkey">P</span>
@@ -539,6 +539,20 @@
       </a>
 
       <!-- 20. Fade -->
+      
+      <a href="./roadmap/" class="card" style="--card-accent: #38bdf8;" data-name="roadmap planning milestones">
+        <div class="card-top">
+          <div class="card-icon">🗺️</div>
+          <span class="card-status live">Pages</span>
+        </div>
+        <h2 class="card-title">Roadmap</h2>
+        <p class="card-desc">Planning board UI on GitHub Pages; VPS API pending proxy fix.</p>
+        <div class="card-bottom">
+          <span class="card-path">/roadmap</span>
+          <span class="card-backend">github.io/roadmap</span>
+        </div>
+      </a>
+
       <a href="./fade/" class="card" style="--card-accent: #38bdf8;" data-name="fade mynow ephemeral chat real-time messaging">
         <div class="card-top">
           <div class="card-icon">💬</div>
@@ -644,10 +658,10 @@
       if (e.target.tagName === 'INPUT') return;
       const keyMap = {
         '1': './info/',
-        '2': 'https://notes.yaeger.info/',
+        '2': './notes/',
         '3': './game/',
         '5': './bucket/',
-        '6': 'https://aria.yaeger.info/',
+        '6': './aria/',
         '8': './aicoach/',
         '9': './adaptivelearn/',
         '0': './anxiety/',
@@ -655,8 +669,9 @@
         'W': './whatisbest/',
         'g': './goals/',
         'G': './goals/',
-        'p': 'https://loop.yaeger.info/',
-        'P': 'https://loop.yaeger.info/',
+        'p': './loop/',
+        'P': './loop/',
+        'r': './roadmap/',
         'o': 'https://omnexx.org',
         'O': 'https://omnexx.org',
         'f': './fade/',

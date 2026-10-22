@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aria · yaegerbomb42</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0a0a12;--card:#141425;--accent:#8b5cf6;--text:#eee;--muted:#999}
+    body{margin:0;font-family:ui-sans-serif,system-ui;background:var(--bg);color:var(--text)}
+    main{max-width:720px;margin:0 auto;padding:2rem 1.25rem}
+    .card{background:var(--card);border-radius:14px;padding:1.25rem;border:1px solid #2a2a3d}
+    code{background:#000;padding:.15rem .4rem;border-radius:4px}
+    .ok{color:#4ade80}.bad{color:#f87171}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Aria</h1>
+  <p style="color:var(--muted)">Frontend on <code>yaegerbomb42.github.io/aria/</code>. Backend remains on the VPS.</p>
+  <div class="card">
+    <p id="status">Checking VPS…</p>
+    <p style="color:var(--muted);font-size:.9rem">Aria’s current Next.js build uses <strong>server actions</strong> + SQLite on the VPS, so a full static port needs those actions exposed as HTTP APIs. This Pages shell verifies the VPS is reachable with CORS for github.io.</p>
+    <pre id="headers" style="overflow:auto;font-size:.75rem;color:var(--muted)"></pre>
+  </div>
+</main>
+<script>
+  const API='https://aria.yaeger.info';
+  (async()=>{
+    const status=document.getElementById('status');
+    try{
+      const res=await fetch(API+'/',{method:'GET',mode:'cors'});
+      status.innerHTML = res.ok
+        ? '<span class="ok">VPS reachable</span> ('+API+' · HTTP '+res.status+'). Full UI migration next: expose actions as /api/*.'
+        : '<span class="bad">VPS HTTP '+res.status+'</span>';
+      document.getElementById('headers').textContent = [...res.headers.entries()].map(([k,v])=>k+': '+v).join('\n');
+    }catch(e){
+      status.innerHTML='<span class="bad">CORS/network error:</span> '+e.message;
+    }
+  })();
+</script>
+</body>
+</html>

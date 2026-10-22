@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Roadmap · yaegerbomb42</title>
+  <style>body{margin:0;font-family:system-ui;background:#0b1220;color:#e5eefc;padding:2rem}code{background:#000;padding:.1rem .35rem;border-radius:4px}.bad{color:#f87171}.ok{color:#4ade80}</style>
+</head>
+<body>
+  <h1>Roadmap</h1>
+  <p>UI target: <code>yaegerbomb42.github.io/roadmap/</code>. VPS API host <code>roadmap.yaeger.info</code> is currently <span class="bad">502</span> (NPM upstream port 8094 not published). Fix VPS proxy, then static-export this Next app with Firebase client config.</p>
+  <p id="s">Probing…</p>
+  <script>
+    fetch('https://roadmap.yaeger.info/',{mode:'cors'}).then(r=>{
+      document.getElementById('s').innerHTML=r.ok?'<span class="ok">API up</span>':'<span class="bad">HTTP '+r.status+'</span>';
+    }).catch(e=>document.getElementById('s').innerHTML='<span class="bad">'+e.message+'</span>');
+  </script>
+</body>
+</html>

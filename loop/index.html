@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loop · yaegerbomb42</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b0b12; --card:#151525; --accent:#a855f7; --text:#e8e8f0; --muted:#9a9ab0; }
+    *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+    header{padding:1.25rem 1.5rem;border-bottom:1px solid #222} h1{margin:0;font-size:1.25rem}
+    main{max-width:960px;margin:0 auto;padding:1.5rem}
+    .status{padding:.75rem 1rem;border-radius:10px;background:var(--card);margin-bottom:1rem;color:var(--muted);font-size:.9rem}
+    .grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+    .card{background:var(--card);border-radius:12px;padding:1rem;border:1px solid #2a2a40}
+    .card h3{margin:.5rem 0 .25rem;font-size:1rem} .card p{margin:0;color:var(--muted);font-size:.85rem}
+    a{color:var(--accent)} button{background:var(--accent);border:0;color:#fff;padding:.6rem 1rem;border-radius:8px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header><h1>Loop</h1><p style="margin:.25rem 0 0;color:var(--muted);font-size:.85rem">UI on GitHub Pages · API on VPS (looper.icu)</p></header>
+  <main>
+    <div class="status" id="status">Connecting to VPS API…</div>
+    <div style="margin-bottom:1rem"><button id="reload">Reload explore</button></div>
+    <div class="grid" id="grid"></div>
+  </main>
+  <script>
+    const API = 'https://looper.icu';
+    async function load() {
+      const status = document.getElementById('status');
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      try {
+        const res = await fetch(API + '/api/explore', { headers: { 'Accept': 'application/json' } });
+        status.textContent = 'API ' + res.status + ' from ' + API + (res.ok ? ' · OK' : ' · check VPS');
+        if (!res.ok) { status.textContent += ' — ' + (await res.text()).slice(0,180); return; }
+        const data = await res.json();
+        const items = data.items || data.results || data.nodes || data || [];
+        const list = Array.isArray(items) ? items : Object.values(items);
+        if (!list.length) { status.textContent += ' · empty explore payload'; return; }
+        for (const it of list.slice(0, 24)) {
+          const el = document.createElement('div');
+          el.className = 'card';
+          const title = it.title || it.name || it.id || 'Item';
+          const thumb = it.thumbnail || it.thumb || '';
+          el.innerHTML = (thumb ? `<img src="${thumb}" alt="" style="width:100%;border-radius:8px;aspect-ratio:16/9;object-fit:cover">` : '') +
+            `<h3>${title}</h3><p>${(it.description || it.channel || '').toString().slice(0,120)}</p>`;
+          grid.appendChild(el);
+        }
+      } catch (e) {
+        status.textContent = 'Failed to reach VPS API: ' + e.message;
+      }
+    }
+    document.getElementById('reload').onclick = load;
+    load();
+  </script>
+</body>
+</html>

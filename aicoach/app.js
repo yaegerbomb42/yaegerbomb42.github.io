@@ -1,5 +1,7 @@
 // ═══════ CONFIG ═══════
-const API_BASE = '/api';
+const API_BASE = (location.hostname.includes('github.io')
+  ? 'https://myainow.org/api'
+  : '/api');
 const stripe = Stripe('pk_live_51Sgudg0bEpBmBdaFT6XSUmZzaZeuY9auHt9nc25dryS8UI14UhSwkWbyPMJz7PDgpnam85v31mSqbBY65UgN3SAK00NidAEYtq');
 let elements;
 let card;
