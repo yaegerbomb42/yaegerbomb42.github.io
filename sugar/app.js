@@ -6,7 +6,7 @@
 (() => {
   "use strict";
 
-  const API = (location.hostname.endsWith("github.io") ? "https://sugar.yaeger.info" : "");
+  const API = (location.hostname.endsWith("github.io") ? "https://sugar.147-224-158-118.sslip.io" : "");
 const USERS = ["alex", "julie", "jimmy", "christine", "gregg", "tom", "valentina"];
 const AVATARS = ["avatar-0", "avatar-1", "avatar-2", "avatar-3", "avatar-4", "avatar-5", "avatar-6"];
 
