@@ -338,7 +338,15 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+      // Fallback if CDN fails or blocked
+      if (typeof io === 'undefined') {
+        const s = document.createElement('script');
+        s.src = '/socket.io/socket.io.js';
+        document.head.appendChild(s);
+      }
+    </script>
 </head>
 <body>
 
@@ -535,8 +543,19 @@ const PLAYER_COLORS = [
 ];
 
 let socket = null;
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const serverOrigin = isLocal ? (window.location.port === '5173' || window.location.port === '4173' ? 'http://localhost:3003' : window.location.origin) : 'https://gamewithfam.com';
+
 if (typeof io !== 'undefined') {
-    socket = io('/bro-vs-bro');
+    try {
+        socket = io(`${serverOrigin}/bro-vs-bro`, {
+            transports: ['websocket', 'polling'],
+            timeout: 5000,
+            reconnectionAttempts: 3
+        });
+    } catch(err) {
+        console.warn('Socket init failed, running in offline skirmish mode', err);
+    }
 }
 
 // --- ENTITY FACTORIES ---
@@ -672,20 +691,66 @@ window.addEventListener('mousedown', e => {
 });
 
 // --- UI / CONNECTING ---
+let hasJoined = false;
+
+function launchSkirmishMode(name) {
+    if (hasJoined) return;
+    hasJoined = true;
+    myId = 'local_bro_' + Math.random().toString(36).substring(2, 7);
+    createShip(myId, name, Math.floor(Math.random() * PLAYER_COLORS.length), true);
+    players[myId].mesh.position.set((Math.random() - 0.5) * 60, 2, (Math.random() - 0.5) * 60);
+    document.getElementById('p1Name').innerText = name;
+    document.getElementById('screens').classList.add('hidden');
+    document.getElementById('ui-layer').classList.remove('hidden');
+    gameActive = true;
+
+    // Spawn 2 practice drone bots if offline skirmish
+    spawnPracticeBots();
+}
+
+function spawnPracticeBots() {
+    const botNames = ['BOT_BLASTER', 'GRID_HUNTER', 'NEON_VIPER'];
+    botNames.forEach((bName, idx) => {
+        const botId = 'drone_' + idx;
+        const bot = createShip(botId, bName, (idx + 1) * 2, false);
+        bot.mesh.position.set((idx - 1) * 35, 2, -40 + idx * 15);
+        bot.score = 50 * (idx + 1);
+
+        // Simple wandering drone logic
+        setInterval(() => {
+            if (!gameActive || !players[botId] || isDead) return;
+            const b = players[botId];
+            if (b.health <= 0) return;
+            // slowly face towards center or player
+            if (players[myId]) {
+                const target = players[myId].mesh.position;
+                b.mesh.lookAt(target.x, 2, target.z);
+                b.mesh.translateZ(0.25);
+            }
+        }, 100);
+    });
+}
+
 document.getElementById('joinBtn').addEventListener('click', () => {
     const name = document.getElementById('playerName').value.trim() || "BRO";
     AudioEngine.init();
     
-    if (socket) {
+    if (socket && socket.connected) {
         document.getElementById('statusText').innerText = "CALIBRATING PILOT LINK...";
         socket.emit('join', { name });
+    } else if (socket) {
+        document.getElementById('statusText').innerText = "CONNECTING TO SERVERS...";
+        socket.emit('join', { name });
+
+        // If not connected within 2.5s, fall back cleanly to local skirmish
+        setTimeout(() => {
+            if (!hasJoined && (!socket || !socket.connected)) {
+                console.log('Socket server unreachable or slow, launching skirmish mode.');
+                launchSkirmishMode(name);
+            }
+        }, 2500);
     } else {
-        // Mock fallback
-        myId = 'mock_p1';
-        createShip(myId, name, 0, true);
-        document.getElementById('screens').classList.add('hidden');
-        document.getElementById('ui-layer').classList.remove('hidden');
-        gameActive = true;
+        launchSkirmishMode(name);
     }
 });
 
