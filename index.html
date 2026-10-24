@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeger — Cloud Fleet Portal</title>
+  <title>yaeger — Fleet Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
@@ -18,10 +18,7 @@
       --red: #E31E24;
       --yellow: #FFDD00;
       --blue: #0055A5;
-      --light-blue: #1E78D2;
-      --teal: #008B8B;
       --green: #008A3C;
-      --concrete: #E8E6E3;
       --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -45,7 +42,6 @@
       background-size: auto, auto, 48px 48px, 48px 48px;
     }
 
-    /* Bauhaus Top Color Ribbon */
     .bauhaus-ribbon {
       height: 8px;
       display: flex;
@@ -59,7 +55,7 @@
 
     header {
       padding: 30px 24px 20px;
-      max-width: 1240px;
+      max-width: 1000px;
       margin: 0 auto;
       width: 100%;
       display: flex;
@@ -127,42 +123,9 @@
       50% { opacity: 0.5; transform: scale(1.2); }
     }
 
-    .search-container {
-      margin-top: 4px;
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      background: #FFFFFF;
-      border: 2px solid #111111;
-      box-shadow: 4px 4px 0 #111111;
-      padding: 14px 20px 14px 46px;
-      color: #111111;
-      font-size: 15px;
-      font-family: var(--font-mono);
-      font-weight: 600;
-      transition: all 0.15s;
-    }
-
-    .search-input:focus {
-      outline: none;
-      background: #FFFFFF;
-      box-shadow: 6px 6px 0 var(--red);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #111111;
-      font-size: 16px;
-    }
-
     main {
       flex: 1;
-      max-width: 1240px;
+      max-width: 1000px;
       width: 100%;
       margin: 0 auto;
       padding: 10px 24px 60px;
@@ -190,76 +153,75 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
     }
 
     .card {
-      background: #FFFFFF;
-      border: 2px solid #111111;
-      box-shadow: 5px 5px 0 #111111;
-      padding: 22px;
-      text-decoration: none;
-      color: #111111;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      box-shadow: 4px 4px 0 var(--border);
+      padding: 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.15s ease-out;
+      text-decoration: none;
+      color: inherit;
       position: relative;
+      transition: all 0.15s cubic-bezier(0.2, 0, 0, 1);
+      cursor: pointer;
+      min-height: 200px;
     }
 
     .card:hover {
-      background: #FFFDF0;
-      transform: translate(-2px, -2px);
-      box-shadow: 8px 8px 0 var(--card-accent, #111111);
+      transform: translate(-3px, -3px);
+      background: var(--surface-hover);
+      box-shadow: 7px 7px 0 var(--card-accent, #111111);
     }
 
     .card-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .card-icon {
-      font-size: 26px;
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
+      background: #FFFFFF;
+      border: 2px solid #111111;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #F4F2EF;
-      border: 2px solid #111111;
+      font-size: 20px;
       box-shadow: 2px 2px 0 #111111;
     }
 
     .card-hotkey {
       font-family: var(--font-mono);
       font-size: 11px;
-      font-weight: 800;
-      color: #111111;
-      background: var(--yellow);
+      font-weight: 700;
+      background: #111111;
+      color: #FFFFFF;
       padding: 2px 8px;
-      border: 2px solid #111111;
-      box-shadow: 2px 2px 0 #111111;
+      border-radius: 2px;
     }
 
     .card-title {
-      font-size: 19px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: -0.5px;
       margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #111111;
     }
 
     .card-desc {
-      font-size: 13.5px;
-      color: #444444;
+      font-size: 14px;
+      color: var(--text-muted);
       line-height: 1.5;
-      margin-bottom: 18px;
       font-weight: 500;
     }
 
@@ -267,106 +229,71 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 2px dashed #E0E0E0;
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: #555555;
-      border-top: 2px solid #111111;
-      padding-top: 12px;
+      font-size: 11px;
+      font-weight: 600;
     }
 
     .card-path {
       color: #111111;
-      font-weight: 700;
-      background: #F4F2EF;
-      padding: 2px 6px;
+      background: #E8E6E3;
+      padding: 3px 8px;
       border: 1px solid #111111;
     }
 
     .card-backend {
-      font-size: 11px;
-      font-weight: 600;
-      color: #111111;
+      color: var(--text-muted);
     }
 
     footer {
       border-top: 2px solid #111111;
       background: #FFFFFF;
-      padding: 24px;
+      padding: 16px 24px;
       text-align: center;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      color: #111111;
-    }
-
-    .external-badge {
-      font-size: 10px;
-      font-weight: 800;
-      background: var(--red);
-      color: #FFFFFF;
-      padding: 2px 6px;
-      border: 1px solid #111111;
-      margin-left: 6px;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
-
-  <!-- Top Bauhaus Accent Strip -->
   <div class="bauhaus-ribbon">
     <div class="ribbon-black"></div>
     <div class="ribbon-red"></div>
     <div class="ribbon-yellow"></div>
     <div class="ribbon-blue"></div>
-    <div class="ribbon-black"></div>
   </div>
 
   <header>
     <div class="top-bar">
       <div class="logo-container">
-        <div class="logo-badge">PORTAL</div>
-        <h1>yaeger</h1>
+        <span class="logo-badge">SYSTEM</span>
+        <h1>Fleet Portal</h1>
       </div>
       <div class="system-status">
-        <div class="status-ping"></div>
-        <span>VPS BACKEND LOADER ACTIVE</span>
+        <span class="status-ping"></span>
+        <span>FLEET ONLINE</span>
       </div>
-    </div>
-    <div class="search-container">
-      <span class="search-icon">⚡</span>
-      <input type="text" id="filter-input" class="search-input" placeholder="Type to filter apps (or press hotkeys 1-9)..." autocomplete="off" />
     </div>
   </header>
 
   <main>
-    <div class="section-title">ACTIVE FLEET APPLICATIONS</div>
-    <div class="grid" id="apps-grid">
+    <div class="section-title">Active Applications (2)</div>
 
-      <!-- 1. Aria -->
-      <a href="./aria/" class="card" style="--card-accent: #8b5cf6;" data-name="aria tasks productivity workflow planner">
+    <div class="grid">
+      <!-- 1. GameWithFam -->
+      <a href="./game/" class="card" style="--card-accent: #ec4899;">
         <div class="card-top">
-          <div class="card-icon">✦</div>
+          <div class="card-icon">🎮</div>
           <span class="card-hotkey">1</span>
         </div>
         <div>
-          <h2 class="card-title">Aria</h2>
-          <p class="card-desc">Dark-mode personal productivity suite, task flow coordination, and priority engine.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/aria</span>
-          <span class="card-backend">github.io/aria</span>
-        </div>
-      </a>
-
-      <!-- 2. Game -->
-      <a href="./game/" class="card" style="--card-accent: #ec4899;" data-name="game gamewithfam party arcade multiplayer bro vs bro neon grid star-rider stickshot dweebs">
-        <div class="card-top">
-          <div class="card-icon">🎮</div>
-          <span class="card-hotkey">2</span>
-        </div>
-        <div>
           <h2 class="card-title">GameWithFam</h2>
-          <p class="card-desc">Real-time arcade suite featuring Bro vs Bro: Neon Grid, Star-Rider, StickShot Co-Op, and DWEEBS Brawl.</p>
+          <p class="card-desc">Multiplayer arcade and real-time family party games suite with live WebSocket servers.</p>
         </div>
         <div class="card-bottom">
           <span class="card-path">/game</span>
@@ -374,128 +301,33 @@
         </div>
       </a>
 
-      <!-- 3. Notes -->
-      <a href="./notes/" class="card" style="--card-accent: #10b981;" data-name="notes quick-capture vault quadrant security documents markdown">
-        <div class="card-top">
-          <div class="card-icon">📝</div>
-          <span class="card-hotkey">3</span>
-        </div>
-        <div>
-          <h2 class="card-title">Notes</h2>
-          <p class="card-desc">Personal quick-capture vault protected with quadrant-click security & SQLite persistence.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/notes</span>
-          <span class="card-backend">github.io/notes</span>
-        </div>
-      </a>
-
-      <!-- 4. JustGoals -->
-      <a href="./goals/" class="card" style="--card-accent: #f59e0b;" data-name="goals justgoals habit tracker productivity achievements gamification streak">
-        <div class="card-top">
-          <div class="card-icon">🎯</div>
-          <span class="card-hotkey">4</span>
-        </div>
-        <div>
-          <h2 class="card-title">JustGoals</h2>
-          <p class="card-desc">Comprehensive cross-device goal tracking, habit streak engine, and gamified progress trees.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/goals</span>
-          <span class="card-backend">github.io/goals</span>
-        </div>
-      </a>
-
-      <!-- 5. Bucket -->
-      <a href="./bucket/" class="card" style="--card-accent: #3b82f6;" data-name="bucket bucketlist goals dreams milestones">
-        <div class="card-top">
-          <div class="card-icon">🪣</div>
-          <span class="card-hotkey">5</span>
-        </div>
-        <div>
-          <h2 class="card-title">Bucket</h2>
-          <p class="card-desc">Interactive Goal and Bucket List manager with celebratory confetti & persistent storage.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/bucket</span>
-          <span class="card-backend">github.io/bucket</span>
-        </div>
-      </a>
-
-      <!-- 6. Roadmap -->
-      <a href="./roadmap/" class="card" style="--card-accent: #06b6d4;" data-name="roadmap planning milestones architecture release board">
-        <div class="card-top">
-          <div class="card-icon">🗺️</div>
-          <span class="card-hotkey">6</span>
-        </div>
-        <div>
-          <h2 class="card-title">Roadmap</h2>
-          <p class="card-desc">Architecture and fleet release tracking board hosted statically with live progress views.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-path">/roadmap</span>
-          <span class="card-backend">github.io/roadmap</span>
-        </div>
-      </a>
-
-      <!-- 7. Omnexx (Dedicated Subagent Space) -->
-      <a href="https://omnexx.org" target="_blank" rel="noopener noreferrer" class="card" style="--card-accent: #e11d48;" data-name="omnexx coordination lock server agent orchestration">
+      <!-- 2. Omnexx -->
+      <a href="./omnexx/" class="card" style="--card-accent: #e11d48;">
         <div class="card-top">
           <div class="card-icon">🪐</div>
-          <span class="card-hotkey">O</span>
+          <span class="card-hotkey">2</span>
         </div>
         <div>
-          <h2 class="card-title">Omnexx <span class="external-badge">omnexx.org</span></h2>
-          <p class="card-desc">Universal Sub-Agent Coordination Space & dynamic lock server for multi-agent workflows.</p>
+          <h2 class="card-title">Omnexx</h2>
+          <p class="card-desc">Universal Sub-Agent Coordination Space, CLI landing portal and dynamic lock server.</p>
         </div>
         <div class="card-bottom">
-          <span class="card-path">omnexx.org</span>
-          <span class="card-backend">Port 8116 (Dedicated)</span>
+          <span class="card-path">/omnexx</span>
+          <span class="card-backend">omnexx.org (Port 8116)</span>
         </div>
       </a>
-
     </div>
   </main>
 
   <footer>
-    yaeger infrastructure &middot; frontends hosted on github pages &middot; backend loader: 147.224.158.118
+    yaeger infrastructure &middot; frontends on github pages &middot; backend: 147.224.158.118
   </footer>
 
   <script>
-    const filterInput = document.getElementById('filter-input');
-    const cards = document.querySelectorAll('.card');
-
-    filterInput.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      cards.forEach(card => {
-        const text = (card.getAttribute('data-name') || '') + ' ' + card.innerText.toLowerCase();
-        card.style.display = text.includes(q) ? 'flex' : 'none';
-      });
-    });
-
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return;
-      const keyMap = {
-        '1': './aria/',
-        '2': './game/',
-        '3': './notes/',
-        '4': './goals/',
-        '5': './bucket/',
-        '6': './roadmap/',
-        'o': 'https://omnexx.org',
-        'O': 'https://omnexx.org'
-      };
-      if (keyMap[e.key]) {
-        if (keyMap[e.key].startsWith('http')) {
-          window.open(keyMap[e.key], '_blank');
-        } else {
-          window.location.href = keyMap[e.key];
-        }
-      }
-      if (e.key === '/') {
-        e.preventDefault();
-        filterInput.focus();
-      }
+      if (e.key === '1') window.location.href = './game/';
+      if (e.key === '2' || e.key.toLowerCase() === 'o') window.location.href = './omnexx/';
     });
   </script>
 </body>
