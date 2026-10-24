@@ -1,0 +1,13 @@
+const { buildEnv } = require('./harness');
+const env = buildEnv({ neonSurvivorsRunHistory: JSON.stringify([{ t: 1760000000000, outcome: 'victory', time: 12, level: 2, kills: 3 }]) });
+const g = env.game();
+console.log('killEnemy:', typeof g.killEnemy, 'rh:', g.runHistory.length, 'masterVol:', g.settings.masterVol);
+env.els['start-btn'].dispatch('click');
+env.step(2);
+g.levelUp();
+const t0 = g.levelupTimer;
+env.step(30);
+console.log('timer:', t0, '->', g.levelupTimer, 'open:', g.levelupOpen);
+g.levelUp();
+env.step(600);
+console.log('after timeout: open:', g.levelupOpen, 'pending:', g.pendingLevels);
