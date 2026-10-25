@@ -8,12 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --cyan-glow: #00f0ff;
-      --pink-glow: #ff0077;
-      --yellow-glow: #ffdd00;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -30,7 +24,6 @@
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     }
 
-    /* Fullscreen Viewport Wrapper */
     .viewport {
       position: relative;
       width: 100vw;
@@ -42,7 +35,7 @@
       background-color: #030408;
     }
 
-    /* Fixed Aspect Ratio Stage matching 1024x571 image ratio */
+    /* Fixed Aspect Ratio Stage matching 1024x571 reference image */
     .stage {
       position: relative;
       width: 100%;
@@ -53,7 +46,6 @@
       margin: auto;
     }
 
-    /* Background Artwork */
     .hero-art {
       width: 100%;
       height: 100%;
@@ -62,7 +54,7 @@
       pointer-events: none;
     }
 
-    /* Ambient particles & lighting canvas overlay */
+    /* Ambient particles canvas */
     #ambient-canvas {
       position: absolute;
       inset: 0;
@@ -70,156 +62,120 @@
       height: 100%;
       pointer-events: none;
       mix-blend-mode: screen;
-      opacity: 0.8;
+      opacity: 0.85;
+      z-index: 5;
     }
 
-    /* Interactive Portals Overlay */
-    .portal-hotspot {
+    /* Full-Half Interactive Click Zones */
+    .half-zone {
       position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
       text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
-      border-radius: 18px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       outline: none;
       z-index: 10;
+      display: block;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* OMNEXX Portal Zone */
-    .portal-omnexx {
-      top: 20%;
-      left: 7.5%;
-      width: 25.5%;
-      height: 62%;
+    /* Left Half: OMNEXX */
+    .zone-left {
+      left: 0;
     }
 
-    .portal-omnexx .glow-frame {
+    /* Right Half: DWEEBS */
+    .zone-right {
+      right: 0;
+    }
+
+    /* Glow overlays for each half */
+    .half-glow {
       position: absolute;
-      inset: -4px;
-      border-radius: 20px;
-      border: 2px solid rgba(0, 240, 255, 0.4);
-      background: radial-gradient(circle at center, rgba(0, 240, 255, 0.12), transparent 70%);
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.3), inset 0 0 30px rgba(0, 240, 255, 0.2);
+      inset: 0;
+      pointer-events: none;
       opacity: 0;
-      transition: all 0.35s ease;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .zone-left .half-glow {
+      background: radial-gradient(circle at 30% 50%, rgba(0, 240, 255, 0.22) 0%, rgba(0, 119, 254, 0.12) 45%, transparent 75%);
+      box-shadow: inset 10px 0 50px rgba(0, 240, 255, 0.25);
+    }
+
+    .zone-right .half-glow {
+      background: radial-gradient(circle at 70% 50%, rgba(255, 0, 119, 0.22) 0%, rgba(255, 221, 0, 0.12) 45%, transparent 75%);
+      box-shadow: inset -10px 0 50px rgba(255, 0, 119, 0.25);
+    }
+
+    /* Subtle active/hover beam line indicator */
+    .portal-beam {
+      position: absolute;
+      top: 15%;
+      bottom: 12%;
+      width: 32%;
+      border-radius: 28px;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: none;
     }
 
-    .portal-omnexx:hover .glow-frame,
-    .portal-omnexx:focus .glow-frame {
+    .zone-left .portal-beam {
+      left: 8%;
+      border: 2px solid rgba(0, 240, 255, 0.7);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.6), inset 0 0 40px rgba(0, 240, 255, 0.3);
+    }
+
+    .zone-right .portal-beam {
+      right: 8%;
+      border: 2px solid rgba(255, 0, 119, 0.7);
+      box-shadow: 0 0 55px rgba(255, 0, 119, 0.65), 0 0 35px rgba(255, 221, 0, 0.4), inset 0 0 40px rgba(255, 0, 119, 0.3);
+    }
+
+    /* Hover & Focus states */
+    .zone-left:hover .half-glow,
+    .zone-left:focus .half-glow {
       opacity: 1;
-      border-color: rgba(0, 240, 255, 0.9);
-      box-shadow: 0 0 45px rgba(0, 240, 255, 0.7), inset 0 0 50px rgba(0, 240, 255, 0.4);
-      transform: scale(1.02);
     }
-
-    /* OMNEXX Enter Button Overlay */
-    .btn-enter {
-      position: absolute;
-      bottom: 12.8%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, #02b0e8 0%, #0066aa 100%);
-      color: #ffffff;
-      font-size: clamp(10px, 1.4vw, 15px);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding: 6px 20px;
-      border-radius: 999px;
-      border: 2px solid #55e6ff;
-      box-shadow: 0 0 16px rgba(0, 240, 255, 0.7), inset 0 1px 3px rgba(255,255,255,0.6);
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-    }
-
-    .portal-omnexx:hover .btn-enter {
-      transform: translateX(-50%) scale(1.1);
-      box-shadow: 0 0 28px rgba(0, 240, 255, 1), inset 0 1px 4px rgba(255,255,255,0.9);
-      background: linear-gradient(180deg, #1ce3ff 0%, #0088dd 100%);
-    }
-
-    /* DWEEBS / GAME Portal Zone */
-    .portal-dweebs {
-      top: 22%;
-      right: 7.5%;
-      width: 26%;
-      height: 61%;
-    }
-
-    .portal-dweebs .glow-frame {
-      position: absolute;
-      inset: -4px;
-      border-radius: 20px;
-      border: 2px solid rgba(255, 0, 119, 0.4);
-      background: radial-gradient(circle at center, rgba(255, 221, 0, 0.15), rgba(255, 0, 119, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 25px rgba(255, 0, 119, 0.35), inset 0 0 30px rgba(255, 221, 0, 0.2);
-      opacity: 0;
-      transition: all 0.35s ease;
-      pointer-events: none;
-    }
-
-    .portal-dweebs:hover .glow-frame,
-    .portal-dweebs:focus .glow-frame {
+    .zone-left:hover .portal-beam,
+    .zone-left:focus .portal-beam {
       opacity: 1;
-      border-color: rgba(255, 221, 0, 0.9);
-      box-shadow: 0 0 50px rgba(255, 0, 119, 0.8), 0 0 30px rgba(255, 221, 0, 0.6), inset 0 0 45px rgba(255, 0, 119, 0.4);
-      transform: scale(1.02);
+      transform: scale(1.01);
     }
 
-    /* DWEEBS Play Button Overlay */
-    .btn-play {
-      position: absolute;
-      bottom: 12.8%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, #ff1475 0%, #d80055 100%);
-      color: #ffffff;
-      font-size: clamp(10px, 1.4vw, 15px);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding: 6px 22px;
-      border-radius: 999px;
-      border: 2px solid #ff77b3;
-      box-shadow: 0 0 16px rgba(255, 0, 119, 0.8), inset 0 1px 3px rgba(255,255,255,0.7);
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    .zone-right:hover .half-glow,
+    .zone-right:focus .half-glow {
+      opacity: 1;
+    }
+    .zone-right:hover .portal-beam,
+    .zone-right:focus .portal-beam {
+      opacity: 1;
+      transform: scale(1.01);
     }
 
-    .portal-dweebs:hover .btn-play {
-      transform: translateX(-50%) scale(1.1);
-      box-shadow: 0 0 30px rgba(255, 0, 119, 1), 0 0 15px rgba(255, 221, 0, 0.8), inset 0 1px 4px rgba(255,255,255,0.9);
-      background: linear-gradient(180deg, #ff388e 0%, #ee0060 100%);
-    }
-
-    /* Hotkey helper pill in the center top */
+    /* Hotkey helper pill */
     .hotkey-bar {
       position: absolute;
       bottom: 14px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(10, 12, 18, 0.7);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(10, 12, 18, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 999px;
-      padding: 6px 16px;
+      padding: 6px 18px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 18px;
       font-size: 11px;
       color: #94a3b8;
       font-family: 'JetBrains Mono', monospace;
       letter-spacing: 0.5px;
       z-index: 20;
+      pointer-events: none;
     }
 
     .hotkey-bar kbd {
@@ -241,7 +197,7 @@
 <body>
   <div class="viewport">
     <div class="stage">
-      <!-- Main Scene Visual Artwork -->
+      <!-- Reference Scene Image -->
       <img
         src="yaeger-portal-hero.jpg"
         alt="Yaeger's Portal - Omnexx and Dweebs"
@@ -249,39 +205,35 @@
         loading="eager"
       />
 
-      <!-- Atmospheric Neon Particle Canvas Overlay -->
+      <!-- Floating Neon Particles -->
       <canvas id="ambient-canvas"></canvas>
 
-      <!-- 1. OMNEXX Portal Click Zone -->
-      <a href="./omnexx/" class="portal-hotspot portal-omnexx" aria-label="Enter Omnexx">
-        <div class="glow-frame"></div>
-        <div class="btn-enter">
-          <span>Enter</span>
-        </div>
+      <!-- Left Half: Clickable Omnexx Zone -->
+      <a href="./omnexx/" class="half-zone zone-left" aria-label="Enter Omnexx (Left Side)">
+        <div class="half-glow"></div>
+        <div class="portal-beam"></div>
       </a>
 
-      <!-- 2. DWEEBS / GAME Portal Click Zone -->
-      <a href="./game/" class="portal-hotspot portal-dweebs" aria-label="Play Games and Dweebs">
-        <div class="glow-frame"></div>
-        <div class="btn-play">
-          <span>Play</span>
-        </div>
+      <!-- Right Half: Clickable Dweebs & Games Zone -->
+      <a href="./game/" class="half-zone zone-right" aria-label="Play Dweebs and Games (Right Side)">
+        <div class="half-glow"></div>
+        <div class="portal-beam"></div>
       </a>
     </div>
 
-    <!-- Minimal Hotkey helper -->
+    <!-- Hotkey Indicator -->
     <div class="hotkey-bar">
       <div class="hotkey-item">
-        <kbd>1</kbd> <span>Omnexx</span>
+        <kbd>1</kbd> <span>Omnexx (Left)</span>
       </div>
       <div class="hotkey-item">
-        <kbd>2</kbd> <span>Dweebs & Games</span>
+        <kbd>2</kbd> <span>Dweebs (Right)</span>
       </div>
     </div>
   </div>
 
   <script>
-    // Keyboard navigation
+    // Keyboard shortcuts
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === '1' || e.key.toLowerCase() === 'o') {
@@ -311,11 +263,16 @@
       reset() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.8;
+        this.size = Math.random() * 2.2 + 0.8;
         this.vx = (Math.random() - 0.5) * 0.4;
         this.vy = -Math.random() * 0.6 - 0.2;
         this.alpha = Math.random() * 0.6 + 0.2;
-        this.color = Math.random() > 0.5 ? '#00f0ff' : (Math.random() > 0.5 ? '#ff0077' : '#ffdd00');
+        // Cyan on left, magenta/yellow on right
+        if (this.x < canvas.width * 0.5) {
+          this.color = Math.random() > 0.3 ? '#00f0ff' : '#0077fe';
+        } else {
+          this.color = Math.random() > 0.4 ? '#ff0077' : '#ffdd00';
+        }
       }
       update() {
         this.x += this.vx;
