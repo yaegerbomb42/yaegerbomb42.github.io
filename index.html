@@ -6,326 +6,352 @@
   <title>yaeger's</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090a0f;
-      --card-bg: rgba(22, 25, 35, 0.72);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-border-hover: rgba(255, 255, 255, 0.22);
-      --text: #f3f4f6;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --accent-game: #ec4899;
-      --accent-omnexx: #6366f1;
-      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --cyan-glow: #00f0ff;
+      --pink-glow: #ff0077;
+      --yellow-glow: #ffdd00;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--font-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow-x: hidden;
-      background-image:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.18), transparent 70%),
-        radial-gradient(ellipse 60% 40% at 85% 60%, rgba(236, 72, 153, 0.12), transparent 60%),
-        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: auto, auto, 48px 48px, 48px 48px;
-    }
-
-    .top-glow {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-    }
-
-    header {
-      padding: 64px 24px 32px;
-      max-width: 960px;
-      margin: 0 auto;
+    html, body {
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 16px;
+      height: 100%;
+      overflow: hidden;
+      background-color: #030408;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     }
 
-    .headline-wrap {
-      display: inline-flex;
+    /* Fullscreen Viewport Wrapper */
+    .viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
       align-items: center;
       justify-content: center;
-      color: #ffffff;
-      width: 100%;
-      max-width: 320px;
-      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.15));
-      transition: transform 0.25s ease;
-    }
-
-    .headline-wrap:hover {
-      transform: scale(1.02);
-    }
-
-    .headline-svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .subtitle {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0.2px;
-    }
-
-    main {
-      flex: 1;
-      max-width: 960px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 24px 72px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 32px 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      background-color: #030408;
     }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(circle at 80% 20%, var(--glow, rgba(255, 255, 255, 0.08)), transparent 60%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+    /* Fixed Aspect Ratio Stage matching 1024x571 image ratio */
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 179.33vh; /* 1024 / 571 = ~1.7933 */
+      max-height: 55.76vw; /* 571 / 1024 = ~0.5576 */
+      aspect-ratio: 1024 / 571;
+      margin: auto;
+    }
+
+    /* Background Artwork */
+    .hero-art {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
       pointer-events: none;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--card-border-hover);
-      box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.45);
+    /* Ambient particles & lighting canvas overlay */
+    #ambient-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0.8;
     }
 
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card-gamewithfam {
-      --glow: rgba(236, 72, 153, 0.18);
-    }
-
-    .card-omnexx {
-      --glow: rgba(99, 102, 241, 0.2);
-    }
-
-    .card-top {
+    /* Interactive Portals Overlay */
+    .portal-hotspot {
+      position: absolute;
+      text-decoration: none;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .card-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      transition: transform 0.2s ease;
+      cursor: pointer;
+      border-radius: 18px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+      z-index: 10;
     }
 
-    .card:hover .card-icon {
-      transform: scale(1.08);
+    /* OMNEXX Portal Zone */
+    .portal-omnexx {
+      top: 20%;
+      left: 7.5%;
+      width: 25.5%;
+      height: 62%;
     }
 
-    .card-badge {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-dim);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 4px 10px;
-      border-radius: 999px;
-      letter-spacing: 0.5px;
+    .portal-omnexx .glow-frame {
+      position: absolute;
+      inset: -4px;
+      border-radius: 20px;
+      border: 2px solid rgba(0, 240, 255, 0.4);
+      background: radial-gradient(circle at center, rgba(0, 240, 255, 0.12), transparent 70%);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.3), inset 0 0 30px rgba(0, 240, 255, 0.2);
+      opacity: 0;
+      transition: all 0.35s ease;
+      pointer-events: none;
     }
 
-    .card-title {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+    .portal-omnexx:hover .glow-frame,
+    .portal-omnexx:focus .glow-frame {
+      opacity: 1;
+      border-color: rgba(0, 240, 255, 0.9);
+      box-shadow: 0 0 45px rgba(0, 240, 255, 0.7), inset 0 0 50px rgba(0, 240, 255, 0.4);
+      transform: scale(1.02);
+    }
+
+    /* OMNEXX Enter Button Overlay */
+    .btn-enter {
+      position: absolute;
+      bottom: 12.8%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #02b0e8 0%, #0066aa 100%);
       color: #ffffff;
-      margin-bottom: 12px;
-    }
-
-    .card-desc {
-      font-size: 15px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      font-weight: 400;
-      margin-bottom: 28px;
-    }
-
-    .card-bottom {
+      font-size: clamp(10px, 1.4vw, 15px);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 6px 20px;
+      border-radius: 999px;
+      border: 2px solid #55e6ff;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.7), inset 0 1px 3px rgba(255,255,255,0.6);
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      gap: 6px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
 
-    .card-action {
-      font-size: 14px;
-      font-weight: 600;
+    .portal-omnexx:hover .btn-enter {
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 0 28px rgba(0, 240, 255, 1), inset 0 1px 4px rgba(255,255,255,0.9);
+      background: linear-gradient(180deg, #1ce3ff 0%, #0088dd 100%);
+    }
+
+    /* DWEEBS / GAME Portal Zone */
+    .portal-dweebs {
+      top: 22%;
+      right: 7.5%;
+      width: 26%;
+      height: 61%;
+    }
+
+    .portal-dweebs .glow-frame {
+      position: absolute;
+      inset: -4px;
+      border-radius: 20px;
+      border: 2px solid rgba(255, 0, 119, 0.4);
+      background: radial-gradient(circle at center, rgba(255, 221, 0, 0.15), rgba(255, 0, 119, 0.1) 60%, transparent 80%);
+      box-shadow: 0 0 25px rgba(255, 0, 119, 0.35), inset 0 0 30px rgba(255, 221, 0, 0.2);
+      opacity: 0;
+      transition: all 0.35s ease;
+      pointer-events: none;
+    }
+
+    .portal-dweebs:hover .glow-frame,
+    .portal-dweebs:focus .glow-frame {
+      opacity: 1;
+      border-color: rgba(255, 221, 0, 0.9);
+      box-shadow: 0 0 50px rgba(255, 0, 119, 0.8), 0 0 30px rgba(255, 221, 0, 0.6), inset 0 0 45px rgba(255, 0, 119, 0.4);
+      transform: scale(1.02);
+    }
+
+    /* DWEEBS Play Button Overlay */
+    .btn-play {
+      position: absolute;
+      bottom: 12.8%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #ff1475 0%, #d80055 100%);
       color: #ffffff;
-      display: inline-flex;
+      font-size: clamp(10px, 1.4vw, 15px);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 6px 22px;
+      border-radius: 999px;
+      border: 2px solid #ff77b3;
+      box-shadow: 0 0 16px rgba(255, 0, 119, 0.8), inset 0 1px 3px rgba(255,255,255,0.7);
+      transition: all 0.2s ease;
+      display: flex;
       align-items: center;
       gap: 6px;
-      transition: gap 0.2s ease, color 0.2s ease;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
 
-    .card:hover .card-action {
-      gap: 10px;
+    .portal-dweebs:hover .btn-play {
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 0 30px rgba(255, 0, 119, 1), 0 0 15px rgba(255, 221, 0, 0.8), inset 0 1px 4px rgba(255,255,255,0.9);
+      background: linear-gradient(180deg, #ff388e 0%, #ee0060 100%);
+    }
+
+    /* Hotkey helper pill in the center top */
+    .hotkey-bar {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 12, 18, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px;
+      z-index: 20;
+    }
+
+    .hotkey-bar kbd {
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .card-arrow {
-      font-size: 16px;
-      line-height: 1;
-      transition: transform 0.2s ease;
-    }
-
-    .card:hover .card-arrow {
-      transform: translateX(3px);
-    }
-
-    footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 24px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-dim);
-    }
-
-    @media (max-width: 640px) {
-      header {
-        padding: 48px 20px 24px;
-      }
-      main {
-        padding: 16px 20px 48px;
-      }
-      .card {
-        padding: 24px 20px;
-      }
+    .hotkey-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="top-glow"></div>
+  <div class="viewport">
+    <div class="stage">
+      <!-- Main Scene Visual Artwork -->
+      <img
+        src="yaeger-portal-hero.jpg"
+        alt="Yaeger's Portal - Omnexx and Dweebs"
+        class="hero-art"
+        loading="eager"
+      />
 
-  <header>
-    <div class="headline-wrap" title="yaeger's">
-      <svg class="headline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 254 42" role="img" aria-label="Yaeger">
-        <defs><clipPath id="cap"><rect x="-10" y="0" width="270" height="30"></rect></clipPath></defs>
-        <g clip-path="url(#cap)" fill="none" stroke="currentColor" stroke-width="3.5" stroke-miterlimit="10">
-          <path d="M-0.2 -3 L16 14.5 L32.2 -3 M16 14.5 V33"></path>
-          <path transform="translate(42 0)" d="M0.4 33 L16 3.8 L31.6 33"></path>
-          <path transform="translate(84 0)" d="M1.75 0 V30 M0 1.75 H32 M0 15 H28 M0 28.25 H32"></path>
-          <path transform="translate(126 0)" d="M32 1.75 H1.75 V28.25 H30.25 V15 H17"></path>
-          <path transform="translate(168 0)" d="M1.75 0 V30 M0 1.75 H32 M0 15 H28 M0 28.25 H32"></path>
-          <path transform="translate(210 0)" d="M1.75 30 V1.75 H30.25 V15 H1.75 M14 15 L31.3 32"></path>
-        </g>
-      </svg>
-    </div>
-    <p class="subtitle">Welcome to yaeger's place</p>
-  </header>
+      <!-- Atmospheric Neon Particle Canvas Overlay -->
+      <canvas id="ambient-canvas"></canvas>
 
-  <main>
-    <div class="grid">
-      <!-- GameWithFam -->
-      <a href="./game/" class="card card-gamewithfam">
-        <div>
-          <div class="card-top">
-            <div class="card-icon">🎮</div>
-            <span class="card-badge">Press 1</span>
-          </div>
-          <h2 class="card-title">GameWithFam</h2>
-          <p class="card-desc">Party games and multiplayer arcade challenges designed to play together in real time.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-action">Play now <span class="card-arrow">→</span></span>
+      <!-- 1. OMNEXX Portal Click Zone -->
+      <a href="./omnexx/" class="portal-hotspot portal-omnexx" aria-label="Enter Omnexx">
+        <div class="glow-frame"></div>
+        <div class="btn-enter">
+          <span>Enter</span>
         </div>
       </a>
 
-      <!-- Omnexx -->
-      <a href="./omnexx/" class="card card-omnexx">
-        <div>
-          <div class="card-top">
-            <div class="card-icon">🪐</div>
-            <span class="card-badge">Press 2</span>
-          </div>
-          <h2 class="card-title">Omnexx</h2>
-          <p class="card-desc">Interactive workspace, smart tooling, and collaborative agent platform.</p>
-        </div>
-        <div class="card-bottom">
-          <span class="card-action">Explore <span class="card-arrow">→</span></span>
+      <!-- 2. DWEEBS / GAME Portal Click Zone -->
+      <a href="./game/" class="portal-hotspot portal-dweebs" aria-label="Play Games and Dweebs">
+        <div class="glow-frame"></div>
+        <div class="btn-play">
+          <span>Play</span>
         </div>
       </a>
     </div>
-  </main>
 
-  <footer>
-    yaeger's
-  </footer>
+    <!-- Minimal Hotkey helper -->
+    <div class="hotkey-bar">
+      <div class="hotkey-item">
+        <kbd>1</kbd> <span>Omnexx</span>
+      </div>
+      <div class="hotkey-item">
+        <kbd>2</kbd> <span>Dweebs & Games</span>
+      </div>
+    </div>
+  </div>
 
   <script>
+    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if (e.key === '1') window.location.href = './game/';
-      if (e.key === '2' || e.key.toLowerCase() === 'o') window.location.href = './omnexx/';
+      if (e.key === '1' || e.key.toLowerCase() === 'o') {
+        window.location.href = './omnexx/';
+      }
+      if (e.key === '2' || e.key.toLowerCase() === 'g' || e.key.toLowerCase() === 'd') {
+        window.location.href = './game/';
+      }
     });
+
+    // Particle Canvas Animation
+    const canvas = document.getElementById('ambient-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.8;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = -Math.random() * 0.6 - 0.2;
+        this.alpha = Math.random() * 0.6 + 0.2;
+        this.color = Math.random() > 0.5 ? '#00f0ff' : (Math.random() > 0.5 ? '#ff0077' : '#ffdd00');
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+          this.reset();
+          this.y = canvas.height;
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const count = 45;
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let p of particles) {
+        p.update();
+        p.draw();
+      }
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
   </script>
 </body>
 </html>
