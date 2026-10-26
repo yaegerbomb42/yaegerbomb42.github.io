@@ -17,18 +17,26 @@
  *     asserts exactly that), and there must never be a cached opaque response if one appears:
  *     opaque responses bloat the cache, cannot be inspected, and would be replayed blindly.
  *
- * Bump CACHE_NAME on every deploy that changes the shell. Old caches are dropped in activate.
+ * Bump CACHE_VERSION on every deploy that changes the shell (the build id is appended automatically).
+ * Old caches are dropped in activate.
  */
 
-const CACHE_NAME = 'dweebs-mall-v1';
+const CACHE_VERSION = 'dweebs-mall-v2';
+// The build appends its id here (vite.config.js → precacheManifest) so every deploy gets a fresh cache.
+const BUILD_ID = 'mvpp4ulo';
+const CACHE_NAME = `${CACHE_VERSION}-${BUILD_ID}`;
 const SHELL = ['./', './index.html', './favicon.svg', './manifest.webmanifest'];
+// Every hashed build asset (JS bundle with Warfare + Rapier, CSS, fonts), injected at build time so the
+// FIRST online visit already makes the whole Mall, Dweeb Warfare included, playable offline. Before this
+// the assets were only cached when re-fetched under the worker, so a first visit was not offline-ready.
+const PRECACHE = ["./assets/index-BhOH0GLA.js","./assets/index-DguF4DIF.css","./assets/lilita-one-latin-400-normal-87r-Z-Re.woff2","./assets/nunito-cyrillic-700-normal-DP36NgGt.woff2","./assets/nunito-cyrillic-900-normal-CWPcV0_V.woff2","./assets/nunito-cyrillic-ext-700-normal-BuR0mlCG.woff2","./assets/nunito-cyrillic-ext-900-normal-BLeVovcl.woff2","./assets/nunito-latin-700-normal-Dort48En.woff2","./assets/nunito-latin-900-normal-BVB1fGs6.woff2","./assets/nunito-latin-ext-700-normal-BWeMsAzO.woff2","./assets/nunito-latin-ext-900-normal-Dllsvgjo.woff2","./assets/nunito-vietnamese-700-normal-Ch8EUCfz.woff2","./assets/nunito-vietnamese-900-normal-D6LWQAy_.woff2"];
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME)
       // individual shell entries may legitimately be missing (favicon variants); one 404
       // must not abort the whole install and leave the app with no offline story at all.
-      .then(cache => Promise.allSettled(SHELL.map(path => cache.add(path))))
+      .then(cache => Promise.allSettled([...SHELL, ...PRECACHE].map(path => cache.add(path))))
       .then(() => self.skipWaiting())
   );
 });
@@ -73,7 +81,8 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  if (url.pathname.startsWith('/assets/')) {
+  // `includes`, not `startsWith`: on GitHub Pages the app lives under /<repo>/assets/.
+  if (url.pathname.includes('/assets/')) {
     e.respondWith(
       caches.match(req).then(hit => hit || fetch(req).then(res => {
         stash(req, res);
