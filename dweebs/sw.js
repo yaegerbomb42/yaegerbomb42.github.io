@@ -23,13 +23,13 @@
 
 const CACHE_VERSION = 'dweebs-mall-v2';
 // The build appends its id here (vite.config.js → precacheManifest) so every deploy gets a fresh cache.
-const BUILD_ID = 'mvr22bxu';
+const BUILD_ID = 'mvr5u5wg';
 const CACHE_NAME = `${CACHE_VERSION}-${BUILD_ID}`;
 const SHELL = ['./', './index.html', './favicon.svg', './manifest.webmanifest'];
 // Every hashed build asset (JS bundle with Warfare + Rapier, CSS, fonts), injected at build time so the
 // FIRST online visit already makes the whole Mall, Dweeb Warfare included, playable offline. Before this
 // the assets were only cached when re-fetched under the worker, so a first visit was not offline-ready.
-const PRECACHE = ["./assets/index-CDLc5i4o.js","./assets/index-EM_9e5yG.css","./assets/lilita-one-latin-400-normal-87r-Z-Re.woff2","./assets/nunito-cyrillic-700-normal-DP36NgGt.woff2","./assets/nunito-cyrillic-900-normal-CWPcV0_V.woff2","./assets/nunito-cyrillic-ext-700-normal-BuR0mlCG.woff2","./assets/nunito-cyrillic-ext-900-normal-BLeVovcl.woff2","./assets/nunito-latin-700-normal-Dort48En.woff2","./assets/nunito-latin-900-normal-BVB1fGs6.woff2","./assets/nunito-latin-ext-700-normal-BWeMsAzO.woff2","./assets/nunito-latin-ext-900-normal-Dllsvgjo.woff2","./assets/nunito-vietnamese-700-normal-Ch8EUCfz.woff2","./assets/nunito-vietnamese-900-normal-D6LWQAy_.woff2"];
+const PRECACHE = ["./assets/index-B3aqYMPh.js","./assets/index-hzI6S09J.css","./assets/lilita-one-latin-400-normal-87r-Z-Re.woff2","./assets/nunito-cyrillic-700-normal-DP36NgGt.woff2","./assets/nunito-cyrillic-900-normal-CWPcV0_V.woff2","./assets/nunito-cyrillic-ext-700-normal-BuR0mlCG.woff2","./assets/nunito-cyrillic-ext-900-normal-BLeVovcl.woff2","./assets/nunito-latin-700-normal-Dort48En.woff2","./assets/nunito-latin-900-normal-BVB1fGs6.woff2","./assets/nunito-latin-ext-700-normal-BWeMsAzO.woff2","./assets/nunito-latin-ext-900-normal-Dllsvgjo.woff2","./assets/nunito-vietnamese-700-normal-Ch8EUCfz.woff2","./assets/nunito-vietnamese-900-normal-D6LWQAy_.woff2"];
 
 self.addEventListener('install', e => {
   e.waitUntil(
