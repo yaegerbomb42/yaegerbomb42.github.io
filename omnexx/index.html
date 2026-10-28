@@ -451,9 +451,137 @@ body {
   font-weight: 600;
 }
 
+/* Install Methods Grid & Custom Buttons */
+.install-methods-wrap {
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.install-buttons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.install-method-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: rgba(10, 18, 38, 0.7);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #e2e8f0;
+  transition: all 0.22s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.install-method-btn:hover {
+  border-color: var(--neon-cyan-core);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+.install-method-btn.active {
+  border-color: var(--neon-cyan-core);
+  background: rgba(0, 229, 255, 0.12);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.45);
+}
+
+.install-method-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.4));
+}
+
+.install-method-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.install-method-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--neon-cyan-core);
+}
+
+.post-install-note {
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(12px, 1.4vw, 13.5px);
+  color: rgba(255, 255, 255, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.post-install-note .prompt-char {
+  color: var(--neon-green-core);
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(57, 255, 20, 0.6);
+}
+
+.post-install-note .neon-cmd {
+  color: var(--neon-cyan-core);
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+}
+
+.vscode-btn {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: rgba(13, 24, 52, 0.75);
+  border: 1px solid rgba(176, 0, 255, 0.4);
+  border-radius: 9px;
+  padding: 8px 16px;
+  color: #c084fc;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  box-shadow: 0 0 12px rgba(176, 0, 255, 0.2);
+}
+
+.vscode-btn:hover {
+  border-color: #d8b4fe;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(176, 0, 255, 0.55);
+  transform: translateY(-1px);
+}
+
 /* Glassmorphic Neoism CLI Box */
 .install-box {
-  margin-top: 40px;
+  margin-top: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -690,16 +818,56 @@ body {
       <span>dark terminal. pure text. zero noise.</span>
     </div>
 
-    <!-- CLI Install Box -->
-    <div class="install-box">
-      <code class="install-cmd" id="install-cmd"><span>$</span>npm i -g omnexx</code>
-      <button type="button" class="copy-btn" id="copy-btn" aria-label="Copy CLI install command">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    <!-- 4 Custom Install Buttons & Terminal Box -->
+    <div class="install-methods-wrap">
+      <div class="install-buttons-grid" role="tablist" aria-label="Installation Methods">
+        <button type="button" class="install-method-btn active" data-cmd="brew install yaegerbomb42/omnexx/omnexx" aria-label="Install via Homebrew">
+          <img src="btn-brew.svg" alt="Brew" class="install-method-icon">
+          <span class="install-method-label">Brew</span>
+          <span class="install-method-tag">macOS/Linux</span>
+        </button>
+        <button type="button" class="install-method-btn" data-cmd="curl -fsSL https://omnexx.org/install.sh | sh" aria-label="Install via cURL">
+          <img src="btn-curl.svg" alt="cURL" class="install-method-icon">
+          <span class="install-method-label">cURL</span>
+          <span class="install-method-tag">One-Liner</span>
+        </button>
+        <button type="button" class="install-method-btn" data-cmd="npm i -g omnexx" aria-label="Install via npm">
+          <img src="btn-npm.svg" alt="npm" class="install-method-icon">
+          <span class="install-method-label">npm</span>
+          <span class="install-method-tag">Global</span>
+        </button>
+        <button type="button" class="install-method-btn" data-cmd="npx omnexx" aria-label="Run with npx">
+          <img src="btn-npx.svg" alt="npx" class="install-method-icon">
+          <span class="install-method-label">npx</span>
+          <span class="install-method-tag">Instant</span>
+        </button>
+      </div>
+
+      <!-- CLI Install Box -->
+      <div class="install-box">
+        <code class="install-cmd" id="install-cmd"><span>$</span>brew install yaegerbomb42/omnexx/omnexx</code>
+        <button type="button" class="copy-btn" id="copy-btn" aria-label="Copy CLI install command">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copy-text">copy</span>
+        </button>
+      </div>
+
+      <!-- After Install Prompt Instruction -->
+      <div class="post-install-note">
+        <span class="prompt-char">&gt;</span>
+        <span>After install, type <code class="neon-cmd">omnexx</code> in your terminal to begin.</span>
+      </div>
+
+      <!-- VS Code Extension Link -->
+      <a href="https://marketplace.visualstudio.com/items?itemName=yaegerbomb42.omnexx" target="_blank" rel="noopener noreferrer" class="vscode-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.5 2.5L7.2 10.8 2.8 7.4 1 8.8l4.4 3.7L1 16.2l1.8 1.4 4.4-3.4 10.3 8.3 4.5-2.2V4.7l-4.5-2.2zm1.5 4.8v10.4l-6.8-5.2 6.8-5.2z"/>
         </svg>
-        <span id="copy-text">copy</span>
-      </button>
+        <span>Get VS Code Extension</span>
+      </a>
     </div>
 
     <!-- Simple Ad Card -->
@@ -712,13 +880,26 @@ body {
 
 <script>
 (function() {
+  var installCmd = document.getElementById('install-cmd');
   var copyBtn = document.getElementById('copy-btn');
   var copyLabel = document.getElementById('copy-text');
-  var cmdText = 'npm i -g omnexx';
+  var methodBtns = document.querySelectorAll('.install-method-btn');
+  var currentCmd = 'brew install yaegerbomb42/omnexx/omnexx';
   var timer;
 
-  function performCopy() {
+  function performCopy(textToCopy, triggerBtn) {
     function success() {
+      if (triggerBtn && triggerBtn !== copyBtn) {
+        var tag = triggerBtn.querySelector('.install-method-tag');
+        if (tag) {
+          var originalText = tag.getAttribute('data-orig') || tag.textContent;
+          tag.setAttribute('data-orig', originalText);
+          tag.textContent = 'COPIED!';
+          setTimeout(function() {
+            tag.textContent = originalText;
+          }, 1500);
+        }
+      }
       copyBtn.classList.add('copied');
       copyLabel.textContent = 'copied!';
       clearTimeout(timer);
@@ -729,14 +910,14 @@ body {
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(cmdText).then(success, fallback);
+      navigator.clipboard.writeText(textToCopy).then(success, fallback);
     } else {
       fallback();
     }
 
     function fallback() {
       var ta = document.createElement('textarea');
-      ta.value = cmdText;
+      ta.value = textToCopy;
       ta.style.position = 'fixed';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
@@ -750,7 +931,19 @@ body {
     }
   }
 
-  copyBtn.addEventListener('click', performCopy);
+  methodBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      methodBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentCmd = btn.getAttribute('data-cmd');
+      installCmd.innerHTML = '<span>$</span>' + currentCmd;
+      performCopy(currentCmd, btn);
+    });
+  });
+
+  copyBtn.addEventListener('click', function() {
+    performCopy(currentCmd, copyBtn);
+  });
 })();
 </script>
   <script src="https://yaeger.info/tracker.js" async defer></script>
