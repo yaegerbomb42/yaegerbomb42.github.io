@@ -707,6 +707,121 @@ body {
   font-weight: 600;
 }
 
+/* Hero Showcase Video */
+.hero-video-container {
+  margin: 26px auto 14px auto;
+  width: 100%;
+  max-width: 760px;
+  position: relative;
+}
+
+.hero-video-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #020612;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  box-shadow:
+    0 0 24px -4px rgba(0, 229, 255, 0.28),
+    0 0 50px -10px rgba(255, 46, 147, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.85);
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+  cursor: pointer;
+}
+
+.hero-video-frame:hover {
+  border-color: var(--neon-cyan-core);
+  box-shadow:
+    0 0 35px rgba(0, 229, 255, 0.45),
+    0 0 70px rgba(255, 46, 147, 0.32),
+    inset 0 0 25px rgba(0, 229, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.hero-video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Cybernetic HUD Overlay */
+.hero-video-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(2, 6, 18, 0.82) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.video-hud-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--neon-cyan-core);
+  text-shadow: 0 0 6px var(--neon-cyan-core);
+  user-select: none;
+}
+
+.hud-rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff2e93;
+  box-shadow: 0 0 8px #ff2e93;
+  animation: pulseLed 1.5s ease-in-out infinite;
+}
+
+.video-hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.hud-action-btn {
+  background: rgba(4, 9, 22, 0.78);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 6px;
+  color: #e2e8f0;
+  padding: 4px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+.hud-action-btn:hover {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--neon-cyan-core);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.45);
+}
+
+.hud-action-btn:active {
+  transform: scale(0.96);
+}
+
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -732,6 +847,13 @@ body {
   .cursor {
     width: 13px;
     height: 24px;
+  }
+  .hero-video-container {
+    margin: 20px auto 10px auto;
+  }
+  .hud-action-btn {
+    padding: 3px 7px;
+    font-size: 10px;
   }
   .install-box {
     margin-top: 30px;
@@ -816,6 +938,39 @@ body {
     <div class="info-line info-dim">
       <span class="prompt-char">&gt;</span>
       <span>dark terminal. pure text. zero noise.</span>
+    </div>
+
+    <!-- Hero Showcase Video Player -->
+    <div class="hero-video-container" aria-label="Omnexx Cybernetic Showcase Video">
+      <div class="hero-video-frame" id="hero-video-frame" title="Click to play / pause">
+        <video id="hero-video"
+               class="hero-video-player"
+               src="omnexx-hero.mp4"
+               poster="omnexx-hero-poster.jpg"
+               autoplay
+               loop
+               muted
+               playsinline
+               preload="auto">
+          Your browser does not support the video tag.
+        </video>
+        <!-- Cybernetic HUD Overlay -->
+        <div class="hero-video-hud">
+          <div class="video-hud-status">
+            <span class="hud-rec-dot"></span>
+            <span class="hud-tag">OMNEXX // LIVE TRANSMISSION</span>
+          </div>
+          <div class="video-hud-actions">
+            <button type="button" id="video-sound-btn" class="hud-action-btn" aria-label="Toggle Sound" title="Toggle audio">
+              <span id="sound-icon">🔇</span>
+              <span id="sound-label">MUTED</span>
+            </button>
+            <button type="button" id="video-play-btn" class="hud-action-btn" aria-label="Toggle Play" title="Play / Pause">
+              <span id="play-icon">⏸</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 4 Custom Install Buttons & Terminal Box -->
@@ -944,6 +1099,61 @@ body {
   copyBtn.addEventListener('click', function() {
     performCopy(currentCmd, copyBtn);
   });
+
+  // Hero Video Controls
+  var heroVideo = document.getElementById('hero-video');
+  var heroVideoFrame = document.getElementById('hero-video-frame');
+  var soundBtn = document.getElementById('video-sound-btn');
+  var soundIcon = document.getElementById('sound-icon');
+  var soundLabel = document.getElementById('sound-label');
+  var playBtn = document.getElementById('video-play-btn');
+  var playIcon = document.getElementById('play-icon');
+
+  if (heroVideo) {
+    if (soundBtn) {
+      soundBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        heroVideo.muted = !heroVideo.muted;
+        if (heroVideo.muted) {
+          soundIcon.textContent = '🔇';
+          soundLabel.textContent = 'MUTED';
+        } else {
+          soundIcon.textContent = '🔊';
+          soundLabel.textContent = 'AUDIO ON';
+          if (heroVideo.paused) {
+            heroVideo.play().catch(function() {});
+          }
+        }
+      });
+    }
+
+    function togglePlay(e) {
+      if (e) e.stopPropagation();
+      if (heroVideo.paused) {
+        heroVideo.play().catch(function() {});
+      } else {
+        heroVideo.pause();
+      }
+    }
+
+    if (playBtn) {
+      playBtn.addEventListener('click', togglePlay);
+    }
+
+    if (heroVideoFrame) {
+      heroVideoFrame.addEventListener('click', function(e) {
+        if (e.target.closest('.hud-action-btn')) return;
+        togglePlay(e);
+      });
+    }
+
+    heroVideo.addEventListener('play', function() {
+      if (playIcon) playIcon.textContent = '⏸';
+    });
+    heroVideo.addEventListener('pause', function() {
+      if (playIcon) playIcon.textContent = '▶';
+    });
+  }
 })();
 </script>
   <script src="https://yaeger.info/tracker.js" async defer></script>
