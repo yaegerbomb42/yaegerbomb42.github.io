@@ -1,4 +1,4 @@
-// Kill-switch service worker for omnexx.org (deployed Oct 2026; keep about 6 months, until ~Apr 2027).
+// Kill-switch service worker for omnexx (deployed Oct 2026; keep about 6 months, until ~Apr 2027).
 // The old DWEEBS game registered a worker at /sw.js that may serve a cached page. Browsers re-check
 // this URL (served with Cache-Control: no-store), get this file, and it removes itself: it deletes
 // every cache, unregisters, and reloads open tabs onto the new page. It has no fetch handler.
