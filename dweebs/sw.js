@@ -23,7 +23,7 @@
 
 const CACHE_VERSION = 'dweebs-mall-v2';
 // The build appends its id here (vite.config.js → precacheManifest) so every deploy gets a fresh cache.
-const BUILD_ID = 'mvy4u9vl';
+const BUILD_ID = 'mvy4ycnw';
 const CACHE_NAME = `${CACHE_VERSION}-${BUILD_ID}`;
 const SHELL = ['./', './index.html', './favicon.svg', './manifest.webmanifest'];
 // Every hashed build asset (JS bundle with Warfare + Rapier, CSS, fonts), injected at build time so the
