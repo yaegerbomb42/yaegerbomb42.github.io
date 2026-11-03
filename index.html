@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yaeger's Command Complex</title>
+  <title>yaeger's</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -66,7 +66,7 @@
       z-index: 5;
     }
 
-    /* Interactive Bay Hotspots aligned exactly with the 5 hangar bays */
+    /* Interactive Bay Hotspots aligned exactly with the 3 hangar bays */
     .bay-zone {
       position: absolute;
       text-decoration: none;
@@ -74,118 +74,88 @@
       outline: none;
       z-index: 10;
       display: block;
-      border-radius: 24px;
+      border-radius: 28px;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* 1. SWARMAGENTS (Far Left Bay, Neon Green) */
-    .zone-swarmagents {
-      top: 18%;
-      left: 1.5%;
-      width: 22.5%;
-      height: 65%;
-    }
-
-    /* 2. OMNEXX (Mid Left Bay, Cyan/Purple Portal) */
+    /* 1. Left Bay: OMNEXX Portal
+       Sign: (12.8% to 26.6% x, 21% to 32% y)
+       Vortex Ring: (4.5% to 29.5% x, 31% to 78% y) */
     .zone-omnexx {
-      top: 29%;
-      left: 24.5%;
-      width: 17%;
-      height: 54%;
-    }
-
-    /* 3. DWEEBS (Center Arena Bay, Magenta/Yellow) */
-    .zone-dweebs {
-      top: 35%;
-      left: 42.5%;
-      width: 15%;
-      height: 48%;
-    }
-
-    /* 4. STICKSHOT (Mid Right Bay, Orange/Laser) */
-    .zone-stickshot {
-      top: 30%;
-      left: 58.5%;
-      width: 17.5%;
-      height: 53%;
-    }
-
-    /* 5. DIRECTOR (Far Right Bay, Cyber Blue/Amber Ops) */
-    .zone-director {
       top: 18%;
-      left: 77%;
-      width: 21.5%;
-      height: 65%;
+      left: 3.5%;
+      width: 27.5%;
+      height: 67%;
+    }
+
+    /* 2. Center Bay: DWEEBS Playground
+       Sign: (44% to 56% x, 31.5% to 38% y)
+       Chamber: (34% to 66% x, 14% to 79% y) */
+    .zone-dweebs {
+      top: 13%;
+      left: 33.5%;
+      width: 33%;
+      height: 72%;
+    }
+
+    /* 3. Right Bay: STICKSHOT Range
+       Sign: (73% to 90% x, 19% to 32% y)
+       Firing Range: (66.5% to 98% x, 14% to 82% y) */
+    .zone-stickshot {
+      top: 14%;
+      right: 2%;
+      width: 32%;
+      height: 71%;
     }
 
     /* Glowing Highlight Borders matching the scene's architectural contours */
     .bay-frame {
       position: absolute;
       inset: 0;
-      border-radius: 24px;
+      border-radius: 28px;
       pointer-events: none;
       opacity: 0;
       transform: scale(0.98);
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .zone-swarmagents .bay-frame {
-      border: 2px solid rgba(52, 211, 153, 0.85);
-      background: radial-gradient(circle at 50% 50%, rgba(52, 211, 153, 0.16), rgba(16, 185, 129, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 45px rgba(52, 211, 153, 0.65), inset 0 0 35px rgba(52, 211, 153, 0.3);
-    }
-
     .zone-omnexx .bay-frame {
       border: 2px solid rgba(0, 240, 255, 0.85);
       background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.16), rgba(168, 85, 247, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 45px rgba(0, 240, 255, 0.65), inset 0 0 35px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.7), inset 0 0 45px rgba(0, 240, 255, 0.35);
     }
 
     .zone-dweebs .bay-frame {
       border: 2px solid rgba(255, 112, 166, 0.85);
       background: radial-gradient(circle at 50% 50%, rgba(255, 221, 0, 0.16), rgba(255, 112, 166, 0.12) 60%, transparent 80%);
-      box-shadow: 0 0 45px rgba(255, 112, 166, 0.65), 0 0 30px rgba(255, 221, 0, 0.4), inset 0 0 35px rgba(255, 221, 0, 0.3);
+      box-shadow: 0 0 50px rgba(255, 112, 166, 0.7), 0 0 35px rgba(255, 221, 0, 0.5), inset 0 0 45px rgba(255, 221, 0, 0.3);
     }
 
     .zone-stickshot .bay-frame {
       border: 2px solid rgba(255, 120, 40, 0.85);
       background: radial-gradient(circle at 50% 50%, rgba(255, 120, 40, 0.16), rgba(59, 130, 246, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 45px rgba(255, 120, 40, 0.65), 0 0 30px rgba(59, 130, 246, 0.4), inset 0 0 35px rgba(255, 120, 40, 0.3);
-    }
-
-    .zone-director .bay-frame {
-      border: 2px solid rgba(56, 189, 248, 0.85);
-      background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.16), rgba(249, 115, 22, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 45px rgba(56, 189, 248, 0.65), 0 0 30px rgba(249, 115, 22, 0.4), inset 0 0 35px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 50px rgba(255, 120, 40, 0.7), 0 0 30px rgba(59, 130, 246, 0.5), inset 0 0 45px rgba(255, 120, 40, 0.3);
     }
 
     /* Floating Action Indicator Pill */
     .bay-pill {
       position: absolute;
-      bottom: 5%;
+      bottom: 6%;
       left: 50%;
       transform: translateX(-50%) translateY(8px);
-      padding: 5px 14px;
+      padding: 6px 18px;
       border-radius: 999px;
-      font-size: clamp(9px, 1.1vw, 12px);
+      font-size: clamp(10px, 1.2vw, 13px);
       font-weight: 800;
       letter-spacing: 0.8px;
       text-transform: uppercase;
       opacity: 0;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       pointer-events: none;
       display: flex;
       align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-    }
-
-    .zone-swarmagents .bay-pill {
-      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
-      color: #ffffff;
-      border: 1.5px solid #a7f3d0;
-      box-shadow: 0 0 20px rgba(52, 211, 153, 0.8);
+      gap: 6px;
     }
 
     .zone-omnexx .bay-pill {
@@ -209,13 +179,6 @@
       box-shadow: 0 0 20px rgba(255, 123, 0, 0.8);
     }
 
-    .zone-director .bay-pill {
-      background: linear-gradient(180deg, #0284c7 0%, #ea580c 100%);
-      color: #ffffff;
-      border: 1.5px solid #bae6fd;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
-    }
-
     /* Hover & Focus Interactions */
     .bay-zone:hover .bay-frame,
     .bay-zone:focus .bay-frame {
@@ -235,15 +198,15 @@
       bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(8, 12, 22, 0.85);
+      background: rgba(8, 12, 22, 0.78);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 999px;
-      padding: 6px 18px;
+      padding: 6px 20px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
       font-size: 11px;
       color: #94a3b8;
       font-family: 'JetBrains Mono', monospace;
@@ -274,7 +237,7 @@
       <!-- Main Scene Art -->
       <img
         src="yaeger-portal-hero.jpg"
-        alt="Yaeger's Command Complex - SwarmAgents, Omnexx, Dweebs, Stickshot, Director"
+        alt="Yaeger's Complex - Omnexx, Dweebs, and Stickshot"
         class="hero-art"
         loading="eager"
       />
@@ -282,53 +245,35 @@
       <!-- Ambient Canvas Particles -->
       <canvas id="ambient-canvas"></canvas>
 
-      <!-- 1. Bay 1 (Far Left): SwarmAgents -->
-      <a href="https://swarmagents.codes" class="bay-zone zone-swarmagents" aria-label="Enter SwarmAgents (Bay 1)">
+      <!-- 1. Left Bay: Omnexx -->
+      <a href="./omnexx/" class="bay-zone zone-omnexx" aria-label="Enter Omnexx (Left Portal)">
         <div class="bay-frame"></div>
-        <div class="bay-pill">SwarmAgents →</div>
+        <div class="bay-pill">Enter Omnexx →</div>
       </a>
 
-      <!-- 2. Bay 2 (Mid Left): Omnexx -->
-      <a href="./omnexx/" class="bay-zone zone-omnexx" aria-label="Enter Omnexx (Bay 2)">
+      <!-- 2. Middle Bay: Dweebs -->
+      <a href="./dweebs/" class="bay-zone zone-dweebs" aria-label="Play Dweebs Mega Stadium (Center Bay)">
         <div class="bay-frame"></div>
-        <div class="bay-pill">Omnexx →</div>
+        <div class="bay-pill">Play Dweebs →</div>
       </a>
 
-      <!-- 3. Bay 3 (Center): Dweebs -->
-      <a href="./dweebs/" class="bay-zone zone-dweebs" aria-label="Play Dweebs Stadium (Bay 3)">
+      <!-- 3. Right Bay: Stickshot -->
+      <a href="./stickshot/" class="bay-zone zone-stickshot" aria-label="Play Stickshot Arcade (Right Bay)">
         <div class="bay-frame"></div>
-        <div class="bay-pill">Dweebs →</div>
-      </a>
-
-      <!-- 4. Bay 4 (Mid Right): Stickshot -->
-      <a href="./stickshot/" class="bay-zone zone-stickshot" aria-label="Play Stickshot Arcade (Bay 4)">
-        <div class="bay-frame"></div>
-        <div class="bay-pill">Stickshot →</div>
-      </a>
-
-      <!-- 5. Bay 5 (Far Right): Director -->
-      <a href="./director/" class="bay-zone zone-director" aria-label="Launch Director 24/7 (Bay 5)">
-        <div class="bay-frame"></div>
-        <div class="bay-pill">Director 24/7 →</div>
+        <div class="bay-pill">Play Stickshot →</div>
       </a>
     </div>
 
     <!-- Hotkey Indicator Bar -->
     <div class="hotkey-bar">
       <div class="hotkey-item">
-        <kbd>1</kbd> <span>SwarmAgents</span>
+        <kbd>1</kbd> <span>Omnexx</span>
       </div>
       <div class="hotkey-item">
-        <kbd>2</kbd> <span>Omnexx</span>
+        <kbd>2</kbd> <span>Dweebs</span>
       </div>
       <div class="hotkey-item">
-        <kbd>3</kbd> <span>Dweebs</span>
-      </div>
-      <div class="hotkey-item">
-        <kbd>4</kbd> <span>Stickshot</span>
-      </div>
-      <div class="hotkey-item">
-        <kbd>5</kbd> <span>Director</span>
+        <kbd>3</kbd> <span>Stickshot</span>
       </div>
     </div>
   </div>
@@ -337,24 +282,18 @@
     // Keyboard navigation
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if (e.key === '1') {
-        window.location.href = 'https://swarmagents.codes';
-      }
-      if (e.key === '2' || e.key.toLowerCase() === 'o') {
+      if (e.key === '1' || e.key.toLowerCase() === 'o') {
         window.location.href = './omnexx/';
       }
-      if (e.key === '3' || e.key.toLowerCase() === 'd') {
+      if (e.key === '2' || e.key.toLowerCase() === 'd') {
         window.location.href = './dweebs/';
       }
-      if (e.key === '4' || e.key.toLowerCase() === 's') {
+      if (e.key === '3' || e.key.toLowerCase() === 's') {
         window.location.href = './stickshot/';
-      }
-      if (e.key === '5' || e.key.toLowerCase() === 'r') {
-        window.location.href = './director/';
       }
     });
 
-    // Ambient Canvas Particle System
+    // Particle Canvas Animation
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -377,17 +316,12 @@
         this.vx = (Math.random() - 0.5) * 0.35;
         this.vy = -Math.random() * 0.5 - 0.15;
         this.alpha = Math.random() * 0.5 + 0.2;
-        const ratio = this.x / canvas.width;
-        if (ratio < 0.20) {
-          this.color = '#34d399'; // green for swarmagents
-        } else if (ratio < 0.40) {
-          this.color = Math.random() > 0.5 ? '#00f0ff' : '#a855f7'; // cyan/purple for omnexx
-        } else if (ratio < 0.60) {
-          this.color = Math.random() > 0.5 ? '#ff70a6' : '#ffdd00'; // pink/yellow for dweebs
-        } else if (ratio < 0.80) {
-          this.color = Math.random() > 0.5 ? '#ff7b00' : '#3b82f6'; // orange/blue for stickshot
+        if (this.x < canvas.width * 0.33) {
+          this.color = Math.random() > 0.4 ? '#00f0ff' : '#a855f7';
+        } else if (this.x < canvas.width * 0.66) {
+          this.color = Math.random() > 0.4 ? '#ff70a6' : '#ffdd00';
         } else {
-          this.color = Math.random() > 0.5 ? '#38bdf8' : '#f97316'; // blue/amber for director
+          this.color = Math.random() > 0.4 ? '#ff7b00' : '#3b82f6';
         }
       }
       update() {
@@ -411,7 +345,7 @@
       }
     }
 
-    const count = 55;
+    const count = 45;
     for (let i = 0; i < count; i++) {
       particles.push(new Particle());
     }
