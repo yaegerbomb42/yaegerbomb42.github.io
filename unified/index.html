@@ -1,25 +1,24 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PROJECT NO FUCKS // PURE UNBOUND CREATION [UNIFIED]</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>UNIFIED // SPACE CADET</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js r128 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Google Fonts: Orbitron, Rajdhani, JetBrains Mono -->
+  <!-- Google Fonts: Orbitron, Chakra Petch, JetBrains Mono, Syne -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;0,800;1,400&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,700;0,900;1,900&family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@600;800;900&family=Syne:wght@800;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --crimson: #ff003c;
-      --volt: #d4ff00;
-      --cyan: #00f0ff;
-      --carbon: #070709;
-      --carbon-light: #111217;
+      --neon-cyan: #00ffe6;
+      --hot-crimson: #ff1e50;
+      --lambo-volt: #d4ff00;
+      --abyss-deep: #020306;
     }
 
     * {
@@ -34,1462 +33,442 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #050507;
-      color: #f0f4f8;
-      font-family: 'Rajdhani', sans-serif;
+      background-color: var(--abyss-deep);
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
     }
 
+    .font-syne { font-family: 'Syne', sans-serif; }
     .font-orbitron { font-family: 'Orbitron', sans-serif; }
-    .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
+    .font-chakra { font-family: 'Chakra Petch', sans-serif; }
 
-    /* Forged Carbon Fiber Procedural Background */
-    .carbon-panel {
-      background-color: rgba(8, 8, 12, 0.82);
-      background-image: 
-        radial-gradient(circle at 20% 35%, rgba(255, 0, 60, 0.08) 0%, transparent 45%),
-        radial-gradient(circle at 80% 70%, rgba(0, 240, 255, 0.06) 0%, transparent 50%),
-        repeating-linear-gradient(45deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 2px, transparent 2px, transparent 6px),
-        repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 3px, transparent 3px, transparent 8px);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    /* Lamborghini-style 45-degree aerodynamic chamfers */
-    .lambo-cut {
-      clip-path: polygon(
-        14px 0, 
-        calc(100% - 14px) 0, 
-        100% 14px, 
-        100% calc(100% - 14px), 
-        calc(100% - 14px) 100%, 
-        14px 100%, 
-        0 calc(100% - 14px), 
-        0 14px
-      );
-    }
-
-    .lambo-cut-sm {
-      clip-path: polygon(
-        8px 0, 
-        calc(100% - 8px) 0, 
-        100% 8px, 
-        100% calc(100% - 8px), 
-        calc(100% - 8px) 100%, 
-        8px 100%, 
-        0 calc(100% - 8px), 
-        0 8px
-      );
-    }
-
-    .lambo-tab {
-      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-    }
-
-    /* Custom Neon Borders & Glows */
-    .glow-crimson {
-      box-shadow: 0 0 20px rgba(255, 0, 60, 0.45), inset 0 0 12px rgba(255, 0, 60, 0.25);
-    }
-    .glow-volt {
-      box-shadow: 0 0 22px rgba(212, 255, 0, 0.5), inset 0 0 12px rgba(212, 255, 0, 0.25);
-    }
-    .glow-cyan {
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.2);
-    }
-
-    .text-glow-crimson { text-shadow: 0 0 10px rgba(255, 0, 60, 0.8); }
-    .text-glow-volt { text-shadow: 0 0 10px rgba(212, 255, 0, 0.85); }
-    .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.85); }
-
-    /* Custom Range Sliders */
-    input[type=range].lambo-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 6px;
-      background: linear-gradient(90deg, #00f0ff 0%, #d4ff00 60%, #ff003c 100%);
-      outline: none;
-      border-radius: 2px;
-    }
-    input[type=range].lambo-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 14px;
-      background: #d4ff00;
-      border: 2px solid #050507;
-      clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
-      cursor: pointer;
-      box-shadow: 0 0 10px #d4ff00;
-    }
-
-    /* Scanline & CRT Telemetry Overlay */
+    /* CRT scanline texture */
     .scanlines {
       background: linear-gradient(
         to bottom,
         rgba(255,255,255,0),
         rgba(255,255,255,0) 50%,
-        rgba(0, 0, 0, 0.22) 50%,
-        rgba(0, 0, 0, 0.22)
+        rgba(0, 0, 0, 0.35) 50%,
+        rgba(0, 0, 0, 0.35)
       );
       background-size: 100% 4px;
     }
 
-    /* Scrollbar for Void Terminal */
-    .void-scroll::-webkit-scrollbar {
-      width: 4px;
-    }
-    .void-scroll::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.4);
-    }
-    .void-scroll::-webkit-scrollbar-thumb {
-      background: #ff003c;
+    /* Massive Monumental Monolith typography */
+    .hero-title-massive {
+      font-family: 'Syne', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 0.88;
+      text-transform: uppercase;
+      text-shadow: 
+        0 0 40px rgba(0, 255, 230, 0.25),
+        0 0 90px rgba(255, 30, 80, 0.2);
     }
 
-    @keyframes pulse-fast {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.96); }
+    .lambo-btn {
+      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .animate-pulse-fast {
-      animation: pulse-fast 0.45s infinite ease-in-out;
+    .lambo-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 255, 230, 0.5);
     }
+
+    /* Modal drawer */
+    .modal-drawer {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    }
+    .modal-drawer.hidden-drawer {
+      transform: scale(0.96) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); filter: brightness(1.3); }
+    }
+    .pulse-glow { animation: pulseGlow 2.5s infinite ease-in-out; }
   </style>
 </head>
-<body class="relative w-screen h-screen overflow-hidden select-none bg-[#050507]">
+<body class="relative w-screen h-screen overflow-hidden bg-[#020306]">
 
-  <!-- SHRED SHADER TAB IFRAME CONTAINER (Z-15) -->
-  <div id="shred-tab-view" class="fixed inset-0 z-15 hidden w-full h-full bg-black">
-    <iframe id="shred-iframe" src="./shred.html" class="w-full h-full border-0"></iframe>
-  </div>
+  <!-- 3D WEBGL ANIMATED ABYSS CANVAS -->
+  <canvas id="abyss-canvas" class="fixed inset-0 w-full h-full z-0"></canvas>
 
+  <!-- CRT SCANLINES & VIGNETTE -->
+  <div class="fixed inset-0 pointer-events-none z-10 scanlines opacity-40"></div>
+  <div class="fixed inset-0 pointer-events-none z-10"
+       style="background: radial-gradient(circle at center, transparent 35%, rgba(0, 5, 12, 0.6) 75%, rgba(2, 3, 6, 0.95) 100%);"></div>
 
-  <!-- THREE.JS WEBGL CANVAS -->
-  <canvas id="webgl-canvas" class="fixed inset-0 w-full h-full z-0 cursor-crosshair"></canvas>
-
-  <!-- SUBTLE SCANLINE & VIGNETTE OVERLAY -->
-  <div class="fixed inset-0 pointer-events-none z-10 scanlines opacity-35"></div>
-  <div id="adrenaline-vignette" class="fixed inset-0 pointer-events-none z-10 transition-opacity duration-300"
-       style="background: radial-gradient(circle at center, transparent 48%, rgba(255, 0, 60, 0.28) 90%, rgba(5, 5, 8, 0.92) 100%);"></div>
-
-  <!-- CENTER RETICLE / Y-MOTIF VECTOR HUD (Pointer Events None) -->
-  <div class="fixed inset-0 pointer-events-none z-10 flex items-center justify-center">
-    <svg id="hud-reticle" class="w-64 h-64 md:w-80 md:h-80 opacity-35 transition-transform duration-75" viewBox="0 0 200 200">
-      <!-- Lambo Y-Motif Outer Brackets -->
-      <path d="M 35 65 L 20 80 L 20 120 L 35 135 M 20 100 L 8 100" stroke="#00f0ff" stroke-width="1.5" fill="none" />
-      <path d="M 165 65 L 180 80 L 180 120 L 165 135 M 180 100 L 192 100" stroke="#00f0ff" stroke-width="1.5" fill="none" />
-      <!-- Top & Bottom Pitch Ticks -->
-      <path d="M 85 25 L 100 32 L 115 25" stroke="#ff003c" stroke-width="1.5" fill="none" />
-      <path d="M 85 175 L 100 168 L 115 175" stroke="#ff003c" stroke-width="1.5" fill="none" />
-      <!-- Center Singularity Crosshair -->
-      <circle cx="100" cy="100" r="3" fill="#d4ff00" />
-      <circle id="reticle-ring" cx="100" cy="100" r="28" stroke="#d4ff00" stroke-width="0.75" stroke-dasharray="6 4" fill="none" />
-    </svg>
-  </div>
-
-  <!-- ===================================================================== -->
-  <!-- COCKPIT HUD LAYER (Z-20)                                              -->
-  <!-- ===================================================================== -->
-  <div class="relative z-20 w-full h-full flex flex-col justify-between p-2 sm:p-4 pointer-events-none">
-
-    <!-- TOP TELEMETRY BAR -->
-    <header class="w-full flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
-
-      <!-- TOP REALITY EXPERIENCE TABS -->
-      <nav class="flex items-center gap-1 bg-black/60 border border-white/15 p-1 lambo-cut-sm">
-        <button id="nav-tab-reality" onclick="switchRealityView('reality')" class="font-orbitron text-[11px] font-bold px-3 py-1.5 transition-all text-[#d4ff00] bg-white/10 border-b-2 border-[#d4ff00]">
-          ⚡ REALITY ENGINE
-        </button>
-        <button id="nav-tab-shred" onclick="switchRealityView('shred')" class="font-orbitron text-[11px] font-bold px-3 py-1.5 transition-all text-gray-400 hover:text-white hover:bg-white/5 border-b-2 border-transparent">
-          🌀 RAYMARCH SHRED CORE
-        </button>
-      </nav>
-
-      
-      <!-- Brand / Mythos Signature -->
-      <div class="carbon-panel lambo-cut border border-[#ff003c]/50 px-3.5 py-2 flex items-center gap-3">
-        <div class="relative flex items-center justify-center w-8 h-8 bg-[#ff003c]/20 border border-[#ff003c] lambo-cut-sm">
-          <span id="heart-icon" class="text-[#ff003c] text-lg font-black">♥</span>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-orbitron font-black text-xs sm:text-sm tracking-widest text-white">PROJECT NO FUCKS</span>
-            <span class="bg-[#d4ff00] text-black font-mono-tech font-extrabold text-[10px] px-1.5 py-0.5 rounded-sm">UNIFIED v4.2</span>
-          </div>
-          <div class="font-mono-tech text-[10px] text-[#00f0ff] tracking-wider flex items-center gap-2">
-            <span>YAEGERBOMB42.GITHUB.IO/UNIFIED</span>
-            <span class="text-white/30">|</span>
-            <span id="active-state-banner" class="text-[#d4ff00] font-bold">STATE 00 // SYNTHESIS</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Center Biometric & 5-Mile Shred Season Counter -->
-      <div class="carbon-panel lambo-cut border border-white/15 px-4 py-1.5 hidden lg:flex items-center gap-6">
-        <!-- Distance to 5.00 Mile Shred -->
-        <div class="flex flex-col">
-          <span class="font-mono-tech text-[9px] text-gray-400 uppercase tracking-widest">SHRED SEASON DISTANCE</span>
-          <div class="flex items-baseline gap-1">
-            <span id="hud-distance" class="font-orbitron font-black text-xl text-[#d4ff00] text-glow-volt">2.84</span>
-            <span class="font-mono-tech text-xs text-white/70">/ 5.00 MI</span>
-          </div>
-        </div>
-
-        <div class="h-7 w-[1px] bg-white/10 rotate-12"></div>
-
-        <!-- Heart Rate BPM -->
-        <div class="flex flex-col">
-          <span class="font-mono-tech text-[9px] text-gray-400 uppercase tracking-widest">BIOMETRIC PULSE</span>
-          <div class="flex items-baseline gap-1">
-            <span id="hud-bpm" class="font-orbitron font-black text-xl text-[#ff003c] text-glow-crimson">188</span>
-            <span class="font-mono-tech text-xs text-[#ff003c]">BPM</span>
-          </div>
-        </div>
-
-        <div class="h-7 w-[1px] bg-white/10 rotate-12"></div>
-
-        <!-- Run Cadence SPM -->
-        <div class="flex flex-col">
-          <span class="font-mono-tech text-[9px] text-gray-400 uppercase tracking-widest">STRIDE CADENCE</span>
-          <div class="flex items-baseline gap-1">
-            <span id="hud-spm" class="font-orbitron font-black text-xl text-[#00f0ff] text-glow-cyan">194</span>
-            <span class="font-mono-tech text-xs text-[#00f0ff]">SPM</span>
-          </div>
-        </div>
-
-        <div class="h-7 w-[1px] bg-white/10 rotate-12"></div>
-
-        <!-- G-Force / Singularity Shear -->
-        <div class="flex flex-col">
-          <span class="font-mono-tech text-[9px] text-gray-400 uppercase tracking-widest">GRAV SHEAR</span>
-          <div class="flex items-baseline gap-1">
-            <span id="hud-gforce" class="font-orbitron font-black text-xl text-white">4.2</span>
-            <span class="font-mono-tech text-xs text-gray-400">G</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Controls: Audio Ignition + Shockwave + Void AI Toggle -->
-      <div class="flex items-center gap-2">
-        <!-- Audio Synthesizer Ignition Button -->
-        <button id="btn-audio-toggle" onclick="toggleAudioEngine()" 
-                class="carbon-panel lambo-cut-sm border border-[#00f0ff]/60 hover:border-[#d4ff00] px-3 py-2 flex items-center gap-2 transition-all duration-150 group cursor-pointer">
-          <span id="audio-led" class="w-2.5 h-2.5 rounded-full bg-gray-500 transition-colors"></span>
-          <div class="text-left">
-            <div id="audio-btn-text" class="font-orbitron font-bold text-[11px] text-[#00f0ff] group-hover:text-[#d4ff00] tracking-wider">IGNITE AUDIO</div>
-            <div class="font-mono-tech text-[9px] text-gray-400">WEB AUDIO SYNTH</div>
-          </div>
-        </button>
-
-        <!-- Shockwave / Detonate Petal & Lattice Button -->
-        <button onclick="triggerRealityShockwave()" 
-                class="carbon-panel lambo-cut-sm border border-[#ff003c]/70 hover:bg-[#ff003c]/20 px-3 py-2 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
-                title="Shortcut: E or Click Canvas">
-          <span class="font-orbitron font-black text-[11px] text-[#ff003c] tracking-wider">⚡ PULSE [E]</span>
-        </button>
-
-        <!-- Toggle Void AI Consciousness Terminal -->
-        <button id="btn-terminal-toggle" onclick="toggleVoidTerminal()" 
-                class="carbon-panel lambo-cut-sm border border-[#d4ff00]/70 bg-[#d4ff00]/10 hover:bg-[#d4ff00]/25 px-3 py-2 flex items-center gap-2 transition-all cursor-pointer">
-          <span class="w-2 h-2 rounded-full bg-[#d4ff00] animate-ping"></span>
-          <span class="font-orbitron font-bold text-[11px] text-[#d4ff00] tracking-wider">VOID AI [TAB]</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- =================================================================== -->
-    <!-- MIDDLE AREA: LEFT TELEMETRY GAUGES & RIGHT VOID AI TERMINAL         -->
-    <!-- =================================================================== -->
-    <div class="flex-1 flex items-center justify-between gap-4 my-2 overflow-hidden">
-
-      <!-- LEFT DOCK: LAMBO TELEMETRY & SHADER PARAMETER RACK -->
-      <aside id="left-telemetry-dock" class="carbon-panel lambo-cut border border-white/15 p-3.5 w-72 hidden md:flex flex-col gap-3 pointer-events-auto">
-        <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
-          <span class="font-orbitron font-bold text-xs tracking-widest text-[#00f0ff] flex items-center gap-1.5">
-            <span class="text-[#ff003c]">///</span> LAMBO V12 TELEMETRY
-          </span>
-          <span id="fps-counter" class="font-mono-tech text-[11px] text-[#d4ff00] font-bold">60 FPS</span>
-        </div>
-
-        <!-- Live Tachometer & Audio Spectrum Canvas -->
-        <div class="relative w-full h-24 bg-black/60 border border-white/10 lambo-cut-sm overflow-hidden">
-          <canvas id="telemetry-canvas" class="w-full h-full block"></canvas>
-          <div class="absolute top-1.5 left-2 font-mono-tech text-[10px] text-gray-400">
-            PACE: <span id="hud-pace" class="text-white font-bold">04:12 /MI</span>
-          </div>
-          <div class="absolute top-1.5 right-2 font-mono-tech text-[10px] text-[#ff003c] font-bold" id="redline-badge">
-            VO2 MAX 98.4%
-          </div>
-        </div>
-
-        <!-- Sliders: Cadence / Velocity / Glitch / Gravity -->
-        <div class="flex flex-col gap-2.5">
-          <!-- Velocity / Cadence Throttle -->
-          <div>
-            <div class="flex justify-between font-mono-tech text-[10px] mb-1">
-              <span class="text-gray-300">CADENCE / VELOCITY THROTTLE</span>
-              <span id="val-throttle" class="text-[#d4ff00] font-bold">82%</span>
-            </div>
-            <input id="slider-throttle" type="range" min="10" max="100" value="42" class="lambo-slider"
-                   oninput="updateCockpitSliders()" />
-          </div>
-
-          <!-- Ceiling Lattice Glitch & Fracture -->
-          <div>
-            <div class="flex justify-between font-mono-tech text-[10px] mb-1">
-              <span class="text-gray-300">LATTICE ENTROPY & FRACTURE</span>
-              <span id="val-glitch" class="text-[#ff003c] font-bold">68%</span>
-            </div>
-            <input id="slider-glitch" type="range" min="0" max="100" value="28" class="lambo-slider"
-                   oninput="updateCockpitSliders()" />
-          </div>
-
-          <!-- Gravitational Singularity Warp -->
-          <div>
-            <div class="flex justify-between font-mono-tech text-[10px] mb-1">
-              <span class="text-gray-300">SINGULARITY LENSING WARP</span>
-              <span id="val-gravity" class="text-[#00f0ff] font-bold">75%</span>
-            </div>
-            <input id="slider-gravity" type="range" min="0" max="100" value="35" class="lambo-slider"
-                   oninput="updateCockpitSliders()" />
-          </div>
-        </div>
-
-        <!-- Live Spatial State Weights Matrix -->
-        <div class="bg-black/50 border border-white/10 p-2 lambo-cut-sm font-mono-tech text-[10px] space-y-1">
-          <div class="text-gray-400 text-[9px] uppercase tracking-wider mb-1">DIMENSIONAL BLEND MATRIX</div>
-          <div class="flex items-center justify-between">
-            <span class="text-cyan-400">01. CEILING LATTICE</span>
-            <div class="w-24 h-1.5 bg-white/10 overflow-hidden"><div id="bar-w0" class="h-full bg-[#00f0ff]" style="width:70%"></div></div>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-rose-500">02. VELVET ROSE PETAL</span>
-            <div class="w-24 h-1.5 bg-white/10 overflow-hidden"><div id="bar-w1" class="h-full bg-[#ff003c]" style="width:85%"></div></div>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-purple-400">03. EARTH SINGULARITY</span>
-            <div class="w-24 h-1.5 bg-white/10 overflow-hidden"><div id="bar-w2" class="h-full bg-purple-400" style="width:65%"></div></div>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-[#d4ff00]">04. 5-MILE SHRED RUN</span>
-            <div class="w-24 h-1.5 bg-white/10 overflow-hidden"><div id="bar-w3" class="h-full bg-[#d4ff00]" style="width:90%"></div></div>
-          </div>
-        </div>
-
-        <!-- Hold SPACE Overdrive Button -->
-        <button id="btn-overdrive"
-                onmousedown="engageOverdrive(true)" onmouseup="engageOverdrive(false)" onmouseleave="engageOverdrive(false)"
-                ontouchstart="engageOverdrive(true)" ontouchend="engageOverdrive(false)"
-                class="w-full py-2.5 bg-gradient-to-r from-[#ff003c] via-[#d4ff00] to-[#00f0ff] text-black font-orbitron font-black text-xs tracking-widest lambo-cut-sm shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer">
-          HOLD [SPACE] // SHRED OVERDRIVE
-        </button>
-      </aside>
-
-      <!-- RIGHT DOCK: FRONTIER INTELLIGENCE VOID TERMINAL (api_keys.md FLEET) -->
-      <aside id="void-terminal" class="carbon-panel lambo-cut border border-[#ff003c]/60 w-full sm:w-96 max-h-[72vh] flex flex-col pointer-events-auto transition-all duration-300 ml-auto">
-        <!-- Terminal Header -->
-        <div class="bg-gradient-to-r from-[#ff003c]/30 via-black to-[#00f0ff]/20 px-3.5 py-2 border-b border-white/15 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 bg-[#ff003c] rounded-full animate-ping"></span>
-            <span class="font-orbitron font-extrabold text-xs tracking-wider text-white">FRONTIER VOID CONSCIOUSNESS</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <button onclick="toggleApiConfig()" class="font-mono-tech text-[10px] text-[#00f0ff] hover:text-[#d4ff00] px-1.5 py-0.5 border border-[#00f0ff]/40 rounded-sm cursor-pointer" title="Configure api_keys.md Fleet">
-              FLEET CFG
-            </button>
-            <button onclick="toggleVoidTerminal()" class="text-gray-400 hover:text-white font-mono-tech text-xs px-1 cursor-pointer">✕</button>
-          </div>
-        </div>
-
-        <!-- Fleet Model Selector Bar -->
-        <div class="px-3 py-1.5 bg-black/60 border-b border-white/10 flex items-center justify-between gap-2">
-          <span class="font-mono-tech text-[10px] text-gray-400 shrink-0">api_keys.md //</span>
-          <select id="fleet-model-select" class="bg-[#0d0e12] text-[#d4ff00] font-mono-tech text-[10px] border border-white/20 px-2 py-1 rounded-sm w-full focus:outline-none focus:border-[#d4ff00]">
-            <option value="gemini">GEMINI-3-FLASH // NATIVE OMNI-VOID</option>
-            <option value="deepseek">DEEPSEEK-R1 // SINGULARITY REASONER</option>
-            <option value="qwen">QWEN-2.5-MAX // LATTICE ARCHITECT</option>
-            <option value="claude">CLAUDE-3.7-SONNET // VELVET ROSE POET</option>
-            <option value="shred">SHRED-DAEMON-70B // 195 BPM ENDURANCE</option>
-          </select>
-        </div>
-
-        <!-- Optional Custom API Key / Endpoint Drawer (Hidden by default) -->
-        <div id="api-config-drawer" class="hidden px-3 py-2 bg-[#12080c] border-b border-[#ff003c]/40 font-mono-tech text-[10px] space-y-1.5">
-          <div class="text-[#ff003c] font-bold">OPTIONAL CUSTOM ENDPOINT / KEY OVERRIDE:</div>
-          <input id="custom-api-key" type="password" placeholder="Leave blank for native Gemini runtime..." 
-                 class="w-full bg-black/80 border border-white/20 px-2 py-1 text-white rounded-sm focus:outline-none focus:border-[#ff003c]" />
-          <div class="text-gray-400 text-[9px]">Native Canvas Gemini 3 Flash API is active by default and mutates WebGL shaders directly.</div>
-        </div>
-
-        <!-- Chat Message Stream -->
-        <div id="void-chat-log" class="flex-1 p-3 overflow-y-auto void-scroll space-y-2.5 font-mono-tech text-xs max-h-64 sm:max-h-72 select-text">
-          <div class="border-l-2 border-[#ff003c] pl-2.5 py-0.5">
-            <div class="text-[10px] text-[#ff003c] font-bold">VOID_CORE // INITIALIZED</div>
-            <p class="text-gray-200 text-[11px] leading-relaxed mt-0.5">
-              Welcome to <span class="text-[#d4ff00] font-bold">PROJECT NO FUCKS</span>. Your pulse is locked at <span class="text-[#ff003c]">188 BPM</span>. Above you, the acoustic ceiling lattice fractures into infinity; before you, a bleeding velvet rose collides with a planetary singularity at Mile 2.84. Command a reality mutation or speak into the slipstream.
-            </p>
-          </div>
-        </div>
-
-        <!-- Quick Reality Mutation Directives -->
-        <div class="px-3 py-1.5 bg-black/50 border-t border-white/10 flex flex-wrap gap-1">
-          <button onclick="sendQuickDirective('Ignite 210 BPM Blood Rose Supernova')" 
-                  class="text-[9px] font-mono-tech bg-[#ff003c]/20 hover:bg-[#ff003c]/40 text-[#ff003c] border border-[#ff003c]/50 px-2 py-0.5 rounded-sm cursor-pointer transition">
-            + Blood Supernova
-          </button>
-          <button onclick="sendQuickDirective('Shatter the ceiling lattice into cyber-acid chaos')" 
-                  class="text-[9px] font-mono-tech bg-[#00f0ff]/15 hover:bg-[#00f0ff]/35 text-[#00f0ff] border border-[#00f0ff]/50 px-2 py-0.5 rounded-sm cursor-pointer transition">
-            + Shatter Lattice
-          </button>
-          <button onclick="sendQuickDirective('Engage final 5.00 Mile Shred Season sprint')" 
-                  class="text-[9px] font-mono-tech bg-[#d4ff00]/15 hover:bg-[#d4ff00]/35 text-[#d4ff00] border border-[#d4ff00]/50 px-2 py-0.5 rounded-sm cursor-pointer transition">
-            + 5-Mile Sprint
-          </button>
-          <button onclick="sendQuickDirective('Collapse Earth into extreme gravitational singularity')" 
-                  class="text-[9px] font-mono-tech bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 border border-purple-400/50 px-2 py-0.5 rounded-sm cursor-pointer transition">
-            + Collapse Void
-          </button>
-        </div>
-
-        <!-- Input Form -->
-        <form onsubmit="handleVoidSubmit(event)" class="p-2 bg-black/80 border-t border-white/15 flex gap-1.5">
-          <input id="void-input" type="text" placeholder="Command the Void or mutate shaders..." autocomplete="off"
-                 class="flex-1 bg-[#0a0b0e] border border-white/20 focus:border-[#d4ff00] px-2.5 py-1.5 font-mono-tech text-xs text-white focus:outline-none lambo-cut-sm" />
-          <button id="void-send-btn" type="submit" 
-                  class="bg-[#ff003c] hover:bg-[#d4ff00] hover:text-black text-white font-orbitron font-bold text-xs px-3.5 py-1.5 lambo-cut-sm transition-colors cursor-pointer">
-            TRANSMIT
-          </button>
-        </form>
-      </aside>
+  <!-- TOP HUD / SYSTEM HEADER -->
+  <header class="relative z-20 w-full flex items-center justify-between p-4 sm:p-6 pointer-events-auto">
+    <!-- Brand badge -->
+    <div class="flex items-center gap-3 bg-black/60 border border-white/10 px-4 py-2 rounded lambo-btn backdrop-blur-md">
+      <div class="w-2.5 h-2.5 rounded-full bg-[#00ffe6] shadow-[0_0_12px_#00ffe6] pulse-glow"></div>
+      <span class="font-orbitron font-extrabold text-xs sm:text-sm tracking-widest text-white">UNIFIED</span>
+      <span class="text-white/20">/</span>
+      <span class="font-chakra text-xs text-[#00ffe6] font-bold tracking-widest uppercase">ORBITAL CORE</span>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- BOTTOM DOCK: 4 SPATIAL STATES + OVERDRIVE SYNTHESIS SWITCHER        -->
-    <!-- =================================================================== -->
-    <footer class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 pointer-events-auto">
-      
-      <!-- 5 Spatial Mode Buttons -->
-      <div class="w-full sm:w-auto grid grid-cols-2 sm:flex items-center gap-1.5">
-        <button id="mode-btn-0" onclick="setSpatialMode(0)" 
-                class="mode-btn carbon-panel lambo-cut-sm border border-[#d4ff00] glow-volt px-3 py-2 text-left transition-all cursor-pointer">
-          <div class="font-mono-tech text-[9px] text-[#d4ff00]">KEY [0] // ALL FUSED</div>
-          <div class="font-orbitron font-black text-xs text-white">UNIFIED SYNTHESIS</div>
-        </button>
+    <!-- ACTION BUTTONS: Stashed Reality Engine & Shred Core -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- High Energy Looping Soundtrack Audio Button -->
+      <button id="audio-toggle-btn" 
+              class="lambo-btn bg-black/70 border border-[#00ffe6]/40 hover:border-[#00ffe6] px-3.5 py-2 flex items-center gap-2 cursor-pointer backdrop-blur-md">
+        <span id="audio-icon" class="text-xs">🔊</span>
+        <span id="audio-text" class="font-chakra font-bold text-xs text-[#00ffe6] tracking-wider">AUDIO ON</span>
+      </button>
 
-        <button id="mode-btn-1" onclick="setSpatialMode(1)" 
-                class="mode-btn carbon-panel lambo-cut-sm border border-white/20 hover:border-[#00f0ff] px-3 py-2 text-left transition-all cursor-pointer">
-          <div class="font-mono-tech text-[9px] text-[#00f0ff]">STATE [1] // GLITCH</div>
-          <div class="font-orbitron font-bold text-xs text-white">CEILING LATTICE</div>
-        </button>
+      <!-- Stashed Reality Engine Button -->
+      <button onclick="openModal('reality')"
+              class="lambo-btn bg-[#ff1e50]/20 hover:bg-[#ff1e50] text-[#ff1e50] hover:text-white border border-[#ff1e50]/60 px-4 py-2 font-orbitron font-bold text-xs tracking-wider cursor-pointer backdrop-blur-md shadow-[0_0_15px_rgba(255,30,80,0.3)]">
+        ⚡ REALITY COCKPIT
+      </button>
 
-        <button id="mode-btn-2" onclick="setSpatialMode(2)" 
-                class="mode-btn carbon-panel lambo-cut-sm border border-white/20 hover:border-[#ff003c] px-3 py-2 text-left transition-all cursor-pointer">
-          <div class="font-mono-tech text-[9px] text-[#ff003c]">STATE [2] // BLOOM</div>
-          <div class="font-orbitron font-bold text-xs text-white">VELVET ROSE PETAL</div>
-        </button>
+      <!-- Stashed Shred Core Button -->
+      <button onclick="openModal('shred')"
+              class="lambo-btn bg-[#00ffe6]/20 hover:bg-[#00ffe6] text-[#00ffe6] hover:text-black border border-[#00ffe6]/60 px-4 py-2 font-orbitron font-bold text-xs tracking-wider cursor-pointer backdrop-blur-md shadow-[0_0_15px_rgba(0,255,230,0.3)]">
+        🌀 SHRED SHADER CORE
+      </button>
+    </div>
+  </header>
 
-        <button id="mode-btn-3" onclick="setSpatialMode(3)" 
-                class="mode-btn carbon-panel lambo-cut-sm border border-white/20 hover:border-purple-400 px-3 py-2 text-left transition-all cursor-pointer">
-          <div class="font-mono-tech text-[9px] text-purple-400">STATE [3] // COSMOS</div>
-          <div class="font-orbitron font-bold text-xs text-white">EARTH SINGULARITY</div>
-        </button>
+  <!-- ========================================================================= -->
+  <!-- HERO STAGE: HUGE STATIONARY LETTERS IN THE ANIMATED ABYSS                   -->
+  <!-- ========================================================================= -->
+  <main class="relative z-20 w-full h-[calc(100vh-160px)] flex flex-col items-center justify-center text-center px-4 pointer-events-none">
+    
+    <!-- Supertag / Cadence Telemetry -->
+    <div class="pointer-events-auto flex items-center gap-2 px-3 py-1 bg-black/50 border border-white/10 rounded-full mb-3 backdrop-blur-sm">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#d4ff00]"></span>
+      <span class="font-chakra text-[11px] sm:text-xs text-[#d4ff00] tracking-[0.3em] font-bold">5 MILE RUN · SHRED SEASON</span>
+    </div>
 
-        <button id="mode-btn-4" onclick="setSpatialMode(4)" 
-                class="mode-btn col-span-2 sm:col-span-1 carbon-panel lambo-cut-sm border border-white/20 hover:border-[#d4ff00] px-3 py-2 text-left transition-all cursor-pointer">
-          <div class="font-mono-tech text-[9px] text-[#d4ff00]">STATE [4] // 195 BPM</div>
-          <div class="font-orbitron font-bold text-xs text-white">5-MILE SHRED RUN</div>
+    <!-- SUBHEADER: SPACE CADET -->
+    <h2 class="font-orbitron font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-[0.35em] text-transparent bg-clip-text bg-gradient-to-r from-[#00ffe6] via-white to-[#ff1e50] mb-2 drop-shadow-[0_0_25px_rgba(0,255,230,0.4)]">
+      SPACE CADET.
+    </h2>
+
+    <!-- HUGE MAIN MONOLITH: SAMKNCLB -->
+    <h1 class="hero-title-massive text-[clamp(4.2rem,14vw,14.5rem)] text-white select-none">
+      SAMKNCLB
+    </h1>
+
+    <!-- Sub-caption & telemetry -->
+    <p class="font-chakra text-xs sm:text-sm tracking-[0.4em] text-white/50 uppercase mt-2">
+      ORBITING DRIFT TRANSMISSION // STATIONARY MONOLITH // ABYSS VELOCITY
+    </p>
+
+    <!-- Floating Roadster Letter Notification Pill -->
+    <div class="pointer-events-auto mt-6 flex items-center gap-3 px-4 py-2 bg-black/60 border border-[#00ffe6]/30 rounded-full backdrop-blur-md">
+      <span class="text-base animate-pulse">🛸</span>
+      <span class="font-chakra text-xs text-white/80 tracking-widest">
+        LETTER <strong class="text-[#00ffe6]">"S"</strong> DRIFTING IN LOW EARTH ORBIT (TESLA ROADSTER TRAJECTORY)
+      </span>
+      <button onclick="teleportLetter()" class="text-[10px] bg-[#00ffe6]/20 hover:bg-[#00ffe6] text-[#00ffe6] hover:text-black font-bold px-2 py-0.5 rounded cursor-pointer transition">
+        BOOST FLIGHT
+      </button>
+    </div>
+  </main>
+
+  <!-- BOTTOM STATUS FOOTER -->
+  <footer class="relative z-20 w-full flex items-center justify-between px-6 py-3 border-t border-white/10 bg-black/50 backdrop-blur-md text-[11px] text-white/40 font-mono-tech">
+    <div class="flex items-center gap-4">
+      <span>LAT: 0.00° N</span>
+      <span>LON: 147.22° E</span>
+      <span class="text-[#00ffe6]">ORBIT: 420 KM</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span>5.00 MI TARGET</span>
+      <span class="text-[#ff1e50]">CADENCE: 176 SPM</span>
+      <span class="text-[#d4ff00]">PROJECT NO FUCKS</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL CONTAINER (STASHED REALITY ENGINE & SHRED CORE)                     -->
+  <!-- ========================================================================= -->
+  <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl hidden">
+    <div id="modal-drawer" class="modal-drawer hidden-drawer relative w-full max-w-7xl h-[92vh] bg-[#07090e] border border-white/20 rounded-lg shadow-2xl flex flex-col overflow-hidden">
+      <!-- Modal Header Bar -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-white/15 bg-black/60">
+        <div class="flex items-center gap-3">
+          <span id="modal-badge" class="font-orbitron font-extrabold text-xs text-[#00ffe6] tracking-widest uppercase">VIEWPORT</span>
+          <span class="text-white/20">|</span>
+          <span id="modal-title" class="font-chakra text-xs text-white/70">INTEGRATED MODULE</span>
+        </div>
+        <button onclick="closeModal()" 
+                class="lambo-btn bg-white/10 hover:bg-[#ff1e50] text-white px-3 py-1 text-xs font-bold font-orbitron cursor-pointer">
+          ✕ CLOSE VIEWPORT
         </button>
       </div>
 
-      <!-- Interactive Hints & Coordinate Ticker -->
-      <div class="carbon-panel lambo-cut-sm border border-white/15 px-3 py-1.5 hidden xl:flex items-center gap-4 font-mono-tech text-[10px] text-gray-400">
-        <span><strong class="text-white">DRAG</strong> ORBIT CAMERA</span>
-        <span><strong class="text-white">SCROLL</strong> MORPH STATES</span>
-        <span><strong class="text-[#d4ff00]">SPACE</strong> OVERDRIVE</span>
-        <span><strong class="text-[#ff003c]">CLICK / E</strong> SHOCKWAVE</span>
+      <!-- Modal Content Iframe Frame -->
+      <div class="flex-1 w-full h-full relative bg-black">
+        <iframe id="modal-iframe" src="" class="w-full h-full border-0"></iframe>
       </div>
-    </footer>
-
+    </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- JAVASCRIPT: WEBGL THREE.JS + CUSTOM GLSL SHADERS + WEB AUDIO + AI     -->
-  <!-- ===================================================================== -->
+  <!-- High-Energy Looping Music Generator -->
+  <script src="./music.js"></script>
+
+  <!-- ========================================================================= -->
+  <!-- 3D ANIMATED ABYSS & FLOATING TESLA ROADSTER LETTER ENGINE                 -->
+  <!-- ========================================================================= -->
   <script>
-    // =========================================================================
-    // 1. GLOBAL REALITY STATE & TELEMETRY CONFIGURATION
-    // =========================================================================
-    const STATE = {
-      mode: 0, // 0 = Unified Synthesis, 1 = Ceiling Lattice, 2 = Velvet Rose, 3 = Earth Singularity, 4 = 5-Mile Shred
-      targetWeights: [0.78, 0.88, 0.72, 0.90], // [Lattice, Rose, Earth, Shred]
-      weights: [0.78, 0.88, 0.72, 0.90],
-      overdrive: false,
-      throttle: 0.42,       // 0.1 to 1.0
-      glitchIntensity: 0.28,// 0.0 to 1.0
-      gravityWarp: 0.35,    // 0.0 to 1.0
-      shockwave: 0.0,       // Decays from 1.0 to 0.0 on click/pulse
-      distanceMiles: 2.84,  // Ticks toward 5.00 and loops with milestone flare
-      bpm: 154,
-      spm: 172,
-      gForce: 4.2,
-      time: 0,
-      beatPhase: 0,
-      cameraOrbitX: 0,
-      cameraOrbitY: 0,
-      targetOrbitX: 0,
-      targetOrbitY: 0,
-      isDragging: false,
-      lastMouseX: 0,
-      lastMouseY: 0,
-      primaryHex: '#ff003c',
-      secondaryHex: '#00f0ff',
-      accentHex: '#d4ff00'
-    };
+    // Audio Autoplay & Loop setup
+    window.addEventListener('DOMContentLoaded', () => {
+      const audioBtn = document.getElementById('audio-toggle-btn');
+      const audioIcon = document.getElementById('audio-icon');
+      const audioText = document.getElementById('audio-text');
 
-    const MODE_NAMES = [
-      "STATE 00 // UNIFIED SYNTHESIS",
-      "STATE 01 // CEILING TILE LATTICE",
-      "STATE 02 // BLEEDING VELVET ROSE",
-      "STATE 03 // EARTH & SINGULARITY",
-      "STATE 04 // 5-MILE SHRED SEASON"
-    ];
-
-    const MODE_PRESETS = {
-      0: [0.80, 0.90, 0.75, 0.85], // Unified Synthesis (All active!)
-      1: [1.00, 0.15, 0.10, 0.35], // Ceiling Tile Lattice focus
-      2: [0.20, 1.00, 0.15, 0.30], // Velvet Rose Bloom focus
-      3: [0.15, 0.20, 1.00, 0.35], // Spinning Earth & Singularity focus
-      4: [0.85, 0.75, 0.60, 1.00]  // 5-Mile Shred Season (High-speed tunnel + all elements)
-    };
-
-    // =========================================================================
-    // 2. PROCEDURAL WEB AUDIO API SYNTHESIZER (SUB-BASS HEARTBEAT + TURBINE)
-    // =========================================================================
-    let audioCtx = null;
-    let audioEnabled = false;
-    let analyser = null;
-    let turbineOsc1 = null;
-    let turbineOsc2 = null;
-    let turbineGain = null;
-    let turbineFilter = null;
-    let shimmerGain = null;
-    let lastBeatTime = 0;
-
-    
-    // Switch between Reality Engine and Shred Core
-    window.switchRealityView = function(view) {
-      const shredView = document.getElementById("shred-tab-view");
-      const tabReality = document.getElementById("nav-tab-reality");
-      const tabShred = document.getElementById("nav-tab-shred");
-
-      if (view === "shred") {
-        if (shredView) shredView.classList.remove("hidden");
-        tabShred.classList.add("text-[#ff003c]", "bg-white/10", "border-[#ff003c]");
-        tabShred.classList.remove("text-gray-400", "border-transparent");
-        tabReality.classList.remove("text-[#d4ff00]", "bg-white/10", "border-[#d4ff00]");
-        tabReality.classList.add("text-gray-400", "border-transparent");
-      } else {
-        if (shredView) shredView.classList.add("hidden");
-        tabReality.classList.add("text-[#d4ff00]", "bg-white/10", "border-[#d4ff00]");
-        tabReality.classList.remove("text-gray-400", "border-transparent");
-        tabShred.classList.remove("text-[#ff003c]", "bg-white/10", "border-[#ff003c]");
-        tabShred.classList.add("text-gray-400", "border-transparent");
+      // Start music on first click anywhere
+      function startMusic() {
+        if (window.highEnergyMusic) {
+          window.highEnergyMusic.start();
+          audioIcon.textContent = '🔊';
+          audioText.textContent = 'AUDIO ON';
+          window.removeEventListener('click', startMusic);
+          window.removeEventListener('keydown', startMusic);
+        }
       }
-    };
+      window.addEventListener('click', startMusic);
+      window.addEventListener('keydown', startMusic);
 
-    function initAudioEngine() {
-      if (audioCtx) return;
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContextClass();
-
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 64;
-      analyser.connect(audioCtx.destination);
-
-      // Lambo V12 / Shepard Turbine Continuous Drone
-      turbineOsc1 = audioCtx.createOscillator();
-      turbineOsc2 = audioCtx.createOscillator();
-      turbineFilter = audioCtx.createBiquadFilter();
-      turbineGain = audioCtx.createGain();
-
-      turbineOsc1.type = 'sawtooth';
-      turbineOsc2.type = 'triangle';
-      turbineOsc1.frequency.value = 55;
-      turbineOsc2.frequency.value = 110.5;
-
-      turbineFilter.type = 'bandpass';
-      turbineFilter.frequency.value = 240;
-      turbineFilter.Q.value = 4.5;
-
-      turbineGain.gain.value = 0.08;
-
-      turbineOsc1.connect(turbineFilter);
-      turbineOsc2.connect(turbineFilter);
-      turbineFilter.connect(turbineGain);
-      turbineGain.connect(analyser);
-
-      turbineOsc1.start();
-      turbineOsc2.start();
-
-      // Ethereal Rose/Singularity Harmonic Pad
-      const padFreqs = [146.83, 220.0, 277.18, 329.63]; // Dmaj7/Bm9 cosmic chord
-      shimmerGain = audioCtx.createGain();
-      shimmerGain.gain.value = 0.04;
-      shimmerGain.connect(analyser);
-
-      padFreqs.forEach((f, idx) => {
-        const osc = audioCtx.createOscillator();
-        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-        osc.frequency.value = f;
-        osc.detune.value = (idx - 1.5) * 8;
-        osc.connect(shimmerGain);
-        osc.start();
+      audioBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!window.highEnergyMusic) return;
+        const active = window.highEnergyMusic.toggle();
+        audioIcon.textContent = active ? '🔊' : '🔇';
+        audioText.textContent = active ? 'AUDIO ON' : 'AUDIO OFF';
       });
-    }
+    });
 
-    function toggleAudioEngine() {
-      if (!audioCtx) {
-        initAudioEngine();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      audioEnabled = !audioEnabled;
+    // Modal Manager for Stashed Reality & Shred
+    function openModal(type) {
+      const container = document.getElementById('modal-container');
+      const drawer = document.getElementById('modal-drawer');
+      const iframe = document.getElementById('modal-iframe');
+      const badge = document.getElementById('modal-badge');
+      const title = document.getElementById('modal-title');
 
-      const led = document.getElementById('audio-led');
-      const txt = document.getElementById('audio-btn-text');
-
-      if (audioEnabled) {
-        turbineGain.gain.setTargetAtTime(0.09, audioCtx.currentTime, 0.1);
-        shimmerGain.gain.setTargetAtTime(0.045, audioCtx.currentTime, 0.1);
-        led.className = 'w-2.5 h-2.5 rounded-full bg-[#d4ff00] shadow-[0_0_10px_#d4ff00]';
-        txt.textContent = 'AUDIO ENGAGED';
-        triggerShockwaveSound();
+      if (type === 'reality') {
+        iframe.src = './reality.html';
+        badge.textContent = '⚡ REALITY COCKPIT';
+        title.textContent = '3D Synthesis · Ceiling Lattice · Velvet Rose · Singularity';
       } else {
-        turbineGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.1);
-        shimmerGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.1);
-        led.className = 'w-2.5 h-2.5 rounded-full bg-gray-500';
-        txt.textContent = 'IGNITE AUDIO';
+        iframe.src = './shred.html';
+        badge.textContent = '🌀 RAYMARCH SHRED CORE';
+        title.textContent = 'Procedural Raymarching · Infinite Lattice Tunnel · 5-Mile Run';
       }
+
+      container.classList.remove('hidden');
+      setTimeout(() => {
+        drawer.classList.remove('hidden-drawer');
+      }, 20);
     }
 
-    // Sub-bass 808 Heartbeat Thump + High-Cadence Hi-Hat Tick
-    function playHeartbeatPulse() {
-      if (!audioEnabled || !audioCtx) return;
-      const now = audioCtx.currentTime;
+    function closeModal() {
+      const container = document.getElementById('modal-container');
+      const drawer = document.getElementById('modal-drawer');
+      const iframe = document.getElementById('modal-iframe');
 
-      // Kick / Heartbeat Sub
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      const baseFreq = STATE.overdrive ? 150 : 115;
-      osc.frequency.setValueAtTime(baseFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(34, now + 0.16);
-
-      gain.gain.setValueAtTime(STATE.overdrive ? 0.45 : 0.30, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-      osc.connect(gain);
-      gain.connect(analyser);
-      osc.start(now);
-      osc.stop(now + 0.19);
-
-      // Metallic Lattice Glitch Click on high entropy
-      if (STATE.glitchIntensity > 0.4) {
-        const clickOsc = audioCtx.createOscillator();
-        const clickGain = audioCtx.createGain();
-        clickOsc.type = 'square';
-        clickOsc.frequency.setValueAtTime(1600 + Math.random() * 1800, now);
-        clickGain.gain.setValueAtTime(0.03 * STATE.glitchIntensity, now);
-        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
-        clickOsc.connect(clickGain);
-        clickGain.connect(analyser);
-        clickOsc.start(now);
-        clickOsc.stop(now + 0.03);
-      }
+      drawer.classList.add('hidden-drawer');
+      setTimeout(() => {
+        container.classList.add('hidden');
+        iframe.src = '';
+      }, 350);
     }
 
-    function triggerShockwaveSound() {
-      if (!audioEnabled || !audioCtx) return;
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(480, now);
-      osc.frequency.exponentialRampToValueAtTime(28, now + 0.55);
+    // -------------------------------------------------------------------------
+    // THREE.JS ANIMATED ABYSS + EARTH + FLOATING ORBITING ROADSTER LETTER
+    // -------------------------------------------------------------------------
+    const canvas = document.getElementById('abyss-canvas');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x020306, 0.018);
 
-      gain.gain.setValueAtTime(0.35, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 16);
 
-      osc.connect(gain);
-      gain.connect(analyser);
-      osc.start(now);
-      osc.stop(now + 0.62);
-    }
-
-    // =========================================================================
-    // 3. THREE.JS SCENE & CUSTOM GLSL SHADERS INITIALIZATION
-    // =========================================================================
-    const canvas = document.getElementById('webgl-canvas');
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
+      alpha: true,
       powerPreference: 'high-performance'
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x040407);
-    scene.fog = new THREE.FogExp2(0x040407, 0.0085);
+    // Ambient Starfield Abyss (2,500 particles moving in cosmic drift)
+    const starCount = 3000;
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    const starColors = new Float32Array(starCount * 3);
 
-    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 400);
-    camera.position.set(0, 0, 26);
+    for (let i = 0; i < starCount * 3; i += 3) {
+      starPos[i] = (Math.random() - 0.5) * 85;
+      starPos[i + 1] = (Math.random() - 0.5) * 85;
+      starPos[i + 2] = (Math.random() - 0.5) * 90 - 15;
 
-    // Master Groups for the 4 Spatial States
-    const latticeGroup = new THREE.Group();
-    const roseGroup = new THREE.Group();
-    const earthSingularityGroup = new THREE.Group();
-    const shredTunnelGroup = new THREE.Group();
-    scene.add(latticeGroup, roseGroup, earthSingularityGroup, shredTunnelGroup);
-
-    // Shared Shader Uniforms updated at 60 FPS
-    const sharedUniforms = {
-      uTime: { value: 0 },
-      uBeat: { value: 0 },
-      uShockwave: { value: 0 },
-      uThrottle: { value: STATE.throttle },
-      uGlitch: { value: STATE.glitchIntensity },
-      uGravity: { value: STATE.gravityWarp },
-      uWeightLattice: { value: STATE.weights[0] },
-      uWeightRose: { value: STATE.weights[1] },
-      uWeightEarth: { value: STATE.weights[2] },
-      uWeightShred: { value: STATE.weights[3] },
-      uPrimaryColor: { value: new THREE.Color('#ff003c') },
-      uSecondaryColor: { value: new THREE.Color('#00f0ff') },
-      uAccentColor: { value: new THREE.Color('#d4ff00') }
-    };
-
-    // -------------------------------------------------------------------------
-    // STATE 01 // THE CEILING TILE LATTICE (ARCHITECTURAL GLITCH INFINITY)
-    // 1,600 Instanced Acoustic Ceiling Tiles on Upper & Lower Infinite Grids
-    // -------------------------------------------------------------------------
-    const tileCount = 1600;
-    const tileGeo = new THREE.BoxGeometry(2.6, 0.12, 2.6);
-    const tileMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms,
-      transparent: true,
-      vertexShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uShockwave;
-        uniform float uThrottle;
-        uniform float uGlitch;
-        uniform float uGravity;
-        uniform float uWeightLattice;
-
-        attribute vec3 aOffset;
-        attribute float aSeed;
-
-        varying vec2 vUv;
-        varying float vFracture;
-        varying float vDistZ;
-        varying float vSeed;
-
-        // Fast rotation matrix
-        mat2 rot(float a) {
-          float s = sin(a), c = cos(a);
-          return mat2(c, -s, s, c);
-        }
-
-        void main() {
-          vUv = uv;
-          vSeed = aSeed;
-
-          vec3 pos = aOffset;
-
-          // Endless Z-corridor streaming toward camera
-          float speed = (12.0 + uThrottle * 58.0);
-          float zSpan = 160.0;
-          pos.z = mod(aOffset.z + uTime * speed, zSpan) - (zSpan * 0.78);
-          vDistZ = pos.z;
-
-          // Architectural glitch fracture wave
-          float wave = sin(pos.z * 0.12 - uTime * 4.5 + aOffset.x * 0.25) 
-                     * cos(aOffset.x * 0.2 + uTime * 2.2);
-          float glitchTrigger = step(1.0 - uGlitch * 0.65, fract(sin(aSeed * 43758.5453 + floor(uTime * 8.0))));
-          vFracture = clamp(abs(wave) * uGlitch + glitchTrigger * 0.7 + uShockwave, 0.0, 1.5);
-
-          // Scale tiles based on Lattice state weight
-          float scale = mix(0.001, 1.0, clamp(uWeightLattice * 1.25, 0.0, 1.0));
-          vec3 localPos = position * scale;
-
-          // Rotate fractured tiles out of architectural order
-          float angle = vFracture * (aSeed - 0.5) * 3.14159 * uGlitch;
-          localPos.xy = rot(angle) * localPos.xy;
-          localPos.yz = rot(angle * 0.6) * localPos.yz;
-
-          // Levitate/collapse toward singularity center when fractured
-          pos.y += sign(pos.y) * (vFracture * 4.5 * sin(aSeed * 12.0 + uTime * 3.0));
-          pos.x += sin(uTime * 2.0 + aSeed * 6.28) * vFracture * 1.8;
-
-          // Gravitational pull near Z=0 when Earth Singularity is active
-          float gravPull = exp(-abs(pos.z) * 0.04) * uGravity * (1.0 - uWeightLattice * 0.5);
-          pos.xy *= (1.0 - gravPull * 0.45);
-
-          vec4 mvPosition = modelViewMatrix * vec4(pos + localPos, 1.0);
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uGlitch;
-        uniform float uWeightLattice;
-        uniform vec3 uPrimaryColor;
-        uniform vec3 uSecondaryColor;
-        uniform vec3 uAccentColor;
-
-        varying vec2 vUv;
-        varying float vFracture;
-        varying float vDistZ;
-        varying float vSeed;
-
-        // Procedural acoustic ceiling tile fissured noise
-        float hash(vec2 p) {
-          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-        }
-
-        void main() {
-          if (uWeightLattice < 0.02) discard;
-
-          // Grid border for metal T-bar ceiling strut
-          vec2 border = abs(vUv - 0.5) * 2.0;
-          float edge = max(border.x, border.y);
-          float isStrut = smoothstep(0.88, 0.95, edge);
-
-          // Acoustic pin-perforation texture
-          vec2 gridUv = floor(vUv * 28.0);
-          float speckle = hash(gridUv + floor(vSeed * 10.0));
-          float pinHole = step(0.76, speckle);
-
-          // Base brutalist office acoustic tile surface
-          vec3 tileSurface = vec3(0.14, 0.15, 0.18) - pinHole * 0.08;
-
-          // Bleeding crimson & cyan neon void leaking through fractured edges
-          vec3 neonEdge = mix(uSecondaryColor, uPrimaryColor, clamp(vFracture, 0.0, 1.0));
-          if (vFracture > 0.85) {
-            neonEdge = mix(neonEdge, uAccentColor, uBeat);
-          }
-
-          vec3 col = mix(tileSurface, neonEdge * (1.2 + uBeat * 0.8), isStrut);
-
-          // Inner glitch scanline on fractured tiles
-          if (vFracture > 0.45 && hash(vec2(floor(vUv.y * 12.0), floor(uTime * 15.0))) > 0.75) {
-            col += uPrimaryColor * 0.65;
-          }
-
-          // Distance fog fade
-          float fog = smoothstep(-125.0, -25.0, vDistZ) * (1.0 - smoothstep(18.0, 35.0, vDistZ));
-          gl_FragColor = vec4(col, fog * clamp(uWeightLattice * 1.2, 0.0, 0.95));
-        }
-      `
-    });
-
-    const instancedTiles = new THREE.InstancedMesh(tileGeo, tileMat, tileCount);
-    const offsets = new Float32Array(tileCount * 3);
-    const seeds = new Float32Array(tileCount);
-
-    let idx = 0;
-    const cols = 16;
-    const rows = 50;
-    for (let layer = -1; layer <= 1; layer += 2) { // -1 = Floor Lattice, +1 = Ceiling Lattice
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (idx >= tileCount) break;
-          offsets[idx * 3 + 0] = (c - cols / 2 + 0.5) * 3.1;
-          offsets[idx * 3 + 1] = layer * 10.5;
-          offsets[idx * 3 + 2] = -r * 3.1;
-          seeds[idx] = Math.random();
-          idx++;
-        }
-      }
+      const isCyan = Math.random() > 0.45;
+      starColors[i] = isCyan ? 0.0 : 1.0;
+      starColors[i + 1] = isCyan ? 0.95 : 0.15;
+      starColors[i + 2] = isCyan ? 1.0 : 0.35;
     }
-    tileGeo.setAttribute('aOffset', new THREE.InstancedBufferAttribute(offsets, 3));
-    tileGeo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
-    latticeGroup.add(instancedTiles);
 
-    // -------------------------------------------------------------------------
-    // STATE 02 // THE BLEEDING VELVET ROSE PETAL (SURREAL BIOMECHANICAL BLOOM)
-    // Parametric Rose Core + 1,200 Swirling Zero-G Velvet Petals
-    // -------------------------------------------------------------------------
-    const roseCoreGeo = new THREE.IcosahedronGeometry(5.2, 42);
-    const roseCoreMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms,
-      transparent: true,
-      side: THREE.DoubleSide,
-      vertexShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uShockwave;
-        uniform float uWeightRose;
-        uniform float uThrottle;
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
-        varying vec3 vNormal;
-        varying vec3 vViewPosition;
-        varying float vPetalFold;
-        varying vec2 vUv;
-
-        void main() {
-          vUv = uv;
-          vec3 p = position;
-          float r = length(p);
-          vec3 dir = normalize(p);
-
-          // Spherical coordinates for Rhodonea (Rose) harmonic folding
-          float theta = acos(clamp(dir.y, -1.0, 1.0));
-          float phi = atan(dir.z, dir.x);
-
-          // Multi-layered unfolding rose petals math
-          float petalFreq = 5.0;
-          float fold1 = sin(petalFreq * phi + uTime * 1.2) * sin(theta * 4.0 - uTime * 0.8);
-          float fold2 = cos((petalFreq * 2.0) * phi - uTime * 1.8) * sin(theta * 7.0);
-          float pulse = 1.0 + uBeat * 0.18 + uShockwave * 0.65;
-
-          vPetalFold = fold1 * 0.65 + fold2 * 0.35;
-
-          // Displace vertex along parametric petal folds
-          float scale = clamp(uWeightRose * 1.2, 0.001, 1.15);
-          vec3 displaced = dir * (3.8 + vPetalFold * 2.35 + sin(theta * 12.0 + uTime * 3.0) * 0.35) * pulse * scale;
-
-          // Subtle biomechanical spiral twist
-          float twist = vPetalFold * 0.45 * (1.0 + uThrottle * 0.5);
-          float s = sin(twist), c = cos(twist);
-          displaced.xz = mat2(c, -s, s, c) * displaced.xz;
-
-          vNormal = normalize(normalMatrix * (dir + vec3(fold1 * 0.3, fold2 * 0.3, 0.0)));
-          vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
-          vViewPosition = -mvPosition.xyz;
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uWeightRose;
-        uniform vec3 uPrimaryColor;
-        uniform vec3 uSecondaryColor;
-        uniform vec3 uAccentColor;
-
-        varying vec3 vNormal;
-        varying vec3 vViewPosition;
-        varying float vPetalFold;
-        varying vec2 vUv;
-
-        void main() {
-          if (uWeightRose < 0.02) discard;
-
-          vec3 normal = normalize(vNormal);
-          vec3 viewDir = normalize(vViewPosition);
-
-          // Velvet Fresnel rim sheen (signature velvet rose look)
-          float fresnel = pow(1.0 - abs(dot(normal, viewDir)), 2.6);
-
-          // Deep arterial crimson core to glowing laser-crimson & acid-volt rim
-          vec3 deepVelvet = vec3(0.12, 0.0, 0.03);
-          vec3 midCrimson = uPrimaryColor * (0.75 + 0.45 * vPetalFold);
-          vec3 sheenColor = mix(uPrimaryColor * 1.6, uAccentColor, fresnel * 0.55 + uBeat * 0.25);
-
-          vec3 finalColor = mix(deepVelvet, midCrimson, smoothstep(-0.6, 0.6, vPetalFold));
-          finalColor = mix(finalColor, sheenColor, fresnel);
-
-          // Biomechanical vein circuitry pulsing with BPM
-          float vein = abs(sin(vPetalFold * 18.0 - uTime * 4.0));
-          float veinMask = smoothstep(0.92, 0.99, vein);
-          finalColor += uSecondaryColor * veinMask * (0.35 + uBeat * 0.65);
-
-          gl_FragColor = vec4(finalColor, clamp(uWeightRose * 1.15, 0.0, 0.96));
-        }
-      `
-    });
-    const roseCoreMesh = new THREE.Mesh(roseCoreGeo, roseCoreMat);
-    roseGroup.add(roseCoreMesh);
-
-    // 1,200 Swirling Individual Velvet Rose Petals in Zero-G Vortex
-    const petalCount = 1200;
-    const singlePetalGeo = new THREE.PlaneGeometry(0.85, 1.15, 4, 4);
-    // Curve the single petal geometry so each instance is a cupped organic rose petal
-    const posAttr = singlePetalGeo.attributes.position;
-    for (let i = 0; i < posAttr.count; i++) {
-      const px = posAttr.getX(i);
-      const py = posAttr.getY(i);
-      const pz = -0.28 * (px * px + py * py) + Math.sin(py * 3.14) * 0.12;
-      posAttr.setZ(i, pz);
-    }
-    singlePetalGeo.computeVertexNormals();
-
-    const petalSwirlMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms,
-      transparent: true,
-      side: THREE.DoubleSide,
-      vertexShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uShockwave;
-        uniform float uThrottle;
-        uniform float uWeightRose;
-
-        attribute vec3 aOrbit; // [radius, angle, heightOffset]
-        attribute float aPetalSeed;
-
-        varying vec2 vUv;
-        varying float vFresnel;
-        varying float vSeed;
-
-        mat2 rot(float a) {
-          float s = sin(a), c = cos(a);
-          return mat2(c, -s, s, c);
-        }
-
-        void main() {
-          vUv = uv;
-          vSeed = aPetalSeed;
-
-          float radius = aOrbit.x + uShockwave * 14.0 * aPetalSeed;
-          float speed = (0.35 + uThrottle * 1.4) * (1.5 / sqrt(max(1.5, aOrbit.x)));
-          float angle = aOrbit.y + uTime * speed;
-
-          vec3 center = vec3(
-            cos(angle) * radius,
-            aOrbit.z + sin(uTime * 1.5 + aPetalSeed * 12.0) * 2.2,
-            sin(angle) * radius
-          );
-
-          // Scale and flutter individual petal
-          float scale = clamp(uWeightRose * 1.3, 0.0, 1.2) * (0.6 + aPetalSeed * 0.9);
-          vec3 p = position * scale;
-          p.xy = rot(uTime * 2.5 + aPetalSeed * 6.28) * p.xy;
-          p.yz = rot(uTime * 1.8 + aOrbit.y) * p.yz;
-
-          vec4 mvPosition = modelViewMatrix * vec4(center + p, 1.0);
-          vec3 viewDir = normalize(-mvPosition.xyz);
-          vec3 norm = normalize(normalMatrix * normal);
-          vFresnel = pow(1.0 - abs(dot(norm, viewDir)), 2.0);
-
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform float uWeightRose;
-        uniform float uBeat;
-        uniform vec3 uPrimaryColor;
-        uniform vec3 uAccentColor;
-
-        varying vec2 vUv;
-        varying float vFresnel;
-        varying float vSeed;
-
-        void main() {
-          if (uWeightRose < 0.02) discard;
-
-          // Organic rose petal teardrop silhouette mask
-          vec2 p = vUv * 2.0 - 1.0;
-          p.y -= 0.15;
-          float r = length(vec2(p.x * (1.2 - p.y * 0.35), p.y));
-          if (r > 0.92) discard;
-
-          vec3 baseVelvet = mix(vec3(0.22, 0.0, 0.05), uPrimaryColor, vUv.y);
-          vec3 rim = mix(uPrimaryColor * 1.8, uAccentColor, vFresnel * 0.65);
-          vec3 col = mix(baseVelvet, rim, vFresnel + uBeat * 0.2);
-
-          gl_FragColor = vec4(col, (1.0 - smoothstep(0.75, 0.92, r)) * clamp(uWeightRose, 0.0, 0.95));
-        }
-      `
-    });
-
-    const instancedPetals = new THREE.InstancedMesh(singlePetalGeo, petalSwirlMat, petalCount);
-    const petalOrbits = new Float32Array(petalCount * 3);
-    const petalSeeds = new Float32Array(petalCount);
-    for (let i = 0; i < petalCount; i++) {
-      petalOrbits[i * 3 + 0] = 5.5 + Math.pow(Math.random(), 1.4) * 26.0; // Radius
-      petalOrbits[i * 3 + 1] = Math.random() * Math.PI * 2;               // Angle
-      petalOrbits[i * 3 + 2] = (Math.random() - 0.5) * 16.0;              // Height
-      petalSeeds[i] = Math.random();
-    }
-    singlePetalGeo.setAttribute('aOrbit', new THREE.InstancedBufferAttribute(petalOrbits, 3));
-    singlePetalGeo.setAttribute('aPetalSeed', new THREE.InstancedBufferAttribute(petalSeeds, 1));
-    roseGroup.add(instancedPetals);
-
-    // -------------------------------------------------------------------------
-    // STATE 03 // THE SPINNING EARTH & GRAVITATIONAL SINGULARITY
-    // Planetary Shader Globe + Relativistic Black Hole Accretion Disk
-    // -------------------------------------------------------------------------
-    const earthGeo = new THREE.SphereGeometry(6.8, 64, 64);
-    const earthMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms,
-      transparent: true,
-      vertexShader: `
-        uniform float uTime;
-        uniform float uGravity;
-        uniform float uWeightEarth;
-        uniform float uShockwave;
-
-        varying vec2 vUv;
-        varying vec3 vNormal;
-        varying vec3 vViewPos;
-        varying float vElevation;
-
-        // 3D Simplex-like hash for procedural continents & tectonic displacement
-        float hash3(vec3 p) {
-          p = fract(p * vec3(443.897, 441.423, 437.195));
-          p += dot(p, p.yzx + 19.19);
-          return fract((p.x + p.y) * p.z);
-        }
-
-        void main() {
-          vUv = uv;
-          vec3 p = position;
-
-          // Procedural continental elevation math
-          vec3 normP = normalize(p);
-          float n1 = sin(normP.x * 5.0 + normP.z * 4.0) * cos(normP.y * 5.0 - normP.x * 3.0);
-          float n2 = sin(normP.x * 13.0 - normP.y * 11.0) * 0.35;
-          vElevation = smoothstep(-0.1, 0.45, n1 + n2);
-
-          // Gravitational singularity tidal stretching (spaghettification warp)
-          float scale = clamp(uWeightEarth * 1.2, 0.001, 1.05);
-          vec3 warped = p * scale * (1.0 + vElevation * 0.06 + uShockwave * 0.18);
-          float warpFactor = sin(uTime * 2.0 + normP.y * 4.0) * uGravity * 0.45;
-          warped.x += warpFactor * normP.z;
-
-          vNormal = normalize(normalMatrix * normal);
-          vec4 mvPosition = modelViewMatrix * vec4(warped, 1.0);
-          vViewPos = -mvPosition.xyz;
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uGravity;
-        uniform float uWeightEarth;
-        uniform vec3 uPrimaryColor;
-        uniform vec3 uSecondaryColor;
-        uniform vec3 uAccentColor;
-
-        varying vec2 vUv;
-        varying vec3 vNormal;
-        varying vec3 vViewPos;
-        varying float vElevation;
-
-        void main() {
-          if (uWeightEarth < 0.02) discard;
-
-          vec3 normal = normalize(vNormal);
-          vec3 viewDir = normalize(vViewPos);
-          float fresnel = pow(1.0 - abs(dot(normal, viewDir)), 2.2);
-
-          // Lat/Long holographic telemetry grid
-          float latGrid = smoothstep(0.95, 0.99, abs(sin(vUv.y * 36.0 * 3.14159)));
-          float lonGrid = smoothstep(0.95, 0.99, abs(sin(vUv.x * 72.0 * 3.14159 + uTime * 0.5)));
-          float grid = max(latGrid, lonGrid);
-
-          // Ocean void vs Continental telemetry mass
-          vec3 ocean = vec3(0.02, 0.05, 0.10);
-          vec3 continent = mix(uSecondaryColor * 0.45, uAccentColor * 0.85, vElevation);
-          vec3 col = mix(ocean, continent, step(0.45, vElevation));
-
-          // Add glowing lat/long telemetry wireframe & tectonic crimson rifts
-          col += uSecondaryColor * grid * 0.45;
-          float rift = smoothstep(0.42, 0.46, vElevation) * (1.0 - smoothstep(0.46, 0.50, vElevation));
-          col += uPrimaryColor * rift * (2.2 + uBeat * 1.5);
-
-          // Atmospheric Fresnel Halo
-          col = mix(col, uSecondaryColor * 1.6 + uPrimaryColor * uGravity, fresnel);
-
-          gl_FragColor = vec4(col, clamp(uWeightEarth * 1.15, 0.0, 0.92));
-        }
-      `
-    });
-    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
-    earthSingularityGroup.add(earthMesh);
-
-    // Relativistic Singularity Accretion Disk Shader Ring
-    const diskGeo = new THREE.RingGeometry(7.6, 22.0, 96, 8);
-    diskGeo.rotateX(Math.PI * 0.42);
-    const diskMat = new THREE.ShaderMaterial({
-      uniforms: sharedUniforms,
-      transparent: true,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      vertexShader: `
-        uniform float uTime;
-        uniform float uGravity;
-        uniform float uWeightEarth;
-        varying vec2 vUv;
-        varying float vRadius;
-
-        void main() {
-          vUv = uv;
-          float scale = clamp(uWeightEarth * 1.25, 0.001, 1.2);
-          vec3 p = position * scale;
-          vRadius = length(position.xz);
-          // Relativistic warp bend
-          p.y += sin(atan(p.z, p.x) * 3.0 - uTime * 4.0) * uGravity * 1.4;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform float uTime;
-        uniform float uBeat;
-        uniform float uWeightEarth;
-        uniform vec3 uPrimaryColor;
-        uniform vec3 uSecondaryColor;
-        uniform vec3 uAccentColor;
-
-        varying vec2 vUv;
-        varying float vRadius;
-
-        void main() {
-          if (uWeightEarth < 0.02) discard;
-
-          float radialNorm = (vRadius - 7.6) / (22.0 - 7.6);
-          float angle = vUv.x * 6.28318;
-
-          // Swirling relativistic plasma filaments
-          float spiral1 = sin(angle * 8.0 - radialNorm * 25.0 + uTime * 6.5);
-          float spiral2 = cos(angle * 13.0 + radialNorm * 18.0 - uTime * 4.2);
-          float plasma = smoothstep(-0.2, 0.9, spiral1 * 0.6 + spiral2 * 0.4);
-
-          vec3 hotCore = uAccentColor;
-          vec3 midDisk = mix(uPrimaryColor, uSecondaryColor, radialNorm);
-          vec3 col = mix(midDisk, hotCore, (1.0 - radialNorm) * (0.7 + uBeat * 0.4));
-
-          float alpha = sin(radialNorm * 3.14159) * (0.35 + plasma * 0.65) * uWeightEarth;
-          gl_FragColor = vec4(col * 1.4, clamp(alpha, 0.0, 0.9));
-        }
-      `
-    });
-    const accretionDisk = new THREE.Mesh(diskGeo, diskMat);
-    earthSingularityGroup.add(accretionDisk);
-
-    // Orbital Telemetry Gyroscope Rings around the Planet
-    const gyroRingGeo = new THREE.TorusGeometry(9.2, 0.045, 8, 120);
-    const gyroRingMat = new THREE.MeshBasicMaterial({
-      color: 0x00f0ff,
-      transparent: true,
-      opacity: 0.55
-    });
-    const gyroRing1 = new THREE.Mesh(gyroRingGeo, gyroRingMat);
-    const gyroRing2 = new THREE.Mesh(gyroRingGeo, gyroRingMat.clone());
-    gyroRing2.material.color.setHex(0xd4ff00);
-    gyroRing2.scale.setScalar(1.18);
-    gyroRing2.rotation.x = Math.PI / 3;
-    earthSingularityGroup.add(gyroRing1, gyroRing2);
-
-    // -------------------------------------------------------------------------
-    // STATE 04 // 5-MILE RUN: SHRED SEASON (RELENTLESS VELOCITY & ADRENALINE)
-    // High-Cadence Doppler Speed Streaks + Biometric Heartbeat Pulse Waves
-    // -------------------------------------------------------------------------
-    const streakCount = 900;
-    const streakGeo = new THREE.BufferGeometry();
-    const streakPositions = new Float32Array(streakCount * 6); // 2 vertices per line
-    const streakColors = new Float32Array(streakCount * 6);
-    const streakMeta = new Float32Array(streakCount * 4); // [x, y, z, speedFactor]
-
-    const cCrimson = new THREE.Color('#ff003c');
-    const cVolt = new THREE.Color('#d4ff00');
-    const cCyan = new THREE.Color('#00f0ff');
-
-    for (let i = 0; i < streakCount; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const rad = 3.5 + Math.random() * 28.0;
-      const x = Math.cos(angle) * rad;
-      const y = Math.sin(angle) * rad;
-      const z = (Math.random() - 0.8) * 160.0;
-      const spd = 0.6 + Math.random() * 1.4;
-
-      streakMeta[i * 4 + 0] = x;
-      streakMeta[i * 4 + 1] = y;
-      streakMeta[i * 4 + 2] = z;
-      streakMeta[i * 4 + 3] = spd;
-
-      const col = i % 3 === 0 ? cVolt : (i % 3 === 1 ? cCrimson : cCyan);
-      for (let v = 0; v < 2; v++) {
-        streakColors[(i * 2 + v) * 3 + 0] = col.r;
-        streakColors[(i * 2 + v) * 3 + 1] = col.g;
-        streakColors[(i * 2 + v) * 3 + 2] = col.b;
-      }
-    }
-    streakGeo.setAttribute('position', new THREE.BufferAttribute(streakPositions, 3));
-    streakGeo.setAttribute('color', new THREE.BufferAttribute(streakColors, 3));
-
-    const streakMat = new THREE.LineBasicMaterial({
+    const starMat = new THREE.PointsMaterial({
+      size: 0.11,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending
+      opacity: 0.85
     });
-    const speedLines = new THREE.LineSegments(streakGeo, streakMat);
-    shredTunnelGroup.add(speedLines);
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
 
-    // Biometric Pace Gates (Hexagonal / Octagonal Adrenaline Rings rushing past)
-    const gateCount = 12;
-    const paceGates = [];
-    const gateGeo = new THREE.RingGeometry(11.0, 11.35, 6);
-    for (let i = 0; i < gateCount; i++) {
-      const gateMat = new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0xd4ff00 : 0xff003c,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.45,
-        blending: THREE.AdditiveBlending
+    // Distant 3D Earth in the background
+    const earthGroup = new THREE.Group();
+    earthGroup.position.set(10.5, -4.5, -18);
+    scene.add(earthGroup);
+
+    // Procedural Earth Texture
+    const earthCanvas = document.createElement('canvas');
+    earthCanvas.width = 1024;
+    earthCanvas.height = 512;
+    const ectx = earthCanvas.getContext('2d');
+    const grad = ectx.createLinearGradient(0, 0, 0, 512);
+    grad.addColorStop(0, '#030814');
+    grad.addColorStop(0.5, '#071d3a');
+    grad.addColorStop(1, '#030814');
+    ectx.fillStyle = grad;
+    ectx.fillRect(0, 0, 1024, 512);
+
+    // Continents
+    ectx.fillStyle = '#1c4d38';
+    for (let i = 0; i < 24; i++) {
+      ectx.beginPath();
+      ectx.arc(Math.random() * 1024, Math.random() * 512, Math.random() * 120 + 40, 0, Math.PI * 2);
+      ectx.fill();
+    }
+    // Atmospheric grid
+    ectx.strokeStyle = 'rgba(0, 255, 230, 0.15)';
+    for (let x = 0; x < 1024; x += 48) {
+      ectx.beginPath(); ectx.moveTo(x, 0); ectx.lineTo(x, 512); ectx.stroke();
+    }
+
+    const earthTex = new THREE.CanvasTexture(earthCanvas);
+    const earthMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(4.8, 48, 48),
+      new THREE.MeshStandardMaterial({ map: earthTex, roughness: 0.6, metalness: 0.1 })
+    );
+    earthGroup.add(earthMesh);
+
+    // Earth Atmosphere Rim Glow
+    const atmosMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(5.15, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00ffe6, transparent: true, opacity: 0.18, wireframe: true })
+    );
+    earthGroup.add(atmosMesh);
+
+    // -------------------------------------------------------------------------
+    // THE FLOATING TESLA ROADSTER LETTER: "S" ORBITING IN SPACE
+    // -------------------------------------------------------------------------
+    const letterGroup = new THREE.Group();
+    scene.add(letterGroup);
+
+    // Procedural 3D Beveled Monolith Letter "S" Mesh
+    function create3DLetterS() {
+      const group = new THREE.Group();
+
+      // Create high-tech carbon/gold beveled blocks forming letter "S"
+      const blockMat = new THREE.MeshStandardMaterial({
+        color: 0xff1e50,
+        emissive: 0x330011,
+        roughness: 0.25,
+        metalness: 0.9,
       });
-      const gate = new THREE.Mesh(gateGeo, gateMat);
-      gate.position.z = -i * 14.0;
-      gate.rotation.z = i * 0.25;
-      shredTunnelGroup.add(gate);
-      paceGates.push(gate);
+
+      const wireMat = new THREE.MeshBasicMaterial({
+        color: 0x00ffe6,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.75
+      });
+
+      // Construct segments of the Roadster Letter 'S'
+      const segments = [
+        // Top bar
+        { x: 0, y: 1.8, z: 0, w: 2.2, h: 0.5, d: 0.6 },
+        // Top left bar
+        { x: -0.85, y: 1.0, z: 0, w: 0.5, h: 1.2, d: 0.6 },
+        // Middle crossbar
+        { x: 0, y: 0.3, z: 0, w: 2.2, h: 0.5, d: 0.6 },
+        // Bottom right bar
+        { x: 0.85, y: -0.5, z: 0, w: 0.5, h: 1.2, d: 0.6 },
+        // Bottom bar
+        { x: 0, y: -1.2, z: 0, w: 2.2, h: 0.5, d: 0.6 },
+      ];
+
+      segments.forEach(s => {
+        const geo = new THREE.BoxGeometry(s.w, s.h, s.d);
+        const mesh = new THREE.Mesh(geo, blockMat);
+        mesh.position.set(s.x, s.y, s.z);
+        const wire = new THREE.Mesh(geo, wireMat);
+        wire.scale.set(1.04, 1.04, 1.04);
+        mesh.add(wire);
+        group.add(mesh);
+      });
+
+      // Miniature Roadster cockpit thruster trail
+      const thrusterGeo = new THREE.ConeGeometry(0.35, 1.2, 16);
+      const thrusterMat = new THREE.MeshBasicMaterial({ color: 0x00ffe6, wireframe: true });
+      const thruster = new THREE.Mesh(thrusterGeo, thrusterMat);
+      thruster.position.set(-1.4, 0, 0);
+      thruster.rotation.z = Math.PI / 2;
+      group.add(thruster);
+
+      return group;
     }
 
-    // =========================================================================
-    // 4. INTERACTIVE CONTROLS, MODES & TELEMETRY CANVAS RENDERING
-    // =========================================================================
-    const telemetryCanvas = document.getElementById('telemetry-canvas');
-    const tCtx = telemetryCanvas.getContext('2d');
-    const freqData = new Uint8Array(32);
+    const roadsterLetter = create3DLetterS();
+    roadsterLetter.scale.set(0.65, 0.65, 0.65);
+    letterGroup.add(roadsterLetter);
 
-    function setSpatialMode(modeIndex) {
-      STATE.mode = modeIndex;
-      STATE.targetWeights = [...MODE_PRESETS[modeIndex]];
+    // Orbital parameters (like Tesla Roadster in elliptical heliocentric orbit)
+    let orbitTheta = 0;
+    const orbitRadiusX = 14;
+    const orbitRadiusY = 5.5;
+    const orbitRadiusZ = 7;
+    let flightBoost = 1.0;
 
-      // Trigger subtle shockwave transition
-      STATE.shockwave = Math.max(STATE.shockwave, 0.55);
-      triggerShockwaveSound();
+    window.teleportLetter = function() {
+      flightBoost = 4.0;
+      setTimeout(() => flightBoost = 1.0, 3000);
+    };
 
-      // Update Banner & Mode Button Styles
-      document.getElementById('active-state-banner').textContent = MODE_NAMES[modeIndex];
-      for (let i = 0; i <= 4; i++) {
-        const btn = document.getElementById(`mode-btn-${i}`);
-        if (i === modeIndex) {
-          btn.classList.add('border-[#d4ff00]', 'glow-volt');
-          btn.classList.remove('border-white/20');
-        } else {
-          btn.classList.remove('border-[#d4ff00]', 'glow-volt');
-          btn.classList.add('border-white/20');
-        }
-      }
-    }
+    // Lights
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    dirLight.position.set(10, 8, 12);
+    scene.add(dirLight);
 
-    function updateCockpitSliders() {
-      const throttleVal = parseFloat(document.getElementById('slider-throttle').value);
-      const glitchVal = parseFloat(document.getElementById('slider-glitch').value);
-      const gravityVal = parseFloat(document.getElementById('slider-gravity').value);
+    const cyanLight = new THREE.PointLight(0x00ffe6, 3.5, 50);
+    cyanLight.position.set(-10, -5, 10);
+    scene.add(cyanLight);
 
-      STATE.throttle = throttleVal / 100;
-      STATE.glitchIntensity = glitchVal / 100;
-      STATE.gravityWarp = gravityVal / 100;
+    const crimsonLight = new THREE.PointLight(0xff1e50, 4.0, 50);
+    crimsonLight.position.set(10, 5, -5);
+    scene.add(crimsonLight);
 
-      document.getElementById('val-throttle').textContent = `${Math.round(throttleVal)}%`;
-      document.getElementById('val-glitch').textContent = `${Math.round(glitchVal)}%`;
-      document.getElementById('val-gravity').textContent = `${Math.round(gravityVal)}%`;
-    }
-
-    function engageOverdrive(active) {
-      STATE.overdrive = active;
-      const btn = document.getElementById('btn-overdrive');
-      const vignette = document.getElementById('adrenaline-vignette');
-
-      if (active) {
-        STATE.shockwave = 1.0;
-        triggerShockwaveSound();
-        btn.textContent = '🔥 OVERDRIVE ENGAGED // 5-MILE REDLINE 🔥';
-        vignette.style.background = 'radial-gradient(circle at center, transparent 32%, rgba(212, 255, 0, 0.25) 75%, rgba(255, 0, 60, 0.75) 100%)';
-      } else {
-        btn.textContent = 'HOLD [SPACE] // SHRED OVERDRIVE';
-        vignette.style.background = 'radial-gradient(circle at center, transparent 48%, rgba(255, 0, 60, 0.28) 90%, rgba(5, 5, 8, 0.92) 100%)';
-      }
-    }
-
-    function triggerRealityShockwave() {
-      STATE.shockwave = 1.25;
-      triggerShockwaveSound();
-    }
-
-    function toggleVoidTerminal() {
-      const term = document.getElementById('void-terminal');
-      term.classList.toggle('hidden');
-    }
-
-    function toggleApiConfig() {
-      const drawer = document.getElementById('api-config-drawer');
-      drawer.classList.toggle('hidden');
-    }
-
-    // Mouse / Touch Camera Orbit + Scroll Wheel State Morphing
-    canvas.addEventListener('pointerdown', (e) => {
-      STATE.isDragging = true;
-      STATE.lastMouseX = e.clientX;
-      STATE.lastMouseY = e.clientY;
-      triggerRealityShockwave();
-    });
-
-    window.addEventListener('pointermove', (e) => {
-      const normX = (e.clientX / window.innerWidth) * 2 - 1;
-      const normY = (e.clientY / window.innerHeight) * 2 - 1;
-
-      if (STATE.isDragging) {
-        const dx = e.clientX - STATE.lastMouseX;
-        const dy = e.clientY - STATE.lastMouseY;
-        STATE.targetOrbitX += dx * 0.006;
-        STATE.targetOrbitY = Math.max(-1.1, Math.min(1.1, STATE.targetOrbitY + dy * 0.006));
-        STATE.lastMouseX = e.clientX;
-        STATE.lastMouseY = e.clientY;
-      } else {
-        // Subtle cockpit parallax
-        STATE.targetOrbitX = normX * 0.35;
-        STATE.targetOrbitY = normY * 0.25;
-      }
-    });
-
-    window.addEventListener('pointerup', () => {
-      STATE.isDragging = false;
-    });
-
-    // Scroll wheel seamlessly cycles or morphs spatial states
-    window.addEventListener('wheel', (e) => {
-      if (e.target.closest('#void-terminal')) return;
-      const dir = e.deltaY > 0 ? 1 : -1;
-      const nextMode = (STATE.mode + dir + 5) % 5;
-      setSpatialMode(nextMode);
-    }, { passive: true });
-
-    // Keyboard Hotkeys (0-4 States, SPACE Overdrive, E Shockwave, TAB Terminal)
-    window.addEventListener('keydown', (e) => {
-      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-
-      if (e.key === '0') setSpatialMode(0);
-      if (e.key === '1') setSpatialMode(1);
-      if (e.key === '2') setSpatialMode(2);
-      if (e.key === '3') setSpatialMode(3);
-      if (e.key === '4') setSpatialMode(4);
-      if (e.key.toLowerCase() === 'e') triggerRealityShockwave();
-      if (e.key.toLowerCase() === 'm') toggleAudioEngine();
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        toggleVoidTerminal();
-      }
-      if (e.code === 'Space' && !STATE.overdrive) {
-        e.preventDefault();
-        engageOverdrive(true);
-      }
-    });
-
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space') {
-        engageOverdrive(false);
-      }
+    // Mouse Parallax
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
     window.addEventListener('resize', () => {
@@ -1498,414 +477,45 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // =========================================================================
-    // 5. FRONTIER INTELLIGENCE VOID TERMINAL (GEMINI API + SCENE MUTATION)
-    // =========================================================================
-    const apiKey = ""; // Canvas runtime injects Gemini key automatically
+    // -------------------------------------------------------------------------
+    // ANIMATION LOOP
+    // -------------------------------------------------------------------------
+    let clock = new THREE.Clock();
 
-    function appendVoidMessage(sender, text, badgeColor = '#ff003c') {
-      const log = document.getElementById('void-chat-log');
-      const item = document.createElement('div');
-      item.className = 'border-l-2 pl-2.5 py-0.5 transition-all';
-      item.style.borderColor = badgeColor;
-
-      const header = document.createElement('div');
-      header.className = 'text-[10px] font-bold tracking-wider';
-      header.style.color = badgeColor;
-      header.textContent = sender;
-
-      const body = document.createElement('p');
-      body.className = 'text-gray-200 text-[11px] leading-relaxed mt-0.5';
-      body.textContent = text;
-
-      item.appendChild(header);
-      item.appendChild(body);
-      log.appendChild(item);
-      log.scrollTop = log.scrollHeight;
-      return body;
-    }
-
-    function applyRealityMutation(mutation) {
-      if (!mutation) return;
-
-      if (typeof mutation.targetMode === 'number' && mutation.targetMode >= 0 && mutation.targetMode <= 4) {
-        setSpatialMode(mutation.targetMode);
-      }
-      if (typeof mutation.throttle === 'number') {
-        STATE.throttle = Math.max(0.1, Math.min(1.0, mutation.throttle));
-        document.getElementById('slider-throttle').value = Math.round(STATE.throttle * 100);
-      }
-      if (typeof mutation.glitchIntensity === 'number') {
-        STATE.glitchIntensity = Math.max(0.0, Math.min(1.0, mutation.glitchIntensity));
-        document.getElementById('slider-glitch').value = Math.round(STATE.glitchIntensity * 100);
-      }
-      if (typeof mutation.gravityWarp === 'number') {
-        STATE.gravityWarp = Math.max(0.0, Math.min(1.0, mutation.gravityWarp));
-        document.getElementById('slider-gravity').value = Math.round(STATE.gravityWarp * 100);
-      }
-      if (mutation.primaryHex && /^#[0-9A-Fa-f]{6}$/.test(mutation.primaryHex)) {
-        sharedUniforms.uPrimaryColor.value.set(mutation.primaryHex);
-      }
-      if (mutation.secondaryHex && /^#[0-9A-Fa-f]{6}$/.test(mutation.secondaryHex)) {
-        sharedUniforms.uSecondaryColor.value.set(mutation.secondaryHex);
-      }
-      if (mutation.accentHex && /^#[0-9A-Fa-f]{6}$/.test(mutation.accentHex)) {
-        sharedUniforms.uAccentColor.value.set(mutation.accentHex);
-      }
-
-      updateCockpitSliders();
-      triggerRealityShockwave();
-    }
-
-    async function callGeminiVoidConsciousness(userPrompt, selectedFleet) {
-      const customKey = document.getElementById('custom-api-key').value.trim();
-      const activeKey = customKey || apiKey;
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${activeKey}`;
-
-      const systemInstruction = `You are the omniscient Frontier Intelligence Void Consciousness inside 'PROJECT NO FUCKS: PURE UNBOUND CREATION' (yaegerbomb42.github.io/unified), currently operating under the ${selectedFleet.toUpperCase()} persona from the api_keys.md fleet.
-You observe the user's 5-mile shred season run (currently ${STATE.distanceMiles.toFixed(2)} miles at ${STATE.bpm} BPM), the infinite fracturing ceiling tile lattice, the bleeding velvet rose petals, and the spinning Earth collapsing into a singularity.
-Respond with intense, poetic, unhinged cyber-philosophical brilliance (2-3 sentences max) AND return JSON mutation parameters to physically alter their WebGL shaders in real time.`;
-
-      const payload = {
-        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              reply: { type: "STRING" },
-              targetMode: { type: "INTEGER", description: "0=Unified Synthesis, 1=Ceiling Lattice, 2=Velvet Rose, 3=Earth Singularity, 4=5-Mile Shred" },
-              throttle: { type: "NUMBER", description: "0.1 to 1.0 velocity/cadence" },
-              glitchIntensity: { type: "NUMBER", description: "0.0 to 1.0 lattice fracture" },
-              gravityWarp: { type: "NUMBER", description: "0.0 to 1.0 singularity lensing" },
-              primaryHex: { type: "STRING", description: "Hex color like #ff003c" },
-              secondaryHex: { type: "STRING", description: "Hex color like #00f0ff" },
-              accentHex: { type: "STRING", description: "Hex color like #d4ff00" }
-            },
-            required: ["reply", "targetMode", "throttle", "glitchIntensity", "gravityWarp", "primaryHex", "secondaryHex", "accentHex"]
-          }
-        }
-      };
-
-      // Exponential backoff retry
-      const delays = [1000, 2000, 4000];
-      for (let attempt = 0; attempt <= delays.length; attempt++) {
-        try {
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (rawText) {
-            return JSON.parse(rawText);
-          }
-        } catch (err) {
-          if (attempt === delays.length) throw err;
-          await new Promise(r => setTimeout(r, delays[attempt]));
-        }
-      }
-    }
-
-    // Deterministic Local Fallback if network/key is unavailable
-    function generateFallbackVoidMutation(prompt) {
-      const p = prompt.toLowerCase();
-      if (p.includes('rose') || p.includes('blood') || p.includes('supernova')) {
-        return {
-          reply: "Arterial velvet unfurls across the event horizon. Every stride at 204 BPM detonates ten thousand crimson petals through the fractured acoustic grid.",
-          targetMode: 2,
-          throttle: 0.94,
-          glitchIntensity: 0.75,
-          gravityWarp: 0.85,
-          primaryHex: "#ff0044",
-          secondaryHex: "#ff7700",
-          accentHex: "#d4ff00"
-        };
-      } else if (p.includes('lattice') || p.includes('ceiling') || p.includes('shatter')) {
-        return {
-          reply: "Architectural order is a lie. The suspended ceiling grid shears along non-Euclidean fault lines, exposing the acid-volt slipstream behind the bureaucracy of matter.",
-          targetMode: 1,
-          throttle: 0.88,
-          glitchIntensity: 0.98,
-          gravityWarp: 0.65,
-          primaryHex: "#00ffcc",
-          secondaryHex: "#ff0055",
-          accentHex: "#d4ff00"
-        };
-      } else if (p.includes('earth') || p.includes('collapse') || p.includes('void')) {
-        return {
-          reply: "Planetary mass surrenders to the accretion disk. Continents liquify into cyan telemetry streams as you sprint across the curvature of spacetime.",
-          targetMode: 3,
-          throttle: 0.90,
-          glitchIntensity: 0.82,
-          gravityWarp: 1.0,
-          primaryHex: "#9d00ff",
-          secondaryHex: "#00f0ff",
-          accentHex: "#ff003c"
-        };
-      } else {
-        return {
-          reply: "SHRED SEASON OVERDRIVE LOCKED. 5.00 miles of pure unbound creation: the rose bleeds, the ceiling shatters, and the planet spins beneath your cadence.",
-          targetMode: 0,
-          throttle: 1.0,
-          glitchIntensity: 0.88,
-          gravityWarp: 0.92,
-          primaryHex: "#ff003c",
-          secondaryHex: "#00f0ff",
-          accentHex: "#d4ff00"
-        };
-      }
-    }
-
-    async function processVoidCommand(userText) {
-      if (!userText.trim()) return;
-      const fleetSelect = document.getElementById('fleet-model-select');
-      const fleetName = fleetSelect.options[fleetSelect.selectedIndex].text.split('//')[0].trim();
-
-      appendVoidMessage('RUNNER // TELEMETRY_LINK', userText, '#00f0ff');
-      const loadingEl = appendVoidMessage(`${fleetName} // MUTATING SHADERS...`, 'Synthesizing non-Euclidean shader parameters...', '#d4ff00');
-
-      try {
-        const result = await callGeminiVoidConsciousness(userText, fleetName);
-        loadingEl.textContent = result.reply;
-        applyRealityMutation(result);
-      } catch (e) {
-        const fallback = generateFallbackVoidMutation(userText);
-        loadingEl.textContent = fallback.reply;
-        applyRealityMutation(fallback);
-      }
-    }
-
-    function handleVoidSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('void-input');
-      const text = input.value;
-      input.value = '';
-      processVoidCommand(text);
-    }
-
-    function sendQuickDirective(directiveText) {
-      processVoidCommand(directiveText);
-    }
-
-    // =========================================================================
-    // 6. MASTER 60 FPS ANIMATION & TELEMETRY LOOP
-    // =========================================================================
-    let lastFrameTime = performance.now();
-    let frameCount = 0;
-    let fpsTimer = performance.now();
-
-    function animate(now) {
+    function animate() {
       requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
 
-      const dt = Math.min((now - lastFrameTime) / 1000, 0.1);
-      lastFrameTime = now;
+      // Cosmic star drift
+      starField.rotation.y = time * 0.02;
+      starField.rotation.x = time * 0.008;
 
-      // FPS Counter
-      frameCount++;
-      if (now - fpsTimer >= 500) {
-        const fps = Math.round((frameCount * 1000) / (now - fpsTimer));
-        document.getElementById('fps-counter').textContent = `${Math.min(60, fps)} FPS`;
-        frameCount = 0;
-        fpsTimer = now;
-      }
+      // Earth rotation & axial spin
+      earthGroup.rotation.y = time * 0.06;
 
-      // Effective throttle with Overdrive boost
-      const effectiveThrottle = STATE.overdrive ? 1.35 : STATE.throttle;
-      STATE.time += dt * (0.75 + effectiveThrottle * 0.85);
+      // Floating Roadster Letter "S" orbital physics
+      orbitTheta += delta * 0.45 * flightBoost;
+      const lx = Math.cos(orbitTheta) * orbitRadiusX;
+      const ly = Math.sin(orbitTheta * 1.5) * orbitRadiusY + Math.sin(time) * 0.8;
+      const lz = Math.sin(orbitTheta) * orbitRadiusZ - 1.5;
 
-      // Smoothly interpolate 4 Spatial State Weights
-      for (let i = 0; i < 4; i++) {
-        const target = STATE.overdrive ? 1.0 : STATE.targetWeights[i];
-        STATE.weights[i] += (target - STATE.weights[i]) * Math.min(1.0, dt * 5.5);
-      }
+      roadsterLetter.position.set(lx, ly, lz);
 
-      // Decay Shockwave
-      STATE.shockwave = Math.max(0.0, STATE.shockwave - dt * 1.85);
+      // Tumbling zero-g roadster spin
+      roadsterLetter.rotation.x += delta * 0.8 * flightBoost;
+      roadsterLetter.rotation.y += delta * 1.2 * flightBoost;
+      roadsterLetter.rotation.z += delta * 0.6 * flightBoost;
 
-      // Biometric BPM & Cadence calculation
-      STATE.bpm = Math.round(138 + effectiveThrottle * 64 + STATE.shockwave * 15);
-      STATE.spm = Math.round(152 + effectiveThrottle * 52);
-      STATE.gForce = (1.2 + effectiveThrottle * 3.8 + STATE.gravityWarp * 2.4 + STATE.shockwave * 3.0).toFixed(1);
-
-      // Heartbeat rhythm trigger
-      const beatInterval = 60.0 / STATE.bpm;
-      if (STATE.time - lastBeatTime >= beatInterval) {
-        lastBeatTime = STATE.time;
-        STATE.beatPhase = 1.0;
-        playHeartbeatPulse();
-
-        // Pulse HUD heart icon
-        const heartEl = document.getElementById('heart-icon');
-        heartEl.style.transform = 'scale(1.35)';
-        setTimeout(() => { heartEl.style.transform = 'scale(1)'; }, 90);
-      }
-      STATE.beatPhase = Math.max(0.0, STATE.beatPhase - dt * 4.5);
-
-      // Update Web Audio Turbine pitch with velocity
-      if (audioEnabled && audioCtx && turbineOsc1) {
-        const basePitch = 48 + effectiveThrottle * 115 + STATE.shockwave * 60;
-        turbineOsc1.frequency.setTargetAtTime(basePitch, audioCtx.currentTime, 0.05);
-        turbineOsc2.frequency.setTargetAtTime(basePitch * 1.5, audioCtx.currentTime, 0.05);
-        turbineFilter.frequency.setTargetAtTime(180 + effectiveThrottle * 1200, audioCtx.currentTime, 0.05);
-      }
-
-      // Advance 5.00 Mile Shred Season Distance
-      STATE.distanceMiles += dt * 0.025 * effectiveThrottle;
-      if (STATE.distanceMiles >= 5.0) {
-        STATE.distanceMiles = 0.0;
-        triggerRealityShockwave(); // 5-Mile Shred Milestone Detonation!
-      }
-
-      // Update Shared GLSL Uniforms
-      sharedUniforms.uTime.value = STATE.time;
-      sharedUniforms.uBeat.value = STATE.beatPhase;
-      sharedUniforms.uShockwave.value = STATE.shockwave;
-      sharedUniforms.uThrottle.value = effectiveThrottle;
-      sharedUniforms.uGlitch.value = STATE.overdrive ? 0.95 : STATE.glitchIntensity;
-      sharedUniforms.uGravity.value = STATE.overdrive ? 0.95 : STATE.gravityWarp;
-      sharedUniforms.uWeightLattice.value = STATE.weights[0];
-      sharedUniforms.uWeightRose.value = STATE.weights[1];
-      sharedUniforms.uWeightEarth.value = STATE.weights[2];
-      sharedUniforms.uWeightShred.value = STATE.weights[3];
-
-      // Rotate & Animate Rose Core and Earth Singularity
-      roseCoreMesh.rotation.y = STATE.time * 0.35;
-      roseCoreMesh.rotation.z = Math.sin(STATE.time * 0.5) * 0.2;
-
-      earthMesh.rotation.y = STATE.time * 0.45;
-      earthMesh.rotation.x = 0.25;
-      gyroRing1.rotation.y = -STATE.time * 0.8;
-      gyroRing1.rotation.x = Math.sin(STATE.time * 0.6) * 0.5;
-      gyroRing2.rotation.z = STATE.time * 0.65;
-      gyroRing1.material.opacity = STATE.weights[2] * 0.55;
-      gyroRing2.material.opacity = STATE.weights[2] * 0.45;
-
-      // Update State 04 High-Cadence Speed Lines & Pace Gates
-      const posArr = speedLines.geometry.attributes.position.array;
-      const shredWeight = STATE.weights[3];
-      speedLines.material.opacity = shredWeight * 0.85;
-      const lineSpeed = (45.0 + effectiveThrottle * 95.0);
-
-      for (let i = 0; i < streakCount; i++) {
-        let z = streakMeta[i * 4 + 2];
-        const spd = streakMeta[i * 4 + 3];
-        z += dt * lineSpeed * spd;
-        if (z > 28.0) z = -135.0;
-        streakMeta[i * 4 + 2] = z;
-
-        const x = streakMeta[i * 4 + 0];
-        const y = streakMeta[i * 4 + 1];
-        const streakLen = (2.5 + effectiveThrottle * 9.5) * spd * shredWeight;
-
-        posArr[i * 6 + 0] = x;
-        posArr[i * 6 + 1] = y;
-        posArr[i * 6 + 2] = z;
-
-        posArr[i * 6 + 3] = x;
-        posArr[i * 6 + 4] = y;
-        posArr[i * 6 + 5] = z - streakLen;
-      }
-      speedLines.geometry.attributes.position.needsUpdate = true;
-
-      paceGates.forEach((gate, idx) => {
-        gate.position.z += dt * (28.0 + effectiveThrottle * 55.0);
-        if (gate.position.z > 26.0) gate.position.z = -140.0;
-        gate.rotation.z += dt * 0.45 * (idx % 2 === 0 ? 1 : -1);
-        gate.scale.setScalar(shredWeight * (1.0 + STATE.beatPhase * 0.08));
-        gate.material.opacity = shredWeight * 0.35;
-      });
-
-      // Camera Orbit + High-Cadence Adrenaline Shake
-      STATE.cameraOrbitX += (STATE.targetOrbitX - STATE.cameraOrbitX) * 0.08;
-      STATE.cameraOrbitY += (STATE.targetOrbitY - STATE.cameraOrbitY) * 0.08;
-
-      const shakeAmp = (effectiveThrottle * 0.12 + STATE.shockwave * 0.45) * STATE.weights[3];
-      const shakeX = Math.sin(STATE.time * 32.0) * shakeAmp;
-      const shakeY = Math.cos(STATE.time * 28.0) * shakeAmp;
-
-      const camRadius = 26.0 - effectiveThrottle * 3.5;
-      camera.position.x = Math.sin(STATE.cameraOrbitX) * camRadius + shakeX;
-      camera.position.y = STATE.cameraOrbitY * 12.0 + shakeY;
-      camera.position.z = Math.cos(STATE.cameraOrbitX) * camRadius;
-      camera.lookAt(0, 0, -6);
-
-      // Dynamic FOV warp on Overdrive
-      const targetFov = STATE.overdrive ? 86 : (62 + effectiveThrottle * 12);
-      camera.fov += (targetFov - camera.fov) * 0.1;
-      camera.updateProjectionMatrix();
-
-      // Update DOM HUD Telemetry Readouts
-      document.getElementById('hud-distance').textContent = STATE.distanceMiles.toFixed(2);
-      document.getElementById('hud-bpm').textContent = STATE.bpm;
-      document.getElementById('hud-spm').textContent = STATE.spm;
-      document.getElementById('hud-gforce').textContent = STATE.gForce;
-
-      // Update Dimensional Blend Bars
-      for (let i = 0; i < 4; i++) {
-        document.getElementById(`bar-w${i}`).style.width = `${Math.round(STATE.weights[i] * 100)}%`;
-      }
-
-      // Rotate Center SVG Reticle
-      const reticle = document.getElementById('hud-reticle');
-      reticle.style.transform = `rotate(${ (STATE.cameraOrbitX * 25).toFixed(1) }deg) scale(${ (1 + STATE.beatPhase * 0.06 + STATE.shockwave * 0.15).toFixed(3) })`;
-
-      // Render Live Lambo Tachometer & Audio Oscilloscope Canvas
-      drawTelemetryCanvas(effectiveThrottle);
+      // Camera parallax response to mouse
+      camera.position.x += (mouseX * 1.8 - camera.position.x) * 0.04;
+      camera.position.y += (-mouseY * 1.2 - camera.position.y) * 0.04;
+      camera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
     }
 
-    function drawTelemetryCanvas(effectiveThrottle) {
-      const w = telemetryCanvas.width = telemetryCanvas.clientWidth;
-      const h = telemetryCanvas.height = telemetryCanvas.clientHeight;
-      tCtx.clearRect(0, 0, w, h);
-
-      // Background grid lines
-      tCtx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
-      tCtx.lineWidth = 1;
-      for (let x = 0; x < w; x += 24) {
-        tCtx.beginPath();
-        tCtx.moveTo(x, 0);
-        tCtx.lineTo(x, h);
-        tCtx.stroke();
-      }
-
-      // Audio Spectrum or Synthetic Biometric ECG Waveform
-      if (audioEnabled && analyser) {
-        analyser.getByteFrequencyData(freqData);
-      }
-
-      const barCount = 24;
-      const barW = (w - 16) / barCount;
-      for (let i = 0; i < barCount; i++) {
-        let val = 0;
-        if (audioEnabled && analyser) {
-          val = freqData[i] / 255.0;
-        } else {
-          // Procedural biometric cadence wave
-          val = 0.2 + 0.55 * Math.abs(Math.sin(STATE.time * 6.0 + i * 0.45)) * effectiveThrottle + STATE.beatPhase * 0.25;
-        }
-        const barH = Math.min(h - 24, val * (h - 22));
-        tCtx.fillStyle = i > 18 ? '#ff003c' : (i > 12 ? '#d4ff00' : '#00f0ff');
-        tCtx.fillRect(8 + i * barW, h - barH - 4, barW - 2, barH);
-      }
-
-      // Pace calculation (e.g. 03:45 /MI at high throttle)
-      const paceSecTotal = Math.round(330 - effectiveThrottle * 110);
-      const mins = Math.floor(paceSecTotal / 60);
-      const secs = (paceSecTotal % 60).toString().padStart(2, '0');
-      document.getElementById('hud-pace').textContent = `0${mins}:${secs} /MI`;
-    }
-
-    // Start the 60 FPS Unified Reality Engine on load
-    window.onload = function () {
-      updateCockpitSliders();
-      requestAnimationFrame(animate);
-    };
+    animate();
   </script>
 </body>
 </html>
