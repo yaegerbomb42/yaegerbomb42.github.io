@@ -4,8 +4,7 @@ export class RosePetalEngine {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.width = canvas.width = canvas.offsetWidth || window.innerWidth;
-    this.height = canvas.height = canvas.offsetHeight || 500;
+    this.updateDimensions();
     this.petals = [];
     this.bloomProgress = 0; // 0 to 1
     this.targetBloom = 1;
@@ -17,10 +16,17 @@ export class RosePetalEngine {
     requestAnimationFrame(this.render);
   }
 
+  updateDimensions() {
+    const rect = this.canvas.getBoundingClientRect();
+    const w = rect.width || this.canvas.offsetWidth || 960;
+    const h = rect.height || this.canvas.offsetHeight || 560;
+    this.width = this.canvas.width = Math.max(320, w);
+    this.height = this.canvas.height = Math.max(300, h);
+  }
+
   initListeners() {
     window.addEventListener('resize', () => {
-      this.width = this.canvas.width = this.canvas.offsetWidth || window.innerWidth;
-      this.height = this.canvas.height = this.canvas.offsetHeight || 500;
+      this.updateDimensions();
     });
 
     this.canvas.addEventListener('click', () => {
@@ -37,7 +43,7 @@ export class RosePetalEngine {
     let globalIndex = 0;
     for (let layer = 0; layer < layers; layer++) {
       const count = petalsPerLayer[layer];
-      const radiusBase = (layer + 1) * 26 + 18;
+      const radiusBase = (layer + 1) * 32 + 20;
 
       for (let i = 0; i < count; i++) {
         const baseAngle = (i / count) * Math.PI * 2 + (layer * 0.4);
@@ -119,14 +125,14 @@ export class RosePetalEngine {
 
     // Velvet gradient fill
     const grad = ctx.createRadialGradient(0, -ph * 0.2, pw * 0.1, 0, 0, ph);
-    grad.addColorStop(0, `hsla(${p.hue}, 95%, ${p.lightness + 12}%, 0.95)`);
-    grad.addColorStop(0.5, `hsla(${p.hue}, 90%, ${p.lightness}%, 0.9)`);
-    grad.addColorStop(0.85, `hsla(${p.hue - 10}, 92%, ${p.lightness - 15}%, 0.85)`);
-    grad.addColorStop(1, `hsla(${p.hue - 15}, 95%, 12%, 0.8)`);
+    grad.addColorStop(0, `hsla(${p.hue}, 95%, ${p.lightness + 14}%, 0.98)`);
+    grad.addColorStop(0.5, `hsla(${p.hue}, 90%, ${p.lightness}%, 0.92)`);
+    grad.addColorStop(0.85, `hsla(${p.hue - 10}, 92%, ${p.lightness - 15}%, 0.88)`);
+    grad.addColorStop(1, `hsla(${p.hue - 15}, 95%, 10%, 0.85)`);
 
     ctx.fillStyle = grad;
-    ctx.strokeStyle = `hsla(${p.hue + 10}, 100%, 75%, 0.35)`;
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = `hsla(${p.hue + 15}, 100%, 75%, 0.45)`;
+    ctx.lineWidth = 1.5;
 
     // Organic Petal Bezier Curve
     ctx.beginPath();
@@ -140,7 +146,7 @@ export class RosePetalEngine {
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.quadraticCurveTo(pw * 0.08, -ph * 0.5, 0, -ph * 0.85);
-    ctx.strokeStyle = `hsla(${p.hue + 20}, 100%, 85%, 0.25)`;
+    ctx.strokeStyle = `hsla(${p.hue + 25}, 100%, 85%, 0.35)`;
     ctx.stroke();
 
     ctx.restore();
@@ -153,7 +159,7 @@ export class RosePetalEngine {
     const cy = this.height / 2;
 
     // Smooth bloom transition
-    this.bloomProgress += (this.targetBloom - this.bloomProgress) * 0.04;
+    this.bloomProgress += (this.targetBloom - this.bloomProgress) * 0.05;
 
     // Draw Hero Blooming Rose (Render from outermost layer to innermost core)
     for (let l = 4; l >= 0; l--) {
@@ -165,13 +171,13 @@ export class RosePetalEngine {
     }
 
     // Golden Core Stamen
-    const coreGrad = this.ctx.createRadialGradient(cx, cy, 0, cx, cy, 24);
+    const coreGrad = this.ctx.createRadialGradient(cx, cy, 0, cx, cy, 26);
     coreGrad.addColorStop(0, '#ffe066');
     coreGrad.addColorStop(0.6, '#ff9900');
     coreGrad.addColorStop(1, 'rgba(160, 20, 40, 0.2)');
     this.ctx.fillStyle = coreGrad;
     this.ctx.beginPath();
-    this.ctx.arc(cx, cy, 22 * this.bloomProgress, 0, Math.PI * 2);
+    this.ctx.arc(cx, cy, 24 * this.bloomProgress, 0, Math.PI * 2);
     this.ctx.fill();
 
     // Draw Flying Wind Petals
