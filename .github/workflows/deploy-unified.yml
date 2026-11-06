@@ -1,0 +1,52 @@
+name: Build Unified Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-unified.yml"
+      - "unified/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Pages repository
+        uses: actions/checkout@v4
+
+      - name: Checkout canonical Unified source
+        uses: actions/checkout@v4
+        with:
+          repository: yaegerbomb42/infra
+          ref: main
+          path: infra-source
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build Unified
+        working-directory: infra-source/apps/unified
+        run: npm run build
+
+      - name: Publish static assets
+        run: |
+          mkdir -p unified
+          rsync -av --delete infra-source/apps/unified/dist/ unified/
+
+      - name: Commit and push Pages output
+        run: |
+          if git diff --quiet -- unified; then
+            echo "Unified output is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add unified/
+          git commit -m "deploy(unified): publish current experience"
+          git push
