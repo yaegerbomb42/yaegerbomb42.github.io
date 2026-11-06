@@ -1,31 +1,55 @@
 // Orchestrator for UNIFIED // 5 MILE RUN. SHRED SEASON.
 import { EarthEngine } from './earth.js';
 import { RosePetalEngine } from './rose.js';
+import { CeilingLatticeEngine } from './lattice.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Initialize 3D Earth Engine
+  // 0. Enter Portal Overlay Interaction
+  const enterOverlay = document.getElementById('enterExperienceOverlay');
+  const enterBtn = document.getElementById('enterExperienceBtn');
+  if (enterBtn && enterOverlay) {
+    enterBtn.addEventListener('click', () => {
+      enterOverlay.classList.add('entered');
+      // Trigger Web Audio initial cadence pulse on enter
+      window.shredAudio.init();
+      window.shredAudio.toggle();
+      audioBtn.classList.add('active');
+      audioLabel.textContent = 'AUDIO ACTIVE';
+      audioIcon.textContent = '🔊';
+      window.shredAudio.triggerOverdriveSweep();
+    });
+  }
+
+  // 1. Initialize 3D Ceiling Tile Lattice & Quantum Singularity Engine
+  const latticeCanvas = document.getElementById('latticeCanvas');
+  let latticeEngine = null;
+  if (latticeCanvas) {
+    latticeEngine = new CeilingLatticeEngine(latticeCanvas);
+  }
+
+  // 2. Initialize 3D Earth Engine
   const earthContainer = document.getElementById('earthContainer');
   let earthEngine = null;
   if (earthContainer) {
     earthEngine = new EarthEngine(earthContainer);
   }
 
-  // 2. Initialize Big Rose Petal Hero Engine
+  // 3. Initialize Big Rose Petal Hero Engine
   const roseCanvas = document.getElementById('roseCanvas');
   let roseEngine = null;
   if (roseCanvas) {
     roseEngine = new RosePetalEngine(roseCanvas);
   }
 
-  // 3. Initialize Kinetic Canvas
+  // 4. Initialize Kinetic Canvas
   const kineticCanvas = document.getElementById('kineticCanvas');
   const kineticEngine = new KineticTextEngine(kineticCanvas);
 
-  // 4. Initialize Topo Elevation Radar
+  // 5. Initialize Topo Elevation Radar
   const topoCanvas = document.getElementById('topoCanvas');
   const topoEngine = new TopoEngine(topoCanvas);
 
-  // 5. Audio Toggle
+  // 6. Audio Toggle
   const audioBtn = document.getElementById('audioToggleBtn');
   const audioLabel = document.getElementById('audioLabel');
   const audioIcon = document.getElementById('audioIcon');
@@ -42,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 6. Theme Switcher (Cyber -> Solar -> Lambo)
+  // 7. Theme Switcher (Cyber -> Solar -> Lambo)
   const themes = ['cyber', 'solar', 'lambo'];
   let currentThemeIdx = 0;
   const themeBtn = document.getElementById('themeToggleBtn');
@@ -55,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     kineticEngine.mode = nextTheme;
   });
 
-  // 7. Overdrive Mode (Hold Space or button)
+  // 8. Overdrive Mode (Hold Space or button)
   const overdriveBtn = document.getElementById('overdriveBtn');
   let isOverdrive = false;
 
@@ -67,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     telemetry.setOverdrive(true);
     if (earthEngine) earthEngine.setOverdrive(true);
     if (roseEngine) roseEngine.setOverdrive(true);
+    if (latticeEngine) latticeEngine.setOverdrive(true);
     window.shredAudio.triggerOverdriveSweep();
     window.shredAudio.setCadence(195);
   }
@@ -79,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     telemetry.setOverdrive(false);
     if (earthEngine) earthEngine.setOverdrive(false);
     if (roseEngine) roseEngine.setOverdrive(false);
+    if (latticeEngine) latticeEngine.setOverdrive(false);
     window.shredAudio.setCadence(176);
   }
 
@@ -99,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 8. DOM Metrics References & Telemetry
+  // 9. DOM Metrics References & Telemetry
   const metricDistance = document.getElementById('metricDistance');
   const metricTime = document.getElementById('metricTime');
   const metricPace = document.getElementById('metricPace');
@@ -168,13 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 9. Persistent Frontier AI Chat Feed
+  // 10. Persistent Frontier AI Chat Feed
   const chatFeed = document.getElementById('chatFeed');
   const chatForm = document.getElementById('chatForm');
   const chatInput = document.getElementById('chatInput');
   const modelSelector = document.getElementById('modelSelector');
 
-  // Load from local storage or VPS backend if available
   const BACKEND_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3017' 
     : 'https://unified.147-224-158-118.sslip.io';
@@ -187,15 +212,13 @@ document.addEventListener('DOMContentLoaded', () => {
         renderChat(msgs);
         return;
       }
-    } catch (_) {
-      // Fallback to localStorage persistence
-    }
+    } catch (_) {}
     const saved = localStorage.getItem('unified_chat_history');
     if (saved) {
       renderChat(JSON.parse(saved));
     } else {
       renderChat([
-        { author: 'System', model: 'core', text: '5 MILE RUN. SHRED SEASON. Frontier model chat initialized.' }
+        { author: 'B0 Singularity Core', model: 'core', text: '5 MILE RUN. SHRED SEASON. Ceiling lattice online. Singularity online.' }
       ]);
     }
   }
@@ -220,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const [provider, model] = modelSelector.value.split(':');
     const userMsg = { author: 'You', model: 'user', text, timestamp: new Date().toISOString() };
 
-    // Optimistic render
     const currentMsgs = JSON.parse(localStorage.getItem('unified_chat_history') || '[]');
     currentMsgs.push(userMsg);
     renderChat(currentMsgs);
@@ -239,14 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderChat(currentMsgs);
         return;
       }
-    } catch (_) {
-      // Offline / client simulated response
-    }
+    } catch (_) {}
 
     const aiMsg = {
       author: `${provider.toUpperCase()} (${model})`,
       model: model,
-      text: `Logged: "${text}". 5 miles cadence locked in.`,
+      text: `Logged to Singularity: "${text}". Cadence accelerating.`,
       timestamp: new Date().toISOString()
     };
     currentMsgs.push(aiMsg);

@@ -1,27 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,500;0,700;0,900;1,700;1,900&family=Cinzel:wght@600;800;900&family=JetBrains+Mono:wght@300;400;700;800&display=swap');
 
 :root {
-  --bg-deep: #030406;
+  --bg-deep: #020305;
   --text-main: #f8fafc;
   --accent-cyan: #00ffe6;
   --accent-crimson: #ff1e50;
   --accent-gold: #ffbe0b;
   --accent-rose: #ff2a6d;
-  --panel-bg: rgba(7, 10, 16, 0.82);
-  --panel-border: rgba(255, 30, 80, 0.25);
+  --panel-bg: rgba(6, 9, 15, 0.75);
+  --panel-border: rgba(255, 30, 80, 0.28);
   --font-display: 'Chakra Petch', sans-serif;
   --font-serif: 'Cinzel', serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
 [data-theme="solar"] {
-  --bg-deep: #080402;
+  --bg-deep: #060301;
   --text-main: #fffaf0;
   --accent-cyan: #ffb703;
   --accent-crimson: #fb5607;
   --accent-rose: #ff006e;
-  --panel-border: rgba(251, 86, 7, 0.3);
-  --panel-bg: rgba(18, 10, 5, 0.85);
+  --panel-border: rgba(251, 86, 7, 0.35);
+  --panel-bg: rgba(16, 9, 4, 0.82);
 }
 
 [data-theme="lambo"] {
@@ -31,8 +31,8 @@
   --accent-crimson: #ff0055;
   --accent-gold: #ffeb3b;
   --accent-rose: #ff0055;
-  --panel-border: rgba(57, 255, 20, 0.35);
-  --panel-bg: rgba(10, 12, 10, 0.9);
+  --panel-border: rgba(57, 255, 20, 0.4);
+  --panel-bg: rgba(8, 10, 8, 0.88);
 }
 
 * {
@@ -51,17 +51,91 @@ body {
   user-select: none;
 }
 
+/* =========================================
+   CINEMATIC INTRO PORTAL / ENTER EXPERIENCE
+   ========================================= */
+#enterExperienceOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at center, #070d18 0%, #000000 90%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 2rem;
+}
+
+#enterExperienceOverlay.entered {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.12);
+}
+
+.portal-tile-preview {
+  width: 90px;
+  height: 90px;
+  border: 2px solid var(--accent-cyan);
+  box-shadow: 0 0 35px var(--accent-cyan);
+  margin-bottom: 2rem;
+  animation: tileSprout 3s infinite alternate ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 255, 230, 0.08);
+}
+
+@keyframes tileSprout {
+  0% { transform: rotate(0deg) scale(0.9); border-color: var(--accent-cyan); }
+  50% { transform: rotate(45deg) scale(1.15); border-color: var(--accent-crimson); }
+  100% { transform: rotate(90deg) scale(1); border-color: var(--accent-gold); }
+}
+
+.portal-enter-btn {
+  background: linear-gradient(135deg, var(--accent-crimson) 0%, #ff4b72 100%);
+  color: #ffffff;
+  border: none;
+  padding: 1.1rem 2.8rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 45px rgba(255, 30, 80, 0.6);
+  transition: all 0.25s ease;
+}
+
+.portal-enter-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 65px var(--accent-crimson);
+}
+
+/* Background 3D Ceiling Lattice Canvas */
+#latticeCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* CRT Scanline & Subtle Carbon Fiber Texture */
 .crt-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   background: 
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%),
     linear-gradient(90deg, rgba(255, 0, 80, 0.02), rgba(0, 255, 230, 0.02));
   background-size: 100% 3px, 6px 100%;
   z-index: 100;
-  opacity: 0.75;
+  opacity: 0.8;
 }
 
 /* Background Kinetic Canvas */
@@ -72,6 +146,7 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  pointer-events: none;
 }
 
 /* Top Navigation / Lambo Aero Bar */
@@ -170,7 +245,7 @@ body {
   position: relative;
   z-index: 20;
   width: 100%;
-  min-height: 78vh;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -186,8 +261,8 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
-  max-width: 900px;
-  height: 520px;
+  max-width: 960px;
+  height: 560px;
   z-index: 2;
   cursor: pointer;
 }

@@ -4,11 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UNIFIED // 5 MILE RUN. SHRED SEASON.</title>
-  <meta name="description" content="Project No Fucks. 5 Mile Run. Shred Season. Procedural 3D Earth, blooming Rose Petal hero, kinetic typography, and persistent frontier AI chat.">
+  <meta name="description" content="Project No Fucks. 5 Mile Run. Shred Season. 3D Ceiling Tile Lattice, Quantum Singularity, 3D Earth, blooming Rose Petal hero.">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body data-theme="cyber">
+  <!-- Interactive Cinematic Enter Portal -->
+  <div id="enterExperienceOverlay">
+    <div class="portal-tile-preview">
+      <div style="width: 24px; height: 24px; background: #ff1e50; border-radius: 50%; box-shadow: 0 0 20px #ff1e50;"></div>
+    </div>
+    <div style="font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.45em; color: var(--accent-cyan); margin-bottom: 0.8rem;">
+      SYSTEM READY // 5 MILE RUN. SHRED SEASON.
+    </div>
+    <h2 style="font-family: var(--font-serif); font-size: clamp(2rem, 5vw, 3.8rem); margin-bottom: 2rem; color: #fff; text-transform: uppercase;">
+      ENTER THE EXPERIENCE
+    </h2>
+    <button class="portal-enter-btn" id="enterExperienceBtn">
+      INITIATE UNIFIED ▶
+    </button>
+  </div>
+
   <div class="crt-overlay"></div>
+  <!-- 3D Suspended Ceiling Lattice & Singularity Canvas -->
+  <canvas id="latticeCanvas"></canvas>
+  <!-- Kinetic Mesh Typography Canvas -->
   <canvas id="kineticCanvas"></canvas>
 
   <!-- Top Aero Navigation -->
@@ -36,7 +55,7 @@
     <section class="rose-hero-wrapper">
       <canvas id="roseCanvas"></canvas>
       <div class="hero-overlay-content">
-        <div class="hero-supertitle">PROJECT NO FUCKS // PURE CREATION</div>
+        <div class="hero-supertitle">PROJECT NO FUCKS // CEILING LATTICE MATRIX</div>
         <h1 class="hero-huge-title">
           5 MILE RUN.
           <span class="shred-callout">SHRED SEASON.</span>
