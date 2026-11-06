@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5 MILE RUN. SHRED SEASON. // UNIFIED</title>
+  <meta name="description" content="5 Mile Run. Shred Season. High-velocity kinetic runner HUD & biometrics telemetry engine.">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-theme="cyber">
+  <div class="crt-overlay"></div>
+  <canvas id="kineticCanvas"></canvas>
+
+  <header class="hud-header">
+    <div class="brand-tag">
+      <div class="pulse-led"></div>
+      <div class="brand-title">UNIFIED <span style="font-weight:300;opacity:0.5;">// TELEMETRY</span></div>
+      <div class="status-badge" id="hudStatus">LIVE // CADENCE 176</div>
+    </div>
+    <div class="hud-actions">
+      <button class="hud-btn" id="audioToggleBtn">
+        <span id="audioIcon">🔇</span> <span id="audioLabel">AUDIO OFF</span>
+      </button>
+      <button class="hud-btn" id="themeToggleBtn">
+        <span>⚡</span> <span id="themeLabel">THEME: CYBER</span>
+      </button>
+      <button class="hud-btn" id="resetBtn">
+        <span>↺</span> RESET
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-stage">
+      <div class="hero-subtitle">SYSTEM STATUS : PEAK OUTPUT</div>
+      <h1 class="hero-slogan">
+        5 MILE RUN.<br>
+        <span class="highlight">SHRED SEASON.</span>
+      </h1>
+      <button class="overdrive-pill" id="overdriveBtn">
+        <span>🚀</span> HOLD SPACE OR CLICK FOR SHRED OVERDRIVE
+      </button>
+    </section>
+
+    <div class="dashboard-grid">
+      <!-- Left Panel: Real-time Telemetry & Elevation Radar -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">BIOMETRIC TELEMETRY & COURSE PROFILE</div>
+          <div class="panel-badge">5.00 MILE TARGET</div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">DISTANCE</div>
+            <div class="metric-val" id="metricDistance">0.00 <small>MI</small></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">ELAPSED TIME</div>
+            <div class="metric-val" id="metricTime">00:00</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">CURRENT PACE</div>
+            <div class="metric-val" id="metricPace">6'45" <small>/MI</small></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">HEART RATE</div>
+            <div class="metric-val" id="metricHeartRate">154 <small>BPM</small></div>
+          </div>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="topo-container">
+          <canvas id="topoCanvas"></canvas>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">CADENCE</div>
+            <div class="metric-val" id="metricCadence">176 <small>SPM</small></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">ELEVATION GAIN</div>
+            <div class="metric-val" id="metricElevation">0 <small>FT</small></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">ENERGY OUTPUT</div>
+            <div class="metric-val" id="metricCalories">0 <small>KCAL</small></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">LACTATE INDEX</div>
+            <div class="metric-val" id="metricLactate">3.4 <small>MMOL</small></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Splits & Shred Protocol -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">SPLIT BENCHMARKS & SHRED MANIFESTO</div>
+          <div class="panel-badge" id="splitStatusBadge">MILE 1 ACTIVE</div>
+        </div>
+
+        <div class="splits-list" id="splitsList">
+          <!-- Populated dynamically by app.js -->
+        </div>
+
+        <div class="manifesto-box">
+          <strong>THE SHRED PROTOCOL:</strong> Every mile isn't just distance; it's calibration. Cold start at mile one, heart locked to rhythmic cadence by mile two. When lactate threshold hits on mile three, we don't slow down—we lean into the burn. Mile four is pure grit. Mile five is total transcendence. <strong>Shred Season is here.</strong>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="unified-footer">
+    <p>UNIFIED // 5 MILE RUN // SHRED SEASON &bull; <a href="https://yaegerbomb42.github.io/">Hub Portal</a> &bull; yaegerbomb42</p>
+  </footer>
+
+  <script src="./audio.js"></script>
+  <script src="./particles.js"></script>
+  <script src="./telemetry.js"></script>
+  <script src="./topo.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
