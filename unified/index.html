@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>5 MILE RUN. SHRED SEASON. // UNIFIED</title>
-  <meta name="description" content="5 Mile Run. Shred Season. High-velocity kinetic runner HUD & biometrics telemetry engine.">
+  <title>UNIFIED // 5 MILE RUN. SHRED SEASON.</title>
+  <meta name="description" content="Project No Fucks. 5 Mile Run. Shred Season. Procedural 3D Earth, blooming Rose Petal hero, kinetic typography, and persistent frontier AI chat.">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body data-theme="cyber">
   <div class="crt-overlay"></div>
   <canvas id="kineticCanvas"></canvas>
 
+  <!-- Top Aero Navigation -->
   <header class="hud-header">
     <div class="brand-tag">
       <div class="pulse-led"></div>
-      <div class="brand-title">UNIFIED <span style="font-weight:300;opacity:0.5;">// TELEMETRY</span></div>
-      <div class="status-badge" id="hudStatus">LIVE // CADENCE 176</div>
+      <div class="brand-title">UNIFIED <span style="font-weight:300;opacity:0.6;">// NO FUCKS</span></div>
+      <div class="brand-motto" id="hudStatus">CADENCE 176 // LIVE</div>
     </div>
     <div class="hud-actions">
       <button class="hud-btn" id="audioToggleBtn">
@@ -31,23 +32,37 @@
   </header>
 
   <main>
-    <section class="hero-stage">
-      <div class="hero-subtitle">SYSTEM STATUS : PEAK OUTPUT</div>
-      <h1 class="hero-slogan">
-        5 MILE RUN.<br>
-        <span class="highlight">SHRED SEASON.</span>
-      </h1>
-      <button class="overdrive-pill" id="overdriveBtn">
-        <span>🚀</span> HOLD SPACE OR CLICK FOR SHRED OVERDRIVE
-      </button>
+    <!-- HERO SECTION: Big Velvet Rose Petal & Shred Slogan -->
+    <section class="rose-hero-wrapper">
+      <canvas id="roseCanvas"></canvas>
+      <div class="hero-overlay-content">
+        <div class="hero-supertitle">PROJECT NO FUCKS // PURE CREATION</div>
+        <h1 class="hero-huge-title">
+          5 MILE RUN.
+          <span class="shred-callout">SHRED SEASON.</span>
+        </h1>
+        <p class="hero-no-fucks-tagline">
+          NO RULES. NO WAITING. WE JUST BUILD.
+        </p>
+        <button class="overdrive-pill" id="overdriveBtn">
+          <span>🚀</span> HOLD SPACE OR CLICK FOR SHRED OVERDRIVE
+        </button>
+      </div>
     </section>
 
-    <div class="dashboard-grid">
-      <!-- Left Panel: Real-time Telemetry & Elevation Radar -->
+    <!-- Cockpit / Dashboard Grid -->
+    <div class="cockpit-grid">
+      <!-- Left Column: 3D Spinning Earth & Telemetry -->
       <section class="panel">
         <div class="panel-header">
-          <div class="panel-title">BIOMETRIC TELEMETRY & COURSE PROFILE</div>
-          <div class="panel-badge">5.00 MILE TARGET</div>
+          <div class="panel-title">ORBITAL VIEW & TELEMETRY</div>
+          <div class="panel-badge">EARTH 3D ACTIVE</div>
+        </div>
+
+        <!-- 3D Earth WebGL Viewport -->
+        <div class="earth-viewport-container">
+          <div id="earthContainer"></div>
+          <div class="earth-telemetry-badge">HYPER DETAIL // PROCEDURAL SHADER MATRIX</div>
         </div>
 
         <div class="metrics-row">
@@ -83,11 +98,11 @@
             <div class="metric-val" id="metricCadence">176 <small>SPM</small></div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">ELEVATION GAIN</div>
+            <div class="metric-label">ELEVATION</div>
             <div class="metric-val" id="metricElevation">0 <small>FT</small></div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">ENERGY OUTPUT</div>
+            <div class="metric-label">OUTPUT</div>
             <div class="metric-val" id="metricCalories">0 <small>KCAL</small></div>
           </div>
           <div class="metric-card">
@@ -97,32 +112,51 @@
         </div>
       </section>
 
-      <!-- Right Panel: Splits & Shred Protocol -->
+      <!-- Right Column: Splits & Persistent Frontier AI Engine -->
       <section class="panel">
         <div class="panel-header">
-          <div class="panel-title">SPLIT BENCHMARKS & SHRED MANIFESTO</div>
+          <div class="panel-title">FRONTIER AI PERSISTENCE & SPLITS</div>
           <div class="panel-badge" id="splitStatusBadge">MILE 1 ACTIVE</div>
         </div>
 
+        <!-- Splits Board -->
         <div class="splits-list" id="splitsList">
-          <!-- Populated dynamically by app.js -->
+          <!-- Populated by telemetry.js -->
+        </div>
+
+        <!-- Persistent AI Chat Board -->
+        <div style="margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.25rem;">
+          <div class="panel-title" style="margin-bottom: 0.8rem; font-size: 0.95rem;">
+            PERSISTENT FRONTIER AI CHAT
+          </div>
+          <div id="chatFeed" style="max-height: 220px; overflow-y: auto; background: rgba(0,0,0,0.45); border-radius: 6px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.8rem;">
+            <!-- Chat history injected here -->
+          </div>
+          <form id="chatForm" style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <select id="modelSelector" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--panel-border); border-radius: 4px; padding: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem;">
+              <option value="groq:llama-3.3-70b-versatile">Groq Llama-3.3-70B</option>
+              <option value="mistral:codestral-latest">Mistral Codestral</option>
+            </select>
+            <input type="text" id="chatInput" placeholder="Drop thoughts... (persists in DB)" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: #fff; padding: 0.5rem 0.8rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem;" required>
+            <button type="submit" class="hud-btn" style="padding: 0.5rem 1rem;">SEND</button>
+          </form>
         </div>
 
         <div class="manifesto-box">
-          <strong>THE SHRED PROTOCOL:</strong> Every mile isn't just distance; it's calibration. Cold start at mile one, heart locked to rhythmic cadence by mile two. When lactate threshold hits on mile three, we don't slow down—we lean into the burn. Mile four is pure grit. Mile five is total transcendence. <strong>Shred Season is here.</strong>
+          <strong>PROJECT NO FUCKS MANIFESTO:</strong> We don't ask for permission. We don't overthink. 5 miles at dawn, shredded physique by dusk, and infinite autonomy in code. Spin the Earth, drop the petal, and build what feels impossible.
         </div>
       </section>
     </div>
   </main>
 
   <footer class="unified-footer">
-    <p>UNIFIED // 5 MILE RUN // SHRED SEASON &bull; <a href="https://yaegerbomb42.github.io/">Hub Portal</a> &bull; yaegerbomb42</p>
+    <p>UNIFIED // PROJECT NO FUCKS &bull; 5 MILE RUN &bull; SHRED SEASON &bull; <a href="https://yaegerbomb42.github.io/">Hub Portal</a> &bull; <a href="https://github.com/yaegerbomb42/unified">GitHub Repo</a></p>
   </footer>
 
   <script src="./audio.js"></script>
   <script src="./particles.js"></script>
   <script src="./telemetry.js"></script>
   <script src="./topo.js"></script>
-  <script src="./app.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>

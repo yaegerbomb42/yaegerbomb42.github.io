@@ -1,14 +1,31 @@
-// Orchestrator for 5 MILE RUN. SHRED SEASON.
+// Orchestrator for UNIFIED // 5 MILE RUN. SHRED SEASON.
+import { EarthEngine } from './earth.js';
+import { RosePetalEngine } from './rose.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Kinetic Canvas
+  // 1. Initialize 3D Earth Engine
+  const earthContainer = document.getElementById('earthContainer');
+  let earthEngine = null;
+  if (earthContainer) {
+    earthEngine = new EarthEngine(earthContainer);
+  }
+
+  // 2. Initialize Big Rose Petal Hero Engine
+  const roseCanvas = document.getElementById('roseCanvas');
+  let roseEngine = null;
+  if (roseCanvas) {
+    roseEngine = new RosePetalEngine(roseCanvas);
+  }
+
+  // 3. Initialize Kinetic Canvas
   const kineticCanvas = document.getElementById('kineticCanvas');
   const kineticEngine = new KineticTextEngine(kineticCanvas);
 
-  // Initialize Topo Elevation Radar
+  // 4. Initialize Topo Elevation Radar
   const topoCanvas = document.getElementById('topoCanvas');
   const topoEngine = new TopoEngine(topoCanvas);
 
-  // Audio Toggle
+  // 5. Audio Toggle
   const audioBtn = document.getElementById('audioToggleBtn');
   const audioLabel = document.getElementById('audioLabel');
   const audioIcon = document.getElementById('audioIcon');
@@ -25,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Theme Switcher (Cyber -> Solar -> Gold)
-  const themes = ['cyber', 'solar', 'gold'];
+  // 6. Theme Switcher (Cyber -> Solar -> Lambo)
+  const themes = ['cyber', 'solar', 'lambo'];
   let currentThemeIdx = 0;
   const themeBtn = document.getElementById('themeToggleBtn');
   const themeLabel = document.getElementById('themeLabel');
@@ -38,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     kineticEngine.mode = nextTheme;
   });
 
-  // Overdrive Mode (Hold Space or button)
+  // 7. Overdrive Mode (Hold Space or button)
   const overdriveBtn = document.getElementById('overdriveBtn');
   let isOverdrive = false;
 
@@ -48,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
     overdriveBtn.classList.add('active');
     kineticEngine.setOverdrive(true);
     telemetry.setOverdrive(true);
+    if (earthEngine) earthEngine.setOverdrive(true);
+    if (roseEngine) roseEngine.setOverdrive(true);
     window.shredAudio.triggerOverdriveSweep();
     window.shredAudio.setCadence(195);
   }
@@ -58,6 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
     overdriveBtn.classList.remove('active');
     kineticEngine.setOverdrive(false);
     telemetry.setOverdrive(false);
+    if (earthEngine) earthEngine.setOverdrive(false);
+    if (roseEngine) roseEngine.setOverdrive(false);
     window.shredAudio.setCadence(176);
   }
 
@@ -67,18 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('touchend', deactivateOverdrive);
 
   window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !e.repeat) {
+    if (e.code === 'Space' && !e.repeat && document.activeElement.tagName !== 'INPUT') {
       activateOverdrive();
     }
   });
 
   window.addEventListener('keyup', (e) => {
-    if (e.code === 'Space') {
+    if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT') {
       deactivateOverdrive();
     }
   });
 
-  // DOM Metrics References
+  // 8. DOM Metrics References & Telemetry
   const metricDistance = document.getElementById('metricDistance');
   const metricTime = document.getElementById('metricTime');
   const metricPace = document.getElementById('metricPace');
@@ -94,9 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let lastMileIndex = -1;
 
-  // Initialize Telemetry Engine
   const telemetry = new TelemetryEngine((state) => {
-    // Update DOM numbers
     metricDistance.innerHTML = `${state.distanceMiles} <small>MI</small>`;
     metricTime.textContent = state.formattedTime;
     metricPace.innerHTML = `${state.formattedPace} <small>/MI</small>`;
@@ -105,22 +124,17 @@ document.addEventListener('DOMContentLoaded', () => {
     metricElevation.innerHTML = `${state.elevationGainFt} <small>FT</small>`;
     metricCalories.innerHTML = `${state.caloriesBurned} <small>KCAL</small>`;
 
-    // Lactate calculation based on heart rate
     const lactate = ((state.heartRate - 120) * 0.08 + 1.2).toFixed(1);
     metricLactate.innerHTML = `${lactate} <small>MMOL</small>`;
 
     progressFill.style.width = `${state.progressPct}%`;
     hudStatus.textContent = isOverdrive 
       ? `OVERDRIVE // CADENCE ${state.cadence}` 
-      : `LIVE // CADENCE ${state.cadence}`;
+      : `CADENCE ${state.cadence} // LIVE`;
 
-    // Update Topo engine
     topoEngine.setProgress(parseFloat(state.progressPct));
-
-    // Render Splits
     renderSplits(state.splits, state.currentMileIndex);
 
-    // Audio chime on new mile milestone
     if (state.currentMileIndex !== lastMileIndex) {
       if (lastMileIndex !== -1) {
         window.shredAudio.playMilestone();
@@ -137,11 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     splits.forEach((s, idx) => {
       const item = document.createElement('div');
       item.className = 'split-item';
-      if (idx < currentMileIdx) {
-        item.classList.add('completed');
-      } else if (idx === currentMileIdx) {
-        item.classList.add('active');
-      }
+      if (idx < currentMileIdx) item.classList.add('completed');
+      else if (idx === currentMileIdx) item.classList.add('active');
 
       item.innerHTML = `
         <div class="split-info">
@@ -156,6 +167,94 @@ document.addEventListener('DOMContentLoaded', () => {
       splitsList.appendChild(item);
     });
   }
+
+  // 9. Persistent Frontier AI Chat Feed
+  const chatFeed = document.getElementById('chatFeed');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const modelSelector = document.getElementById('modelSelector');
+
+  // Load from local storage or VPS backend if available
+  const BACKEND_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3017' 
+    : 'https://unified.147-224-158-118.sslip.io';
+
+  async function loadChatMessages() {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/messages`);
+      if (res.ok) {
+        const msgs = await res.json();
+        renderChat(msgs);
+        return;
+      }
+    } catch (_) {
+      // Fallback to localStorage persistence
+    }
+    const saved = localStorage.getItem('unified_chat_history');
+    if (saved) {
+      renderChat(JSON.parse(saved));
+    } else {
+      renderChat([
+        { author: 'System', model: 'core', text: '5 MILE RUN. SHRED SEASON. Frontier model chat initialized.' }
+      ]);
+    }
+  }
+
+  function renderChat(messages) {
+    chatFeed.innerHTML = '';
+    messages.forEach(m => {
+      const row = document.createElement('div');
+      row.style.lineHeight = '1.4';
+      row.innerHTML = `<span style="color: ${m.model === 'user' ? '#00ffe6' : '#ff1e50'}; font-weight: 700;">[${m.author}]:</span> ${m.text}`;
+      chatFeed.appendChild(row);
+    });
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+  }
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
+    chatInput.value = '';
+
+    const [provider, model] = modelSelector.value.split(':');
+    const userMsg = { author: 'You', model: 'user', text, timestamp: new Date().toISOString() };
+
+    // Optimistic render
+    const currentMsgs = JSON.parse(localStorage.getItem('unified_chat_history') || '[]');
+    currentMsgs.push(userMsg);
+    renderChat(currentMsgs);
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ author: 'You', text, provider, model })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        currentMsgs.push(data.ai);
+        localStorage.setItem('unified_chat_history', JSON.stringify(currentMsgs));
+        renderChat(currentMsgs);
+        return;
+      }
+    } catch (_) {
+      // Offline / client simulated response
+    }
+
+    const aiMsg = {
+      author: `${provider.toUpperCase()} (${model})`,
+      model: model,
+      text: `Logged: "${text}". 5 miles cadence locked in.`,
+      timestamp: new Date().toISOString()
+    };
+    currentMsgs.push(aiMsg);
+    localStorage.setItem('unified_chat_history', JSON.stringify(currentMsgs));
+    renderChat(currentMsgs);
+  });
+
+  loadChatMessages();
 
   // Reset Button
   document.getElementById('resetBtn').addEventListener('click', () => {
