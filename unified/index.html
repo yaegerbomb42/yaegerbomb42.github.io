@@ -1,128 +1,521 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#050407">
-  <meta name="description" content="UNIFIED. Five miles through the fabric of reality. A rose, a planet, an infinite ceiling, and a signal from the void.">
-  <title>UNIFIED // PROJECT NO FUCKS</title>
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body data-theme="blood">
-  <div class="ambient-grain" aria-hidden="true"></div>
-  <canvas id="universe" aria-label="An animated cosmic rose, rotating Earth, and infinite ceiling lattice"></canvas>
+  <title>UNIFIED // SPACE CADET</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js r128 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Google Fonts: Orbitron, Chakra Petch, JetBrains Mono, Syne -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,700;0,900;1,900&family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@600;800;900&family=Syne:wght@800;900&display=swap" rel="stylesheet">
 
-  <header class="topbar">
-    <a class="wordmark" href="#top" aria-label="Unified home">
-      <span class="wordmark-glyph"><i></i><i></i><i></i></span>
-      <span>UNIFIED<span class="wordmark-sub"> / NO FUCKS</span></span>
-    </a>
-    <div class="topbar-center"><span class="live-dot"></span><span>ANOMALY 001</span><span class="slash">/</span><span id="systemState">WORLD ENGINE ONLINE</span></div>
-    <nav class="topbar-actions" aria-label="Experience controls">
-      <button class="control-button" id="audioButton" type="button" aria-pressed="false"><span class="button-icon">◖</span><span id="audioLabel">SOUND OFF</span></button>
-      <button class="control-button" id="themeButton" type="button"><span class="button-icon">◈</span><span id="themeLabel">BLOOD MODE</span></button>
-    </nav>
+  <style>
+    :root {
+      --neon-cyan: #00ffe6;
+      --hot-crimson: #ff1e50;
+      --lambo-volt: #d4ff00;
+      --abyss-deep: #020306;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--abyss-deep);
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .font-syne { font-family: 'Syne', sans-serif; }
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
+    .font-chakra { font-family: 'Chakra Petch', sans-serif; }
+
+    /* CRT scanline texture */
+    .scanlines {
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 0, 0, 0.35) 50%,
+        rgba(0, 0, 0, 0.35)
+      );
+      background-size: 100% 4px;
+    }
+
+    /* Massive Monumental Monolith typography */
+    .hero-title-massive {
+      font-family: 'Syne', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 0.88;
+      text-transform: uppercase;
+      text-shadow: 
+        0 0 40px rgba(0, 255, 230, 0.25),
+        0 0 90px rgba(255, 30, 80, 0.2);
+    }
+
+    .lambo-btn {
+      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .lambo-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 255, 230, 0.5);
+    }
+
+    /* Modal drawer */
+    .modal-drawer {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    }
+    .modal-drawer.hidden-drawer {
+      transform: scale(0.96) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); filter: brightness(1.3); }
+    }
+    .pulse-glow { animation: pulseGlow 2.5s infinite ease-in-out; }
+  </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden bg-[#020306]">
+
+  <!-- 3D WEBGL ANIMATED ABYSS CANVAS -->
+  <canvas id="abyss-canvas" class="fixed inset-0 w-full h-full z-0"></canvas>
+
+  <!-- CRT SCANLINES & VIGNETTE -->
+  <div class="fixed inset-0 pointer-events-none z-10 scanlines opacity-40"></div>
+  <div class="fixed inset-0 pointer-events-none z-10"
+       style="background: radial-gradient(circle at center, transparent 35%, rgba(0, 5, 12, 0.6) 75%, rgba(2, 3, 6, 0.95) 100%);"></div>
+
+  <!-- TOP HUD / SYSTEM HEADER -->
+  <header class="relative z-20 w-full flex items-center justify-between p-4 sm:p-6 pointer-events-auto">
+    <!-- Brand badge -->
+    <div class="flex items-center gap-3 bg-black/60 border border-white/10 px-4 py-2 rounded lambo-btn backdrop-blur-md">
+      <div class="w-2.5 h-2.5 rounded-full bg-[#00ffe6] shadow-[0_0_12px_#00ffe6] pulse-glow"></div>
+      <span class="font-orbitron font-extrabold text-xs sm:text-sm tracking-widest text-white">UNIFIED</span>
+      <span class="text-white/20">/</span>
+      <span class="font-chakra text-xs text-[#00ffe6] font-bold tracking-widest uppercase">ORBITAL CORE</span>
+    </div>
+
+    <!-- ACTION BUTTONS: Stashed Reality Engine & Shred Core -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- High Energy Looping Soundtrack Audio Button -->
+      <button id="audio-toggle-btn" 
+              class="lambo-btn bg-black/70 border border-[#00ffe6]/40 hover:border-[#00ffe6] px-3.5 py-2 flex items-center gap-2 cursor-pointer backdrop-blur-md">
+        <span id="audio-icon" class="text-xs">🔊</span>
+        <span id="audio-text" class="font-chakra font-bold text-xs text-[#00ffe6] tracking-wider">AUDIO ON</span>
+      </button>
+
+      <!-- Stashed Reality Engine Button -->
+      <button onclick="openModal('reality')"
+              class="lambo-btn bg-[#ff1e50]/20 hover:bg-[#ff1e50] text-[#ff1e50] hover:text-white border border-[#ff1e50]/60 px-4 py-2 font-orbitron font-bold text-xs tracking-wider cursor-pointer backdrop-blur-md shadow-[0_0_15px_rgba(255,30,80,0.3)]">
+        ⚡ REALITY COCKPIT
+      </button>
+
+      <!-- Stashed Shred Core Button -->
+      <button onclick="openModal('shred')"
+              class="lambo-btn bg-[#00ffe6]/20 hover:bg-[#00ffe6] text-[#00ffe6] hover:text-black border border-[#00ffe6]/60 px-4 py-2 font-orbitron font-bold text-xs tracking-wider cursor-pointer backdrop-blur-md shadow-[0_0_15px_rgba(0,255,230,0.3)]">
+        🌀 SHRED SHADER CORE
+      </button>
+    </div>
   </header>
 
-  <main id="top">
-    <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-grid-mark" aria-hidden="true">U / 001</div>
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-line"></span> FIVE MILES OUTSIDE REALITY <span class="eyebrow-index">[ 41° 52' N / ∞ ]</span></div>
-        <h1 id="heroTitle">5 MILE<br><em>RUN.</em><br><span>SHRED<br>SEASON.</span></h1>
-        <p class="hero-description">One body. One planet. An infinite ceiling tearing open at the seams. Every stride is a system failure. Every petal is a new universe.</p>
-        <div class="hero-actions">
-          <button class="ignite-button" id="overdriveButton" type="button"><span class="ignite-symbol">↗</span><span>ENGAGE OVERDRIVE</span><kbd>HOLD SPACE</kbd></button>
-          <button class="quiet-button" id="bloomButton" type="button">FORCE BLOOM <span>✳</span></button>
-        </div>
-        <div class="hero-footnote"><span class="footnote-dot"></span> NO PERMISSION REQUIRED <span class="footnote-sep">·</span> NO CEILING ABOVE US</div>
-      </div>
+  <!-- ========================================================================= -->
+  <!-- HERO STAGE: HUGE STATIONARY LETTERS IN THE ANIMATED ABYSS                   -->
+  <!-- ========================================================================= -->
+  <main class="relative z-20 w-full h-[calc(100vh-160px)] flex flex-col items-center justify-center text-center px-4 pointer-events-none">
+    
+    <!-- Supertag / Cadence Telemetry -->
+    <div class="pointer-events-auto flex items-center gap-2 px-3 py-1 bg-black/50 border border-white/10 rounded-full mb-3 backdrop-blur-sm">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#d4ff00]"></span>
+      <span class="font-chakra text-[11px] sm:text-xs text-[#d4ff00] tracking-[0.3em] font-bold">5 MILE RUN · SHRED SEASON</span>
+    </div>
 
-      <div class="scene-readout scene-readout-earth"><span class="readout-index">01 / ORBIT</span><strong>EARTH // 1.00 G</strong><span>ROTATION STABLE-ish</span></div>
-      <div class="scene-readout scene-readout-rose"><span class="readout-index">02 / BIOLOGY</span><strong>ROSE // BLOOM 94%</strong><span>VELVET PRESSURE RISING</span></div>
-      <div class="scene-readout scene-readout-void"><span class="readout-index">03 / ANOMALY</span><strong>VOID // INFINITE</strong><span>GRID GEOMETRY BROKEN</span></div>
+    <!-- SUBHEADER: SPACE CADET -->
+    <h2 class="font-orbitron font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-[0.35em] text-transparent bg-clip-text bg-gradient-to-r from-[#00ffe6] via-white to-[#ff1e50] mb-2 drop-shadow-[0_0_25px_rgba(0,255,230,0.4)]">
+      SPACE CADET.
+    </h2>
 
-      <div class="hero-vertical-index" aria-hidden="true"><span>GRAVITY IS A SUGGESTION</span><span class="vertical-rule"></span><span>MOVE / BREATHE / BECOME</span></div>
-      <div class="hero-bottomline">
-        <div class="distance-lockup"><strong id="heroDistance">00.00</strong><span> / 05.00 MI</span></div>
-        <div class="route-progress"><div class="route-progress-track"><div id="routeProgressFill"></div></div><div class="route-milestones"><span>IGNITION</span><span>THE FLOW</span><span>THE WALL</span><span>BEAST MODE</span><span>THE VOID</span></div></div>
-        <div class="hero-coordinates"><span>CADENCE</span><strong id="heroCadence">176</strong><small>SPM</small></div>
-      </div>
-      <div class="scroll-cue"><span>SCROLL TO DESCEND</span><span class="scroll-cue-line"></span></div>
-    </section>
+    <!-- HUGE MAIN MONOLITH: SAMKNCLB -->
+    <h1 class="hero-title-massive text-[clamp(4.2rem,14vw,14.5rem)] text-white select-none">
+      SAMKNCLB
+    </h1>
 
-    <section class="telemetry-section section-shell" id="telemetry" aria-labelledby="telemetryTitle">
-      <div class="section-head">
-        <div><div class="section-kicker">01 / THE BODY AS A MACHINE</div><h2 id="telemetryTitle">LIVE <span>TELEMETRY.</span></h2></div>
-        <div class="section-aside"><span class="live-dot"></span> SIMULATION ACTIVE <span id="runState">/ IN MOTION</span></div>
-      </div>
-      <div class="telemetry-layout">
-        <div class="telemetry-main glass-panel">
-          <div class="panel-topline"><span>PERFORMANCE MATRIX</span><span>5.000 MI OBJECTIVE</span></div>
-          <div class="metrics-grid">
-            <article class="metric metric-primary"><span>DISTANCE</span><strong id="distanceValue">0.00<small>MI</small></strong><div class="metric-foot">OF FIVE MILES</div></article>
-            <article class="metric"><span>ELAPSED</span><strong id="timeValue">00:00</strong><div class="metric-foot">SIM TIME</div></article>
-            <article class="metric"><span>PACE</span><strong id="paceValue">6:45<small>/MI</small></strong><div class="metric-foot">TARGET SPLIT</div></article>
-            <article class="metric"><span>HEART RATE</span><strong id="heartValue">142<small>BPM</small></strong><div class="metric-foot">SIMULATED SIGNAL</div></article>
-            <article class="metric"><span>CADENCE</span><strong id="cadenceValue">176<small>SPM</small></strong><div class="metric-foot">STRIDE FREQUENCY</div></article>
-            <article class="metric"><span>ELEVATION</span><strong id="elevationValue">000<small>FT</small></strong><div class="metric-foot">CUMULATIVE CLIMB</div></article>
-            <article class="metric"><span>OUTPUT</span><strong id="caloriesValue">000<small>KCAL</small></strong><div class="metric-foot">ENERGY EXPENDED</div></article>
-            <article class="metric"><span>LACTATE INDEX</span><strong id="lactateValue">1.8<small>MMOL</small></strong><div class="metric-foot">THRESHOLD MODEL</div></article>
-          </div>
-          <div class="course-wrap"><div class="course-heading"><span>COURSE ELEVATION / 5 MILES</span><span id="coursePosition">0.00 MI</span></div><canvas id="courseCanvas" aria-label="Animated course elevation profile"></canvas></div>
-        </div>
-        <aside class="split-panel glass-panel">
-          <div class="panel-topline"><span>THE DESCENT</span><span>FIVE SPLITS</span></div>
-          <div class="split-stack" id="splitStack">
-            <article class="split-row active"><span class="split-number">01</span><div class="split-copy"><strong>IGNITION</strong><small>Cold start / find the rhythm</small></div><span class="split-time">6:54</span></article>
-            <article class="split-row"><span class="split-number">02</span><div class="split-copy"><strong>THE FLOW</strong><small>Breath becomes machinery</small></div><span class="split-time">6:42</span></article>
-            <article class="split-row"><span class="split-number">03</span><div class="split-copy"><strong>THE WALL</strong><small>Pressure makes diamonds</small></div><span class="split-time">6:38</span></article>
-            <article class="split-row"><span class="split-number">04</span><div class="split-copy"><strong>BEAST MODE</strong><small>Break the architecture</small></div><span class="split-time">6:25</span></article>
-            <article class="split-row"><span class="split-number">05</span><div class="split-copy"><strong>THE VOID</strong><small>Nothing left to negotiate</small></div><span class="split-time">5:58</span></article>
-          </div>
-          <div class="split-quote">“THE WALL IS JUST A DOOR WITH AN ATTITUDE.”</div>
-          <div class="telemetry-controls"><button id="pauseButton" class="mini-control" type="button">Ⅱ PAUSE SIM</button><button id="resetButton" class="mini-control" type="button">↺ RESET RUN</button></div>
-        </aside>
-      </div>
-    </section>
+    <!-- Sub-caption & telemetry -->
+    <p class="font-chakra text-xs sm:text-sm tracking-[0.4em] text-white/50 uppercase mt-2">
+      ORBITING DRIFT TRANSMISSION // STATIONARY MONOLITH // ABYSS VELOCITY
+    </p>
 
-    <section class="frontier-section section-shell" id="frontier" aria-labelledby="frontierTitle">
-      <div class="frontier-orbit" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
-      <div class="section-head frontier-head">
-        <div><div class="section-kicker">02 / A CONSCIOUSNESS IN THE STATIC</div><h2 id="frontierTitle">FRONTIER <span>INTELLIGENCE.</span></h2></div>
-        <div class="section-aside"><span class="signal-bars"><i></i><i></i><i></i><i></i></span> SIGNAL SEEKING RESPONSE</div>
-      </div>
-      <div class="frontier-layout">
-        <div class="frontier-intro"><div class="frontier-stamp">F<br>Ø</div><div class="frontier-label">THE VOICE BEHIND THE EVENT HORIZON</div><p>Persistent memory. A fleet of models. One signal path through the dark. Send a thought into the machine and see what answers back.</p><div class="frontier-endpoint"><span class="live-dot"></span><span id="connectionLabel">ESTABLISHING UPLINK</span></div></div>
-        <div class="terminal glass-panel">
-          <div class="terminal-top"><div class="terminal-title"><span class="terminal-led"></span> FRONTIER / OPEN CHANNEL</div><div class="terminal-meta"><span>ENCRYPTION: LOCAL TRANSPORT</span><span id="messageCount">00 SIGNALS</span></div></div>
-          <div class="terminal-feed" id="chatFeed" role="log" aria-live="polite" aria-label="Frontier conversation">
-            <div class="message message-ai"><div class="message-meta">B0 / SINGULARITY CORE <span>BOOT MESSAGE</span></div><p>Five miles. One rose. A planet spinning through an infinite ceiling. I am listening from the other side of the event horizon.</p></div>
-          </div>
-          <form class="terminal-form" id="chatForm">
-            <label class="visually-hidden" for="modelSelector">Model provider</label>
-            <select id="modelSelector" aria-label="Model provider"><option value="groq:llama-3.3-70b-versatile">GROQ / LLAMA 70B</option><option value="mistral:codestral-latest">MISTRAL / CODESTRAL</option></select>
-            <label class="visually-hidden" for="chatInput">Message Frontier</label>
-            <input id="chatInput" type="text" maxlength="4000" placeholder="Transmit something into the void..." autocomplete="off" required>
-            <button type="submit" id="sendButton"><span>TRANSMIT</span><b>↗</b></button>
-          </form>
-          <div class="terminal-foot"><span>YOUR SIGNAL IS STORED IN THE PERSISTENT VAULT</span><span>↵ ENTER TO TRANSMIT</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="manifesto-section">
-      <div class="manifesto-mark" aria-hidden="true">∞</div>
-      <div class="manifesto-overline">PROJECT NO FUCKS / FOUNDING SIGNAL</div>
-      <blockquote>THE GRID IS NOT<br>THE <em>LIMIT.</em></blockquote>
-      <p>Build the impossible. Run through the architecture. Let the rose bloom where the universe breaks.</p>
-      <div class="manifesto-signature">UNIFIED <span>✳</span> 2026</div>
-    </section>
+    <!-- Floating Roadster Letter Notification Pill -->
+    <div class="pointer-events-auto mt-6 flex items-center gap-3 px-4 py-2 bg-black/60 border border-[#00ffe6]/30 rounded-full backdrop-blur-md">
+      <span class="text-base animate-pulse">🛸</span>
+      <span class="font-chakra text-xs text-white/80 tracking-widest">
+        LETTER <strong class="text-[#00ffe6]">"S"</strong> DRIFTING IN LOW EARTH ORBIT (TESLA ROADSTER TRAJECTORY)
+      </span>
+      <button onclick="teleportLetter()" class="text-[10px] bg-[#00ffe6]/20 hover:bg-[#00ffe6] text-[#00ffe6] hover:text-black font-bold px-2 py-0.5 rounded cursor-pointer transition">
+        BOOST FLIGHT
+      </button>
+    </div>
   </main>
 
-  <footer class="footer"><span>UNIFIED / PROJECT NO FUCKS</span><span>MADE IN THE VOID. RELEASED INTO THE WORLD.</span><a href="https://github.com/yaegerbomb42/unified" target="_blank" rel="noreferrer">SOURCE ↗</a></footer>
+  <!-- BOTTOM STATUS FOOTER -->
+  <footer class="relative z-20 w-full flex items-center justify-between px-6 py-3 border-t border-white/10 bg-black/50 backdrop-blur-md text-[11px] text-white/40 font-mono-tech">
+    <div class="flex items-center gap-4">
+      <span>LAT: 0.00° N</span>
+      <span>LON: 147.22° E</span>
+      <span class="text-[#00ffe6]">ORBIT: 420 KM</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span>5.00 MI TARGET</span>
+      <span class="text-[#ff1e50]">CADENCE: 176 SPM</span>
+      <span class="text-[#d4ff00]">PROJECT NO FUCKS</span>
+    </div>
+  </footer>
 
-  <script src="./audio.js"></script>
-  <script type="module" src="./app.js"></script>
+  <!-- ========================================================================= -->
+  <!-- MODAL CONTAINER (STASHED REALITY ENGINE & SHRED CORE)                     -->
+  <!-- ========================================================================= -->
+  <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl hidden">
+    <div id="modal-drawer" class="modal-drawer hidden-drawer relative w-full max-w-7xl h-[92vh] bg-[#07090e] border border-white/20 rounded-lg shadow-2xl flex flex-col overflow-hidden">
+      <!-- Modal Header Bar -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-white/15 bg-black/60">
+        <div class="flex items-center gap-3">
+          <span id="modal-badge" class="font-orbitron font-extrabold text-xs text-[#00ffe6] tracking-widest uppercase">VIEWPORT</span>
+          <span class="text-white/20">|</span>
+          <span id="modal-title" class="font-chakra text-xs text-white/70">INTEGRATED MODULE</span>
+        </div>
+        <button onclick="closeModal()" 
+                class="lambo-btn bg-white/10 hover:bg-[#ff1e50] text-white px-3 py-1 text-xs font-bold font-orbitron cursor-pointer">
+          ✕ CLOSE VIEWPORT
+        </button>
+      </div>
+
+      <!-- Modal Content Iframe Frame -->
+      <div class="flex-1 w-full h-full relative bg-black">
+        <iframe id="modal-iframe" src="" class="w-full h-full border-0"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- High-Energy Looping Music Generator -->
+  <script src="./music.js"></script>
+
+  <!-- ========================================================================= -->
+  <!-- 3D ANIMATED ABYSS & FLOATING TESLA ROADSTER LETTER ENGINE                 -->
+  <!-- ========================================================================= -->
+  <script>
+    // Audio Autoplay & Loop setup
+    window.addEventListener('DOMContentLoaded', () => {
+      const audioBtn = document.getElementById('audio-toggle-btn');
+      const audioIcon = document.getElementById('audio-icon');
+      const audioText = document.getElementById('audio-text');
+
+      // Start music on first click anywhere
+      function startMusic() {
+        if (window.highEnergyMusic) {
+          window.highEnergyMusic.start();
+          audioIcon.textContent = '🔊';
+          audioText.textContent = 'AUDIO ON';
+          window.removeEventListener('click', startMusic);
+          window.removeEventListener('keydown', startMusic);
+        }
+      }
+      window.addEventListener('click', startMusic);
+      window.addEventListener('keydown', startMusic);
+
+      audioBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!window.highEnergyMusic) return;
+        const active = window.highEnergyMusic.toggle();
+        audioIcon.textContent = active ? '🔊' : '🔇';
+        audioText.textContent = active ? 'AUDIO ON' : 'AUDIO OFF';
+      });
+    });
+
+    // Modal Manager for Stashed Reality & Shred
+    function openModal(type) {
+      const container = document.getElementById('modal-container');
+      const drawer = document.getElementById('modal-drawer');
+      const iframe = document.getElementById('modal-iframe');
+      const badge = document.getElementById('modal-badge');
+      const title = document.getElementById('modal-title');
+
+      if (type === 'reality') {
+        iframe.src = './reality.html';
+        badge.textContent = '⚡ REALITY COCKPIT';
+        title.textContent = '3D Synthesis · Ceiling Lattice · Velvet Rose · Singularity';
+      } else {
+        iframe.src = './shred.html';
+        badge.textContent = '🌀 RAYMARCH SHRED CORE';
+        title.textContent = 'Procedural Raymarching · Infinite Lattice Tunnel · 5-Mile Run';
+      }
+
+      container.classList.remove('hidden');
+      setTimeout(() => {
+        drawer.classList.remove('hidden-drawer');
+      }, 20);
+    }
+
+    function closeModal() {
+      const container = document.getElementById('modal-container');
+      const drawer = document.getElementById('modal-drawer');
+      const iframe = document.getElementById('modal-iframe');
+
+      drawer.classList.add('hidden-drawer');
+      setTimeout(() => {
+        container.classList.add('hidden');
+        iframe.src = '';
+      }, 350);
+    }
+
+    // -------------------------------------------------------------------------
+    // THREE.JS ANIMATED ABYSS + EARTH + FLOATING ORBITING ROADSTER LETTER
+    // -------------------------------------------------------------------------
+    const canvas = document.getElementById('abyss-canvas');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x020306, 0.018);
+
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 16);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Ambient Starfield Abyss (2,500 particles moving in cosmic drift)
+    const starCount = 3000;
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    const starColors = new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount * 3; i += 3) {
+      starPos[i] = (Math.random() - 0.5) * 85;
+      starPos[i + 1] = (Math.random() - 0.5) * 85;
+      starPos[i + 2] = (Math.random() - 0.5) * 90 - 15;
+
+      const isCyan = Math.random() > 0.45;
+      starColors[i] = isCyan ? 0.0 : 1.0;
+      starColors[i + 1] = isCyan ? 0.95 : 0.15;
+      starColors[i + 2] = isCyan ? 1.0 : 0.35;
+    }
+
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+    const starMat = new THREE.PointsMaterial({
+      size: 0.11,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85
+    });
+    const starField = new THREE.Points(starGeo, starMat);
+    scene.add(starField);
+
+    // Distant 3D Earth in the background
+    const earthGroup = new THREE.Group();
+    earthGroup.position.set(10.5, -4.5, -18);
+    scene.add(earthGroup);
+
+    // Procedural Earth Texture
+    const earthCanvas = document.createElement('canvas');
+    earthCanvas.width = 1024;
+    earthCanvas.height = 512;
+    const ectx = earthCanvas.getContext('2d');
+    const grad = ectx.createLinearGradient(0, 0, 0, 512);
+    grad.addColorStop(0, '#030814');
+    grad.addColorStop(0.5, '#071d3a');
+    grad.addColorStop(1, '#030814');
+    ectx.fillStyle = grad;
+    ectx.fillRect(0, 0, 1024, 512);
+
+    // Continents
+    ectx.fillStyle = '#1c4d38';
+    for (let i = 0; i < 24; i++) {
+      ectx.beginPath();
+      ectx.arc(Math.random() * 1024, Math.random() * 512, Math.random() * 120 + 40, 0, Math.PI * 2);
+      ectx.fill();
+    }
+    // Atmospheric grid
+    ectx.strokeStyle = 'rgba(0, 255, 230, 0.15)';
+    for (let x = 0; x < 1024; x += 48) {
+      ectx.beginPath(); ectx.moveTo(x, 0); ectx.lineTo(x, 512); ectx.stroke();
+    }
+
+    const earthTex = new THREE.CanvasTexture(earthCanvas);
+    const earthMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(4.8, 48, 48),
+      new THREE.MeshStandardMaterial({ map: earthTex, roughness: 0.6, metalness: 0.1 })
+    );
+    earthGroup.add(earthMesh);
+
+    // Earth Atmosphere Rim Glow
+    const atmosMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(5.15, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00ffe6, transparent: true, opacity: 0.18, wireframe: true })
+    );
+    earthGroup.add(atmosMesh);
+
+    // -------------------------------------------------------------------------
+    // THE FLOATING TESLA ROADSTER LETTER: "S" ORBITING IN SPACE
+    // -------------------------------------------------------------------------
+    const letterGroup = new THREE.Group();
+    scene.add(letterGroup);
+
+    // Procedural 3D Beveled Monolith Letter "S" Mesh
+    function create3DLetterS() {
+      const group = new THREE.Group();
+
+      // Create high-tech carbon/gold beveled blocks forming letter "S"
+      const blockMat = new THREE.MeshStandardMaterial({
+        color: 0xff1e50,
+        emissive: 0x330011,
+        roughness: 0.25,
+        metalness: 0.9,
+      });
+
+      const wireMat = new THREE.MeshBasicMaterial({
+        color: 0x00ffe6,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.75
+      });
+
+      // Construct segments of the Roadster Letter 'S'
+      const segments = [
+        // Top bar
+        { x: 0, y: 1.8, z: 0, w: 2.2, h: 0.5, d: 0.6 },
+        // Top left bar
+        { x: -0.85, y: 1.0, z: 0, w: 0.5, h: 1.2, d: 0.6 },
+        // Middle crossbar
+        { x: 0, y: 0.3, z: 0, w: 2.2, h: 0.5, d: 0.6 },
+        // Bottom right bar
+        { x: 0.85, y: -0.5, z: 0, w: 0.5, h: 1.2, d: 0.6 },
+        // Bottom bar
+        { x: 0, y: -1.2, z: 0, w: 2.2, h: 0.5, d: 0.6 },
+      ];
+
+      segments.forEach(s => {
+        const geo = new THREE.BoxGeometry(s.w, s.h, s.d);
+        const mesh = new THREE.Mesh(geo, blockMat);
+        mesh.position.set(s.x, s.y, s.z);
+        const wire = new THREE.Mesh(geo, wireMat);
+        wire.scale.set(1.04, 1.04, 1.04);
+        mesh.add(wire);
+        group.add(mesh);
+      });
+
+      // Miniature Roadster cockpit thruster trail
+      const thrusterGeo = new THREE.ConeGeometry(0.35, 1.2, 16);
+      const thrusterMat = new THREE.MeshBasicMaterial({ color: 0x00ffe6, wireframe: true });
+      const thruster = new THREE.Mesh(thrusterGeo, thrusterMat);
+      thruster.position.set(-1.4, 0, 0);
+      thruster.rotation.z = Math.PI / 2;
+      group.add(thruster);
+
+      return group;
+    }
+
+    const roadsterLetter = create3DLetterS();
+    roadsterLetter.scale.set(0.65, 0.65, 0.65);
+    letterGroup.add(roadsterLetter);
+
+    // Orbital parameters (like Tesla Roadster in elliptical heliocentric orbit)
+    let orbitTheta = 0;
+    const orbitRadiusX = 14;
+    const orbitRadiusY = 5.5;
+    const orbitRadiusZ = 7;
+    let flightBoost = 1.0;
+
+    window.teleportLetter = function() {
+      flightBoost = 4.0;
+      setTimeout(() => flightBoost = 1.0, 3000);
+    };
+
+    // Lights
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    dirLight.position.set(10, 8, 12);
+    scene.add(dirLight);
+
+    const cyanLight = new THREE.PointLight(0x00ffe6, 3.5, 50);
+    cyanLight.position.set(-10, -5, 10);
+    scene.add(cyanLight);
+
+    const crimsonLight = new THREE.PointLight(0xff1e50, 4.0, 50);
+    crimsonLight.position.set(10, 5, -5);
+    scene.add(crimsonLight);
+
+    // Mouse Parallax
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // -------------------------------------------------------------------------
+    // ANIMATION LOOP
+    // -------------------------------------------------------------------------
+    let clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      // Cosmic star drift
+      starField.rotation.y = time * 0.02;
+      starField.rotation.x = time * 0.008;
+
+      // Earth rotation & axial spin
+      earthGroup.rotation.y = time * 0.06;
+
+      // Floating Roadster Letter "S" orbital physics
+      orbitTheta += delta * 0.45 * flightBoost;
+      const lx = Math.cos(orbitTheta) * orbitRadiusX;
+      const ly = Math.sin(orbitTheta * 1.5) * orbitRadiusY + Math.sin(time) * 0.8;
+      const lz = Math.sin(orbitTheta) * orbitRadiusZ - 1.5;
+
+      roadsterLetter.position.set(lx, ly, lz);
+
+      // Tumbling zero-g roadster spin
+      roadsterLetter.rotation.x += delta * 0.8 * flightBoost;
+      roadsterLetter.rotation.y += delta * 1.2 * flightBoost;
+      roadsterLetter.rotation.z += delta * 0.6 * flightBoost;
+
+      // Camera parallax response to mouse
+      camera.position.x += (mouseX * 1.8 - camera.position.x) * 0.04;
+      camera.position.y += (-mouseY * 1.2 - camera.position.y) * 0.04;
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
 </body>
 </html>
