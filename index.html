@@ -3,362 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeger's</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <title>MONOLITH</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
+    :root {
+      --bg: #090a0f;
+      --fg: #e2e8f0;
+      --accent: #38bdf8;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #05070d;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    }
-
-    .viewport {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      background-color: #05070d;
+      padding: 24px;
+      text-align: center;
     }
-
-    /* Fixed Aspect Ratio Stage matching 1024x571 reference image */
-    .stage {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      max-width: 179.33vh; /* 1024 / 571 = ~1.7933 */
-      max-height: 55.76vw; /* 571 / 1024 = ~0.5576 */
-      aspect-ratio: 1024 / 571;
-      margin: auto;
-    }
-
-    .hero-art {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      pointer-events: none;
-    }
-
-    /* Subtle ambient light particles overlay */
-    #ambient-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      mix-blend-mode: screen;
-      opacity: 0.75;
-      z-index: 5;
-    }
-
-    /* Interactive Bay Hotspots aligned exactly with the 3 hangar bays */
-    .bay-zone {
-      position: absolute;
-      text-decoration: none;
-      cursor: pointer;
-      outline: none;
-      z-index: 10;
-      display: block;
-      border-radius: 28px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* 1. Left Bay: OMNEXX Portal
-       Sign: (12.8% to 26.6% x, 21% to 32% y)
-       Vortex Ring: (4.5% to 29.5% x, 31% to 78% y) */
-    .zone-omnexx {
-      top: 18%;
-      left: 3.5%;
-      width: 27.5%;
-      height: 67%;
-    }
-
-    /* 2. Center Bay: DWEEBS Playground
-       Sign: (44% to 56% x, 31.5% to 38% y)
-       Chamber: (34% to 66% x, 14% to 79% y) */
-    .zone-dweebs {
-      top: 13%;
-      left: 33.5%;
-      width: 33%;
-      height: 72%;
-    }
-
-    /* 3. Right Bay: STICKSHOT Range
-       Sign: (73% to 90% x, 19% to 32% y)
-       Firing Range: (66.5% to 98% x, 14% to 82% y) */
-    .zone-stickshot {
-      top: 14%;
-      right: 2%;
-      width: 32%;
-      height: 71%;
-    }
-
-    /* Glowing Highlight Borders matching the scene's architectural contours */
-    .bay-frame {
-      position: absolute;
-      inset: 0;
-      border-radius: 28px;
-      pointer-events: none;
-      opacity: 0;
-      transform: scale(0.98);
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .zone-omnexx .bay-frame {
-      border: 2px solid rgba(0, 240, 255, 0.85);
-      background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.16), rgba(168, 85, 247, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 50px rgba(0, 240, 255, 0.7), inset 0 0 45px rgba(0, 240, 255, 0.35);
-    }
-
-    .zone-dweebs .bay-frame {
-      border: 2px solid rgba(255, 112, 166, 0.85);
-      background: radial-gradient(circle at 50% 50%, rgba(255, 221, 0, 0.16), rgba(255, 112, 166, 0.12) 60%, transparent 80%);
-      box-shadow: 0 0 50px rgba(255, 112, 166, 0.7), 0 0 35px rgba(255, 221, 0, 0.5), inset 0 0 45px rgba(255, 221, 0, 0.3);
-    }
-
-    .zone-stickshot .bay-frame {
-      border: 2px solid rgba(255, 120, 40, 0.85);
-      background: radial-gradient(circle at 50% 50%, rgba(255, 120, 40, 0.16), rgba(59, 130, 246, 0.1) 60%, transparent 80%);
-      box-shadow: 0 0 50px rgba(255, 120, 40, 0.7), 0 0 30px rgba(59, 130, 246, 0.5), inset 0 0 45px rgba(255, 120, 40, 0.3);
-    }
-
-    /* Floating Action Indicator Pill */
-    .bay-pill {
-      position: absolute;
-      bottom: 6%;
-      left: 50%;
-      transform: translateX(-50%) translateY(8px);
-      padding: 6px 18px;
-      border-radius: 999px;
-      font-size: clamp(10px, 1.2vw, 13px);
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .zone-omnexx .bay-pill {
-      background: linear-gradient(180deg, #00f0ff 0%, #0077fe 100%);
-      color: #ffffff;
-      border: 1.5px solid #a5f3fc;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.8);
-    }
-
-    .zone-dweebs .bay-pill {
-      background: linear-gradient(180deg, #ff4d8d 0%, #e11d48 100%);
-      color: #ffffff;
-      border: 1.5px solid #fecdd3;
-      box-shadow: 0 0 20px rgba(255, 77, 141, 0.8);
-    }
-
-    .zone-stickshot .bay-pill {
-      background: linear-gradient(180deg, #ff7b00 0%, #ea580c 100%);
-      color: #ffffff;
-      border: 1.5px solid #ffedd5;
-      box-shadow: 0 0 20px rgba(255, 123, 0, 0.8);
-    }
-
-    /* Hover & Focus Interactions */
-    .bay-zone:hover .bay-frame,
-    .bay-zone:focus .bay-frame {
-      opacity: 1;
-      transform: scale(1.02);
-    }
-
-    .bay-zone:hover .bay-pill,
-    .bay-zone:focus .bay-pill {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* Sleek Bottom Hotkey Bar */
-    .hotkey-bar {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(8, 12, 22, 0.78);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 999px;
-      padding: 6px 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
+    .badge {
+      font-family: var(--mono);
       font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+    p {
+      font-size: 1.15rem;
       color: #94a3b8;
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.5px;
-      z-index: 20;
-      pointer-events: none;
+      max-width: 540px;
+      line-height: 1.6;
+      margin-bottom: 32px;
     }
-
-    .hotkey-bar kbd {
-      background: rgba(255, 255, 255, 0.14);
-      color: #ffffff;
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-weight: 700;
-      border: 1px solid rgba(255, 255, 255, 0.22);
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 680px;
+      text-align: left;
     }
-
-    .hotkey-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .card-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .card-val {
+      font-size: 0.95rem;
+      color: #f1f5f9;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
-  <div class="viewport">
-    <div class="stage">
-      <!-- Main Scene Art -->
-      <img
-        src="yaeger-portal-hero.jpg"
-        alt="Yaeger's Complex - Omnexx, Dweebs, and Stickshot"
-        class="hero-art"
-        loading="eager"
-      />
-
-      <!-- Ambient Canvas Particles -->
-      <canvas id="ambient-canvas"></canvas>
-
-      <!-- 1. Left Bay: Omnexx -->
-      <a href="./omnexx/" class="bay-zone zone-omnexx" aria-label="Enter Omnexx (Left Portal)">
-        <div class="bay-frame"></div>
-        <div class="bay-pill">Enter Omnexx →</div>
-      </a>
-
-      <!-- 2. Middle Bay: Dweebs -->
-      <a href="./dweebs/" class="bay-zone zone-dweebs" aria-label="Play Dweebs Mega Stadium (Center Bay)">
-        <div class="bay-frame"></div>
-        <div class="bay-pill">Play Dweebs →</div>
-      </a>
-
-      <!-- 3. Right Bay: Stickshot -->
-      <a href="./stickshot/" class="bay-zone zone-stickshot" aria-label="Play Stickshot Arcade (Right Bay)">
-        <div class="bay-frame"></div>
-        <div class="bay-pill">Play Stickshot →</div>
-      </a>
+  <div class="badge">Baseline Cleared &bull; Oracle VPS Online</div>
+  <h1>MONOLITH</h1>
+  <p>Scratch baseline initialized. Zero legacy debt, zero bloated harnesses, zero phantom games. Ready for direct value creation.</p>
+  <div class="grid">
+    <div class="card">
+      <div class="card-label">HOST COMPUTE</div>
+      <div class="card-val">Oracle VPS (147.224.158.118)</div>
     </div>
-
-    <!-- Hotkey Indicator Bar -->
-    <div class="hotkey-bar">
-      <div class="hotkey-item">
-        <kbd>1</kbd> <span>Omnexx</span>
-      </div>
-      <div class="hotkey-item">
-        <kbd>2</kbd> <span>Dweebs</span>
-      </div>
-      <div class="hotkey-item">
-        <kbd>3</kbd> <span>Stickshot</span>
-      </div>
+    <div class="card">
+      <div class="card-label">EDGE CDN</div>
+      <div class="card-val">GitHub Pages CDN</div>
+    </div>
+    <div class="card">
+      <div class="card-label">AI REASONING</div>
+      <div class="card-val">Direct LLM & 3D Pipelines</div>
     </div>
   </div>
-
-  <script>
-    // Keyboard navigation
-    window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if (e.key === '1' || e.key.toLowerCase() === 'o') {
-        window.location.href = './omnexx/';
-      }
-      if (e.key === '2' || e.key.toLowerCase() === 'd') {
-        window.location.href = './dweebs/';
-      }
-      if (e.key === '3' || e.key.toLowerCase() === 's') {
-        window.location.href = './stickshot/';
-      }
-    });
-
-    // Particle Canvas Animation
-    const canvas = document.getElementById('ambient-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Particle {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2.0 + 0.6;
-        this.vx = (Math.random() - 0.5) * 0.35;
-        this.vy = -Math.random() * 0.5 - 0.15;
-        this.alpha = Math.random() * 0.5 + 0.2;
-        if (this.x < canvas.width * 0.33) {
-          this.color = Math.random() > 0.4 ? '#00f0ff' : '#a855f7';
-        } else if (this.x < canvas.width * 0.66) {
-          this.color = Math.random() > 0.4 ? '#ff70a6' : '#ffdd00';
-        } else {
-          this.color = Math.random() > 0.4 ? '#ff7b00' : '#3b82f6';
-        }
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
-          this.reset();
-          this.y = canvas.height;
-        }
-      }
-      draw() {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = this.color;
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    const count = 45;
-    for (let i = 0; i < count; i++) {
-      particles.push(new Particle());
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let p of particles) {
-        p.update();
-        p.draw();
-      }
-      requestAnimationFrame(animate);
-    }
-    requestAnimationFrame(animate);
-  </script>
 </body>
 </html>
