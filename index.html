@@ -114,6 +114,35 @@
     color:#736d62;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.8rem;background:#07080b;
     border-top:1px solid rgba(255,255,255,.05);
   }
+
+  /* ---------- 5 · the ride (loop video + audio) ---------- */
+  #s5{
+    background:#000;color:#f2efe9;min-height:100vh;min-height:100svh;
+    position:relative;display:flex;flex-direction:column;justify-content:flex-end;
+    overflow:hidden;
+  }
+  .video-bg{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;
+    filter:contrast(1.05) brightness(.9);
+  }
+  .video-overlay{
+    position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 35%,rgba(0,0,0,.3) 70%,rgba(0,0,0,.92) 100%);
+  }
+  .video-content{
+    position:relative;z-index:3;padding:4rem clamp(1.2rem,6vw,6rem) 3rem;
+    display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem;
+  }
+  .video-tag{font-size:.85rem;letter-spacing:.3em;text-transform:uppercase;color:#ffd38a;margin-bottom:.5rem}
+  .video-title{font-size:clamp(2rem,5vw,4.5rem);font-weight:300;line-height:1.08;letter-spacing:-.01em;max-width:18em}
+  .sound-btn{
+    cursor:pointer;background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.25);
+    color:#fff;padding:.8rem 1.4rem;border-radius:9999px;font-family:inherit;font-size:.9rem;letter-spacing:.15em;
+    text-transform:uppercase;display:inline-flex;align-items:center;gap:.6rem;transition:all .25s ease;
+  }
+  .sound-btn:hover{background:rgba(255,255,255,.25);border-color:#ffd38a;color:#ffd38a}
+  .sound-dot{width:8px;height:8px;border-radius:50%;background:#ffd38a;animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 </style>
 </head>
 <body>
@@ -203,6 +232,24 @@
   <div class="world-tips">
     <span>[Click canvas to lock cursor] · WASD / Arrows to Move · Mouse to Look</span>
     <span>Space to Jump / Ascend · Shift to Run</span>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <video id="loopVideo" class="video-bg" src="./assets/ride.mp4" autoplay loop muted playsinline preload="auto"></video>
+  <div class="video-overlay"></div>
+  <div class="video-content">
+    <div>
+      <div class="video-tag">Entry I · The Passage</div>
+      <h2 class="video-title">riding through the endless grain, feeling the motion of what comes next.</h2>
+    </div>
+    <div>
+      <button id="soundToggle" class="sound-btn">
+        <span class="sound-dot"></span>
+        <span id="soundLabel">Enable Sound 🔊</span>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -528,6 +575,43 @@ if(btnRandom){
     const rndSeed = `${adjectives[Math.floor(Math.random()*adjectives.length)]}-${nouns[Math.floor(Math.random()*nouns.length)]}-${Math.floor(Math.random()*900+100)}`;
     applySeed(rndSeed);
   });
+}
+
+/* =========================================================
+   5 · Loop Video & Audio Controls
+   ========================================================= */
+const loopVideo = $('loopVideo');
+const soundToggle = $('soundToggle');
+const soundLabel = $('soundLabel');
+
+if(loopVideo && soundToggle){
+  // Try unmuting immediately on user interaction
+  soundToggle.addEventListener('click', ()=>{
+    if(loopVideo.muted){
+      loopVideo.muted = false;
+      loopVideo.volume = 1.0;
+      loopVideo.play().catch(()=>{});
+      soundLabel.textContent = 'Mute Audio 🔇';
+    } else {
+      loopVideo.muted = true;
+      soundLabel.textContent = 'Enable Sound 🔊';
+    }
+  });
+
+  // When scrolling into section 5, attempt audio playback if user already interacted
+  const vObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        loopVideo.play().catch(()=>{});
+      }
+    });
+  },{threshold:0.3});
+  vObserver.observe($('s5'));
+
+  // Ensure first click on page unlocks audio if permitted
+  window.addEventListener('click', ()=>{
+    if(loopVideo.paused) loopVideo.play().catch(()=>{});
+  }, {once:true});
 }
 </script>
 </body>
