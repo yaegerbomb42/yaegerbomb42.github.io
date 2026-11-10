@@ -69,6 +69,51 @@
   .cursor{display:inline-block;width:.05em;height:.85em;background:#f2efe9;margin-left:.08em;
       transform:translateY(.08em);animation:blink 1s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
+
+  /* ---------- 4 · world engine ---------- */
+  #s4{
+    background:#07080b;color:#f2efe9;min-height:100vh;min-height:100svh;
+    display:flex;flex-direction:column;position:relative;border-top:1px solid rgba(255,255,255,.08);
+  }
+  .world-header{
+    padding:2.2rem clamp(1.2rem,5vw,4rem) 1.2rem;
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;
+    gap:1.5rem;z-index:10;background:linear-gradient(180deg,#07080b 0%,rgba(7,8,11,.92) 80%,transparent 100%);
+  }
+  .world-title{font-size:clamp(1.5rem,3.2vw,2.8rem);font-weight:300;line-height:1.15;letter-spacing:-.01em;color:#f4eee2}
+  .world-title em{font-style:italic;color:#ffd38a}
+  .world-sub{font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:#8f887b;margin-bottom:.4rem}
+  .world-controls{
+    display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;
+  }
+  .seed-box{
+    display:flex;align-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);
+    border-radius:6px;overflow:hidden;transition:border-color .2s;
+  }
+  .seed-box:focus-within{border-color:#ffd38a}
+  .seed-input{
+    background:transparent;border:none;padding:.55rem .8rem;color:#f4eee2;font-family:inherit;
+    font-size:inherit;width:130px;outline:none;
+  }
+  .btn{
+    cursor:pointer;background:rgba(255,255,255,.06);color:#f4eee2;border:1px solid rgba(255,255,255,.14);
+    padding:.55rem .9rem;border-radius:6px;font-family:inherit;font-size:inherit;letter-spacing:.05em;
+    transition:background .2s,border-color .2s,color .2s;
+  }
+  .btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3)}
+  .btn.primary{background:#f4eee2;color:#07080b;font-weight:600;border-color:#f4eee2}
+  .btn.primary:hover{background:#ffd38a;border-color:#ffd38a}
+  .world-frame-wrap{
+    position:relative;flex:1;min-height:75vh;width:100%;display:flex;
+  }
+  #worldFrame{
+    width:100%;height:100%;min-height:75vh;border:none;flex:1;background:#000;display:block;
+  }
+  .world-tips{
+    padding:1rem clamp(1.2rem,5vw,4rem);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;
+    color:#736d62;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.8rem;background:#07080b;
+    border-top:1px solid rgba(255,255,255,.05);
+  }
 </style>
 </head>
 <body>
@@ -134,6 +179,31 @@
 <section id="s3">
   <div class="meta">Entry I &nbsp;—&nbsp; <span id="date2"></span></div>
   <div id="typed" aria-label="and thus it begins..."><span id="typedText"></span><span class="cursor"></span></div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <div class="world-header">
+    <div>
+      <div class="world-sub">Genesis Engine · Infinite Procedural World</div>
+      <h3 class="world-title">Venture into the <em>unshaped domain</em></h3>
+    </div>
+    <div class="world-controls">
+      <div class="seed-box">
+        <input type="text" id="seedInput" class="seed-input" placeholder="seed string..." value="monolith" spellcheck="false" />
+      </div>
+      <button class="btn primary" id="btnGen">Generate Seed</button>
+      <button class="btn" id="btnRandom">Randomize</button>
+      <a href="./world/" target="_blank" class="btn">Full Screen ↗</a>
+    </div>
+  </div>
+  <div class="world-frame-wrap">
+    <iframe id="worldFrame" src="./world/#seed=monolith" allow="fullscreen; pointer-lock"></iframe>
+  </div>
+  <div class="world-tips">
+    <span>[Click canvas to lock cursor] · WASD / Arrows to Move · Mouse to Look</span>
+    <span>Space to Jump / Ascend · Shift to Run</span>
+  </div>
 </section>
 
 <script>
@@ -426,6 +496,38 @@ function startTyping(){
       setTimeout(next, ch==='.'?650: ch===' '?160: 85+Math.random()*80);
     }
   },900);
+}
+
+/* =========================================================
+   4 · World Engine seed & frame controller
+   ========================================================= */
+const worldFrame = $('worldFrame');
+const seedInput = $('seedInput');
+const btnGen = $('btnGen');
+const btnRandom = $('btnRandom');
+
+function applySeed(seed){
+  const clean = seed.trim() || 'monolith';
+  seedInput.value = clean;
+  worldFrame.src = `./world/#seed=${encodeURIComponent(clean)}`;
+}
+
+if(btnGen){
+  btnGen.addEventListener('click', ()=>{
+    applySeed(seedInput.value);
+  });
+  seedInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') applySeed(seedInput.value);
+  });
+}
+
+if(btnRandom){
+  btnRandom.addEventListener('click', ()=>{
+    const adjectives = ['aeon','solaris','astral','cipher','void','dune','prism','echo','obsidian','zenith'];
+    const nouns = ['strata','spire','vale','expanse','core','reach','tide','abyss','drift','sanctum'];
+    const rndSeed = `${adjectives[Math.floor(Math.random()*adjectives.length)]}-${nouns[Math.floor(Math.random()*nouns.length)]}-${Math.floor(Math.random()*900+100)}`;
+    applySeed(rndSeed);
+  });
 }
 </script>
 </body>
