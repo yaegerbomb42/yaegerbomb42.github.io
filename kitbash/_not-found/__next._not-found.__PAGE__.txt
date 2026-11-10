@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[47497,["/kitbash/_next/static/chunks/00szq0z3bug-b.js","/kitbash/_next/static/chunks/0r0repc60l9u-.js","/kitbash/_next/static/chunks/01lhe~14v09ha.js"],""]
+3:I[83812,["/kitbash/_next/static/chunks/00szq0z3bug-b.js","/kitbash/_next/static/chunks/0r0repc60l9u-.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"className":"grid min-h-screen place-items-center px-6","children":["$","div",null,{"className":"panel max-w-sm p-7","children":[["$","p",null,{"className":"label","children":"Part missing"}],["$","h1",null,{"className":"mt-2 text-3xl font-bold leading-tight","children":"This world isn't in the box."}],["$","p",null,{"className":"mt-3 text-sm text-ink-2","children":"It may have been deleted, or the link is incomplete. Your other worlds are still safe."}],["$","$L2",null,{"href":"/","className":"mt-5 inline-flex h-10 items-center rounded-lg bg-ink px-4 text-sm font-semibold text-paper hover:bg-ink-2","children":"Back to building"}]]}]}],[["$","script","script-0",{"src":"/kitbash/_next/static/chunks/01lhe~14v09ha.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"NGl7jBqd1F1bWEfCMJo8R"}
+5:null

@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[94613,["/forma/_next/static/chunks/06ti7377zf-hy.js"],"ViewportBoundary"]
+3:I[94613,["/forma/_next/static/chunks/06ti7377zf-hy.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+5:I[63184,["/forma/_next/static/chunks/06ti7377zf-hy.js"],"IconMark"]
+0:{"rsc":["$","$1","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Forma — A little world. Endless possibility."}],["$","meta","1",{"name":"description","content":"A creative 3D sandbox for your next big idea. Build with beautiful prefabs, make every detail your own, and keep your worlds forever."}],["$","meta","2",{"name":"application-name","content":"Forma"}],["$","meta","3",{"name":"keywords","content":"3D sandbox,world builder,creative game,prefab editor,Forma"}],["$","link","4",{"rel":"icon","href":"/forma/icon.svg?icon.0czd2o_msjh.z.svg","sizes":"any","type":"image/svg+xml"}],["$","$L5","5",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"OBHIaSTbj7axgR2zLNhmG"}

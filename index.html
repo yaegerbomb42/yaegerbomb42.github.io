@@ -41,6 +41,32 @@
   }
   #s1 em{font-style:italic;font-weight:500;color:#ffd38a}
 
+  .hero-nav {
+    position:absolute;z-index:10;left:clamp(1.2rem,6vw,6rem);bottom:clamp(2.5rem,8vh,5rem);
+    display:flex;flex-wrap:wrap;gap:.85rem;align-items:center;
+  }
+  .hero-btn {
+    display:inline-flex;align-items:center;gap:.6rem;
+    padding:.7rem 1.25rem;border-radius:999px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,236,190,.22);
+    color:#f8e8cf;text-decoration:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    transition:all .28s cubic-bezier(.2,.8,.2,1);
+    box-shadow:0 4px 20px rgba(0,0,0,.35);
+  }
+  .hero-btn .pill-dot {
+    width:6px;height:6px;border-radius:50%;background:#ffd38a;
+    box-shadow:0 0 8px #ffd38a;transition:transform .28s ease;
+  }
+  .hero-btn:hover {
+    background:rgba(255,236,190,.16);border-color:#ffd38a;color:#fff;
+    transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,211,138,.2);
+  }
+  .hero-btn:hover .pill-dot {
+    transform:scale(1.4);
+  }
+
   /* ---------- 2 · silhouette ---------- */
   #s2{background:radial-gradient(ellipse at 30% 55%,#f4f4f2 0%,#dcdcd9 55%,#b9b9b6 100%);
       display:flex;align-items:center;justify-content:center;gap:clamp(1rem,4vw,5rem);
@@ -184,6 +210,20 @@
 <section id="s1">
   <canvas id="dune"></canvas>
   <h1 class="big split">from the drifting top soil of a sand dune facing wind, <em>a singular grain</em> holds the importance of an idea</h1>
+  <div class="hero-nav">
+    <a href="./world/" class="hero-btn" title="Venture into the procedural voxel world engine">
+      <span class="pill-dot"></span>
+      <span>World Engine</span>
+    </a>
+    <a href="./forma/" class="hero-btn" title="Creative 3D sandbox and prefab builder">
+      <span class="pill-dot" style="background:#ff9f5a;box-shadow:0 0 8px #ff9f5a;"></span>
+      <span>Forma Studio</span>
+    </a>
+    <a href="./kitbash/" class="hero-btn" title="Modular 3D environment builder & kit editor">
+      <span class="pill-dot" style="background:#5ce1e6;box-shadow:0 0 8px #5ce1e6;"></span>
+      <span>Kitbash 3D</span>
+    </a>
+  </div>
 </section>
 
 <!-- 2 -->
