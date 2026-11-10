@@ -253,6 +253,24 @@
   </div>
 </section>
 
+<!-- 6 -->
+<section id="s6">
+  <video id="monkeyVideo" class="video-bg" src="./assets/monkey.mp4" autoplay loop muted playsinline preload="auto"></video>
+  <div class="video-overlay"></div>
+  <div class="video-content">
+    <div>
+      <div class="video-tag">Entry I · The Watcher</div>
+      <h2 class="video-title">an ancient gaze meets yours, unblinking into the unknown.</h2>
+    </div>
+    <div>
+      <button id="monkeySoundToggle" class="sound-btn">
+        <span class="sound-dot"></span>
+        <span id="monkeySoundLabel">Enable Sound 🔊</span>
+      </button>
+    </div>
+  </div>
+</section>
+
 <script>
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -578,41 +596,46 @@ if(btnRandom){
 }
 
 /* =========================================================
-   5 · Loop Video & Audio Controls
+   5 & 6 · Video & Audio Controls
    ========================================================= */
-const loopVideo = $('loopVideo');
-const soundToggle = $('soundToggle');
-const soundLabel = $('soundLabel');
+function setupVideoAudio(vidId, btnId, labelId, secId){
+  const vid = $(vidId);
+  const btn = $(btnId);
+  const lbl = $(labelId);
+  const sec = $(secId);
+  if(!vid || !btn) return;
 
-if(loopVideo && soundToggle){
-  // Try unmuting immediately on user interaction
-  soundToggle.addEventListener('click', ()=>{
-    if(loopVideo.muted){
-      loopVideo.muted = false;
-      loopVideo.volume = 1.0;
-      loopVideo.play().catch(()=>{});
-      soundLabel.textContent = 'Mute Audio 🔇';
+  btn.addEventListener('click', ()=>{
+    if(vid.muted){
+      vid.muted = false;
+      vid.volume = 1.0;
+      vid.play().catch(()=>{});
+      lbl.textContent = 'Mute Audio 🔇';
     } else {
-      loopVideo.muted = true;
-      soundLabel.textContent = 'Enable Sound 🔊';
+      vid.muted = true;
+      lbl.textContent = 'Enable Sound 🔊';
     }
   });
 
-  // When scrolling into section 5, attempt audio playback if user already interacted
-  const vObserver = new IntersectionObserver((entries)=>{
+  const obs = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting){
-        loopVideo.play().catch(()=>{});
+        vid.play().catch(()=>{});
+      } else {
+        // pause or mute when scrolled out of view to avoid overlapping sound
+        if(!vid.muted) vid.pause();
       }
     });
-  },{threshold:0.3});
-  vObserver.observe($('s5'));
+  },{threshold:0.35});
+  if(sec) obs.observe(sec);
 
-  // Ensure first click on page unlocks audio if permitted
   window.addEventListener('click', ()=>{
-    if(loopVideo.paused) loopVideo.play().catch(()=>{});
+    if(vid.paused) vid.play().catch(()=>{});
   }, {once:true});
 }
+
+setupVideoAudio('loopVideo', 'soundToggle', 'soundLabel', 's5');
+setupVideoAudio('monkeyVideo', 'monkeySoundToggle', 'monkeySoundLabel', 's6');
 </script>
 </body>
 </html>
