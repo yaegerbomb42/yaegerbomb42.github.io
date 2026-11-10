@@ -143,6 +143,37 @@
   .sound-btn:hover{background:rgba(255,255,255,.25);border-color:#ffd38a;color:#ffd38a}
   .sound-dot{width:8px;height:8px;border-radius:50%;background:#ffd38a;animation:pulse 1.8s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+  /* ---------- 7 · 42 crypt ---------- */
+  #s7{
+    background:#040406;color:#e8e4dc;min-height:100vh;min-height:100svh;
+    display:flex;flex-direction:column;justify-content:center;position:relative;
+    padding:6rem clamp(1.2rem,6vw,6rem);border-top:1px solid rgba(255,255,255,.08);
+    overflow:hidden;
+  }
+  #s7::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 70% 40%,rgba(66,133,244,.08) 0%,rgba(218,74,34,.04) 45%,transparent 75%);
+  }
+  #cryptMatrix{position:absolute;inset:0;width:100%;height:100%;opacity:.28;pointer-events:none}
+  .crypt-box{position:relative;z-index:2;max-width:min(52em,92vw)}
+  .crypt-badge{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;letter-spacing:.3em;
+    text-transform:uppercase;color:#8590a6;margin-bottom:1.8rem;display:flex;align-items:center;gap:.75rem;
+  }
+  .crypt-badge .dot{width:8px;height:8px;background:#38bdf8;border-radius:50%;box-shadow:0 0 10px #38bdf8}
+  #s7 .big{
+    font-size:clamp(2.4rem,6.2vw,6.4rem);color:#f5f0e6;margin-bottom:2rem;line-height:1.04;
+  }
+  #s7 em{font-style:italic;color:#ffd38a;font-weight:400}
+  .crypt-metrics{
+    display:flex;flex-wrap:wrap;gap:clamp(1.5rem,4vw,3.5rem);margin-top:2.5rem;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  .metric-item{display:flex;flex-direction:column;gap:.35rem}
+  .metric-label{font-size:.74rem;letter-spacing:.25em;text-transform:uppercase;color:#6d7687}
+  .metric-val{font-size:clamp(1.4rem,2.5vw,2.2rem);font-weight:600;color:#f0ece2;letter-spacing:.02em}
+  .metric-val span{color:#ffd38a}
 </style>
 </head>
 <body>
@@ -271,6 +302,29 @@
   </div>
 </section>
 
+<!-- 7 -->
+<section id="s7">
+  <canvas id="cryptMatrix"></canvas>
+  <div class="crypt-box">
+    <div class="crypt-badge"><span class="dot"></span> Protocol 42 // Monolith Vault</div>
+    <h2 class="big split">42 crypt: <em>42 deadline</em>, time bends toward those who build.</h2>
+    <div class="crypt-metrics">
+      <div class="metric-item">
+        <span class="metric-label">Vault Epoch</span>
+        <div class="metric-val">42.<span>00</span></div>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Crypt State</span>
+        <div class="metric-val">SEALED</div>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Deadline Drift</span>
+        <div class="metric-val" id="cryptCountdown">42d <span>00:00:00</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -295,7 +349,7 @@ function splitNode(node){
 document.querySelectorAll('.split').forEach(el=>{wi=0;splitNode(el);});
 
 /* ---------- visibility tracking ---------- */
-const visible = {s1:false,s2:false,s3:false};
+const visible = {s1:false,s2:false,s3:false,s7:false};
 const io = new IntersectionObserver(es=>{
   es.forEach(e=>{
     visible[e.target.id]=e.isIntersecting;
@@ -306,7 +360,7 @@ const io = new IntersectionObserver(es=>{
     } else if(e.target.id==='s2') stopTear();
   });
 },{threshold:.35});
-['s1','s2','s3'].forEach(id=>io.observe($(id)));
+['s1','s2','s3','s7'].forEach(id=>{ const el = $(id); if(el) io.observe(el); });
 
 /* =========================================================
    1 · SAND DUNE
@@ -636,6 +690,55 @@ function setupVideoAudio(vidId, btnId, labelId, secId){
 
 setupVideoAudio('loopVideo', 'soundToggle', 'soundLabel', 's5');
 setupVideoAudio('monkeyVideo', 'monkeySoundToggle', 'monkeySoundLabel', 's6');
+
+/* =========================================================
+   7 · 42 Crypt Matrix Rain & Countdown
+   ========================================================= */
+const cmat = $('cryptMatrix');
+if(cmat){
+  const mc = cmat.getContext('2d');
+  let mw, mh, cols, ypos;
+  const chars = '012345678942CRYPTDEADLINEΣΩΔλ';
+
+  function resizeMatrix(){
+    mw = cmat.width = cmat.clientWidth;
+    mh = cmat.height = cmat.clientHeight;
+    cols = Math.floor(mw / 24) + 1;
+    ypos = Array(cols).fill(0).map(()=> Math.random() * -100);
+  }
+  window.addEventListener('resize', resizeMatrix);
+  resizeMatrix();
+
+  function renderMatrix(){
+    mc.fillStyle = 'rgba(4, 4, 6, 0.08)';
+    mc.fillRect(0, 0, mw, mh);
+    mc.fillStyle = '#38bdf8';
+    mc.font = '13px monospace';
+
+    ypos.forEach((y, i)=>{
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      const x = i * 24;
+      mc.fillText(text, x, y);
+      if(y > 50 + Math.random() * 10000) ypos[i] = 0;
+      else ypos[i] = y + 16;
+    });
+    requestAnimationFrame(renderMatrix);
+  }
+  requestAnimationFrame(renderMatrix);
+
+  // Live drift countdown
+  const cd = $('cryptCountdown');
+  function updateCountdown(){
+    if(!cd) return;
+    const now = new Date();
+    const sec = 59 - now.getSeconds();
+    const min = 59 - now.getMinutes();
+    const hr = 23 - now.getHours();
+    cd.innerHTML = `42d <span>${String(hr).padStart(2,'0')}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}</span>`;
+  }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+}
 </script>
 </body>
 </html>
