@@ -1,101 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MONOLITH</title>
-  <style>
-    :root {
-      --bg: #090a0f;
-      --fg: #e2e8f0;
-      --accent: #38bdf8;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-    .badge {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      background: rgba(56, 189, 248, 0.1);
-      color: var(--accent);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      margin-bottom: 24px;
-    }
-    h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
-    }
-    p {
-      font-size: 1.15rem;
-      color: #94a3b8;
-      max-width: 540px;
-      line-height: 1.6;
-      margin-bottom: 32px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      width: 100%;
-      max-width: 680px;
-      text-align: left;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 18px 20px;
-    }
-    .card-label {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: #64748b;
-      margin-bottom: 6px;
-    }
-    .card-val {
-      font-size: 0.95rem;
-      color: #f1f5f9;
-      font-weight: 500;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal — Entry I</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-snap-type:y proximity;background:#050505}
+  body{font-family:'Cormorant Garamond',Georgia,serif;color:#111;overflow-x:hidden}
+
+  /* film grain over everything */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.09;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;
+    padding:1.4rem clamp(1.2rem,4vw,3rem);color:#fff;mix-blend-mode:difference;
+    font-size:.95rem;letter-spacing:.3em;text-transform:uppercase;font-weight:500;
+  }
+
+  section{position:relative;min-height:100vh;min-height:100svh;scroll-snap-align:start;overflow:hidden}
+
+  /* ---------- word reveal ---------- */
+  .big{font-weight:300;line-height:1.06;letter-spacing:-.01em}
+  .w{display:inline-block;opacity:0;transform:translateY(.55em);filter:blur(10px);
+     transition:opacity 1.3s ease,transform 1.3s cubic-bezier(.2,.7,.2,1),filter 1.3s ease;
+     transition-delay:calc(var(--i)*85ms + 250ms)}
+  .in .w{opacity:1;transform:none;filter:none}
+
+  /* ---------- 1 · dune ---------- */
+  #s1{background:#1b1020}
+  #dune{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #s1 .big{
+    position:absolute;z-index:2;top:clamp(5.5rem,14vh,10rem);left:clamp(1.2rem,6vw,6rem);
+    max-width:min(22em,88vw);font-size:clamp(2rem,5.1vw,5.6rem);color:#f8e8cf;
+    text-shadow:0 2px 40px rgba(30,10,0,.55);
+  }
+  #s1 em{font-style:italic;font-weight:500;color:#ffd38a}
+
+  /* ---------- 2 · silhouette ---------- */
+  #s2{background:radial-gradient(ellipse at 30% 55%,#f4f4f2 0%,#dcdcd9 55%,#b9b9b6 100%);
+      display:flex;align-items:center;justify-content:center;gap:clamp(1rem,4vw,5rem);
+      padding:5rem clamp(1.2rem,6vw,6rem) 2rem}
+  #s2::before{content:"";position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.28) 100%)}
+  #face{flex:0 1 46%;height:min(86vh,900px);position:relative;z-index:1}
+  #face svg{width:100%;height:100%;display:block;overflow:visible}
+  #breath{animation:breathe 7s ease-in-out infinite;transform-origin:50% 100%}
+  @keyframes breathe{50%{transform:translateY(-3px) scale(1.004)}}
+  #s2 .big{flex:0 1 48%;font-size:clamp(2rem,4.5vw,5rem);color:#101010;position:relative;z-index:2;max-width:13em}
+  #s2 em{font-style:italic;font-weight:500}
+  @media (max-width:800px){
+    #s2{flex-direction:column;padding-top:4.5rem}
+    #face{flex:none;height:52vh;width:100%}
+    #s2 .big{flex:none;font-size:clamp(1.8rem,7vw,3rem)}
+  }
+
+  /* ---------- 3 · begins ---------- */
+  #s3{background:#050505;color:#f2efe9;display:flex;flex-direction:column;justify-content:center;
+      padding:0 clamp(1.2rem,6vw,6rem)}
+  #s3 .meta{font-size:1rem;letter-spacing:.3em;text-transform:uppercase;opacity:0;transition:opacity 2s 3.8s;
+      margin-bottom:2rem;color:#9b9488}
+  #s3.in .meta{opacity:1}
+  #typed{font-size:clamp(2.6rem,10vw,11rem);font-weight:300;line-height:1;font-style:italic;min-height:1.1em}
+  .cursor{display:inline-block;width:.05em;height:.85em;background:#f2efe9;margin-left:.08em;
+      transform:translateY(.08em);animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+</style>
 </head>
 <body>
-  <div class="badge">Baseline Cleared &bull; Oracle VPS Online</div>
-  <h1>MONOLITH</h1>
-  <p>Scratch baseline initialized. Zero legacy debt, zero bloated harnesses, zero phantom games. Ready for direct value creation.</p>
-  <div class="grid">
-    <div class="card">
-      <div class="card-label">HOST COMPUTE</div>
-      <div class="card-val">Oracle VPS (147.224.158.118)</div>
-    </div>
-    <div class="card">
-      <div class="card-label">EDGE CDN</div>
-      <div class="card-val">GitHub Pages CDN</div>
-    </div>
-    <div class="card">
-      <div class="card-label">AI REASONING</div>
-      <div class="card-val">Direct LLM & 3D Pipelines</div>
-    </div>
+
+<header><span>The Journal</span><span id="date"></span></header>
+
+<!-- 1 -->
+<section id="s1">
+  <canvas id="dune"></canvas>
+  <h1 class="big split">from the drifting top soil of a sand dune facing wind, <em>a singular grain</em> holds the importance of an idea</h1>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <div id="face">
+    <svg viewBox="0 0 420 500" preserveAspectRatio="xMidYMid meet" aria-label="Silhouette of a man in profile, a tear running down his cheek">
+      <defs>
+        <linearGradient id="skin" x1="0" x2="1">
+          <stop offset="0" stop-color="#000"/><stop offset=".7" stop-color="#050505"/><stop offset="1" stop-color="#1c1c1c"/>
+        </linearGradient>
+        <linearGradient id="tearGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f8fb" stop-opacity=".95"/>
+          <stop offset="1" stop-color="#8da0ad" stop-opacity=".85"/>
+        </linearGradient>
+        <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+      </defs>
+
+      <g id="breath">
+        <path id="head" fill="url(#skin)" d="
+          M 0 500 C 80 490 130 470 150 430 L 155 390
+          C 120 370 90 320 90 250 C 85 150 140 70 220 65
+          C 280 62 315 100 322 160 C 324 185 326 200 330 215
+          C 334 225 330 232 328 238 C 326 245 330 255 340 272
+          C 350 285 362 296 368 303 C 370 312 362 318 350 318
+          C 346 320 346 324 348 328 C 354 334 352 340 346 342
+          C 342 345 346 348 350 352 C 350 358 344 360 340 362
+          C 336 368 338 376 340 382 C 344 392 336 410 316 418
+          C 280 425 240 420 210 410 L 205 440
+          C 210 470 260 490 330 500 L 420 500 L 420 500 L 0 500 Z"/>
+
+        <!-- wet eye glimmer -->
+        <ellipse id="glint" cx="314" cy="251" rx="6" ry="2.2" fill="#fff" opacity="0" filter="url(#soft)"/>
+
+        <!-- the tear's route down the cheek (invisible) -->
+        <path id="tearPath" d="M 314 261 C 308 290 306 320 306 345 C 306 375 304 400 299.5 420" fill="none" stroke="none"/>
+        <!-- wet trail -->
+        <path id="trail" d="M 314 261 C 308 290 306 320 306 345 C 306 375 304 400 299.5 420"
+              fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0"/>
+
+        <ellipse id="ripple" cx="299" cy="486" rx="1" ry="1" fill="none" stroke="#fff" stroke-width=".8" opacity="0"/>
+
+        <g id="tear" opacity="0">
+          <path id="tearBody" fill="url(#tearGrad)" stroke="rgba(30,40,50,.45)" stroke-width=".5"/>
+          <ellipse id="tearHi" fill="#fff" opacity=".9"/>
+        </g>
+      </g>
+    </svg>
   </div>
+  <h2 class="big split">wonder took hold, <em>what happens when a man decides to venture into a new form</em></h2>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <div class="meta">Entry I &nbsp;—&nbsp; <span id="date2"></span></div>
+  <div id="typed" aria-label="and thus it begins..."><span id="typedText"></span><span class="cursor"></span></div>
+</section>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const dateStr = new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+$('date').textContent = dateStr; $('date2').textContent = dateStr;
+
+/* split headline text into animated words (keeps <em>) */
+let wi = 0;
+function splitNode(node){
+  [...node.childNodes].forEach(n=>{
+    if(n.nodeType===3){
+      const frag=document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(tok=>{
+        if(!tok) return;
+        if(/^\s+$/.test(tok)) frag.appendChild(document.createTextNode(' '));
+        else{const s=document.createElement('span');s.className='w';s.style.setProperty('--i',wi++);s.textContent=tok;frag.appendChild(s);}
+      });
+      n.replaceWith(frag);
+    } else if(n.nodeType===1) splitNode(n);
+  });
+}
+document.querySelectorAll('.split').forEach(el=>{wi=0;splitNode(el);});
+
+/* ---------- visibility tracking ---------- */
+const visible = {s1:false,s2:false,s3:false};
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    visible[e.target.id]=e.isIntersecting;
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.id==='s2') startTear();
+      if(e.target.id==='s3') startTyping();
+    } else if(e.target.id==='s2') stopTear();
+  });
+},{threshold:.35});
+['s1','s2','s3'].forEach(id=>io.observe($(id)));
+
+/* =========================================================
+   1 · SAND DUNE
+   ========================================================= */
+const cv = $('dune'), ctx = cv.getContext('2d');
+const bg = document.createElement('canvas'), bctx = bg.getContext('2d');
+let W,H,DPR,surf=[],CX=.6,parts=[],streaks=[];
+
+const rand=(a,b)=>a+Math.random()*(b-a);
+
+function buildScene(){
+  bg.width=W*DPR; bg.height=H*DPR; bctx.setTransform(DPR,0,0,DPR,0,0);
+  const c=bctx;
+  // sky
+  let g=c.createLinearGradient(0,0,0,H*.75);
+  g.addColorStop(0,'#150c1c'); g.addColorStop(.35,'#4a2a3a'); g.addColorStop(.62,'#b4603f'); g.addColorStop(1,'#f0b068');
+  c.fillStyle=g; c.fillRect(0,0,W,H);
+  // sun glow
+  g=c.createRadialGradient(W*.82,H*.6,0,W*.82,H*.6,W*.5);
+  g.addColorStop(0,'rgba(255,225,160,.75)'); g.addColorStop(.25,'rgba(255,170,90,.3)'); g.addColorStop(1,'rgba(255,150,80,0)');
+  c.fillStyle=g; c.fillRect(0,0,W,H);
+  // far dunes (hazy)
+  [[.60,'#a45a3e',.016,.7],[.66,'#86452f',.02,1.9],[.72,'#64331f',.026,3.1]].forEach(([base,col,f,ph],li)=>{
+    c.beginPath(); c.moveTo(0,H);
+    for(let x=0;x<=W;x+=4){
+      const y=H*base - Math.sin(x/W*3.2+ph)*H*.035 - Math.sin(x/W*7+ph*2)*H*.012;
+      c.lineTo(x,y);
+    }
+    c.lineTo(W,H); c.closePath(); c.fillStyle=col; c.fill();
+  });
+  // main dune surface table
+  surf=[];
+  for(let i=0;i<=W;i++){
+    const u=i/W; let y;
+    if(u<CX){const t=u/CX; y=.90-.31*(1-Math.pow(1-t,2.2)); }
+    else{const s=(u-CX)/(1-CX); y=.59+.30*(1-Math.exp(-s*6.5));}
+    y*=H; if(u<CX) y+=Math.sin(i*.045)*.8;
+    surf[i]=y;
+  }
+  // lit windward body
+  c.beginPath(); c.moveTo(0,H); for(let i=0;i<=W;i++) c.lineTo(i,surf[i]); c.lineTo(W,H); c.closePath();
+  g=c.createLinearGradient(0,H*.55,0,H); g.addColorStop(0,'#e8a757'); g.addColorStop(.5,'#b9692f'); g.addColorStop(1,'#6a3319');
+  c.fillStyle=g; c.fill();
+  // shadowed slip face
+  const cxp=CX*W;
+  c.beginPath(); c.moveTo(cxp,H); for(let i=cxp|0;i<=W;i++) c.lineTo(i,surf[i]); c.lineTo(W,H); c.closePath();
+  g=c.createLinearGradient(cxp,0,W,0); g.addColorStop(0,'rgba(30,12,12,.92)'); g.addColorStop(1,'rgba(60,25,15,.7)');
+  c.fillStyle=g; c.fill();
+  // wind ripples
+  c.lineWidth=1; c.strokeStyle='rgba(70,28,8,.13)';
+  for(let k=1;k<26;k++){
+    c.beginPath();
+    for(let x=0;x<=cxp;x+=6){
+      const y=surf[x|0]+k*H*.011+Math.sin(x*.018+k*1.7)*2.4;
+      x?c.lineTo(x,y):c.moveTo(x,y);
+    }
+    c.stroke();
+  }
+  // crest highlight
+  c.beginPath(); for(let i=(CX*W*.55)|0;i<=cxp;i++){i===((CX*W*.55)|0)?c.moveTo(i,surf[i]):c.lineTo(i,surf[i]);}
+  c.strokeStyle='rgba(255,226,170,.55)'; c.lineWidth=1.6; c.stroke();
+}
+
+class Grain{
+  constructor(init){this.reset(init);}
+  reset(init){
+    const u=.08+.54*Math.pow(Math.random(),.65);
+    this.x=u*W; this.y=surf[this.x|0]-rand(0,2);
+    this.vx=rand(1,3.6); this.vy=-rand(.1,1.5);
+    this.age=init?rand(0,300):0; this.max=rand(140,380);
+    this.s=rand(.7,1.9); this.seed=rand(0,100);
+  }
+  step(gust){
+    this.age++;
+    this.vx += (rand(1.2,3.4)*gust - this.vx)*.03;
+    this.vy += .014 + Math.sin(this.age*.05+this.seed)*.03;
+    this.x += this.vx*gust; this.y += this.vy;
+    const sy = surf[Math.max(0,Math.min(W|0,this.x|0))];
+    if(this.y>sy){
+      this.y=sy-.5; this.vy=-Math.abs(this.vy)*.35-.15;
+      if(this.x>CX*W+W*.08) this.age=this.max;   // dropped over the slip face
+    }
+    if(this.age>=this.max||this.x>W+10) this.reset(false);
+  }
+  draw(){
+    const a=Math.sin(Math.PI*Math.min(1,this.age/this.max));
+    ctx.globalAlpha=a*.85; ctx.fillRect(this.x,this.y,this.s,this.s);
+  }
+}
+
+/* the singular grain */
+const hero={phase:'rest',t0:0,x0:0,y0:0,x:0,y:0,trail:[],glow:0};
+function heroStart(now){
+  hero.phase='rest'; hero.t0=now; hero.x0=W*.44; hero.y0=surf[hero.x0|0]-2; hero.trail=[];
+}
+function heroUpdate(now){
+  const t=now-hero.t0;
+  if(hero.phase==='rest'){
+    hero.x=hero.x0+Math.sin(t*.02)*.4; hero.y=hero.y0+Math.cos(t*.03)*.3;
+    hero.glow=.35+.25*Math.sin(t*.004)+Math.min(1,t/2600)*.4;
+    if(t>2800){hero.phase='fly';hero.t0=now;}
+  } else if(hero.phase==='fly'){
+    const D=9000,p=Math.min(1,t/D);
+    const rise=1-Math.pow(1-p,2);
+    hero.x=hero.x0+(W*.62)*Math.pow(p,1.35);
+    hero.y=hero.y0-10-(H*.34)*rise+Math.sin(p*13)*11*p;
+    hero.glow=1;
+    hero.trail.push([hero.x,hero.y]); if(hero.trail.length>60) hero.trail.shift();
+    if(p>=1){hero.phase='gone';hero.t0=now;}
+  } else {
+    hero.glow=0; hero.trail.shift();
+    if(t>1800) heroStart(now);
+  }
+}
+function heroDraw(){
+  if(hero.trail.length>1){
+    for(let i=1;i<hero.trail.length;i++){
+      ctx.globalAlpha=(i/hero.trail.length)*.5; ctx.strokeStyle='#ffe2a8'; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(...hero.trail[i-1]); ctx.lineTo(...hero.trail[i]); ctx.stroke();
+    }
+  }
+  if(hero.glow<=0) return;
+  const r=26;
+  const g=ctx.createRadialGradient(hero.x,hero.y,0,hero.x,hero.y,r);
+  g.addColorStop(0,'rgba(255,236,190,.95)'); g.addColorStop(.25,'rgba(255,210,130,.45)'); g.addColorStop(1,'rgba(255,190,100,0)');
+  ctx.globalAlpha=Math.min(1,hero.glow); ctx.fillStyle=g;
+  ctx.fillRect(hero.x-r,hero.y-r,r*2,r*2);
+  ctx.fillStyle='#fff6df'; ctx.globalAlpha=1;
+  ctx.beginPath(); ctx.arc(hero.x,hero.y,2.2,0,7); ctx.fill();
+}
+
+function resize(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  W=cv.clientWidth; H=cv.clientHeight;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+  buildScene();
+  const n=Math.min(650,Math.floor(W/2.6));
+  parts=Array.from({length:n},()=>new Grain(true));
+  streaks=Array.from({length:14},()=>({x:rand(0,W),y:rand(H*.2,H*.85),l:rand(80,260),v:rand(2,6)}));
+  heroStart(performance.now());
+}
+addEventListener('resize',resize);
+resize();
+
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!visible.s1) return;
+  const gust=.75+.35*Math.sin(now*.0007)+.2*Math.sin(now*.0023);
+  ctx.globalAlpha=1; ctx.drawImage(bg,0,0,W,H);
+  // wind streaks
+  streaks.forEach(s=>{
+    s.x+=s.v*gust; if(s.x-s.l>W){s.x=-20;s.y=rand(H*.2,H*.85);}
+    const g=ctx.createLinearGradient(s.x-s.l,0,s.x,0);
+    g.addColorStop(0,'rgba(255,230,190,0)'); g.addColorStop(1,'rgba(255,230,190,.09)');
+    ctx.strokeStyle=g; ctx.lineWidth=1; ctx.globalAlpha=1;
+    ctx.beginPath(); ctx.moveTo(s.x-s.l,s.y); ctx.lineTo(s.x,s.y-s.l*.03); ctx.stroke();
+  });
+  ctx.fillStyle='#f3cf98';
+  parts.forEach(p=>{p.step(gust);p.draw();});
+  heroUpdate(now); heroDraw();
+  ctx.globalAlpha=1;
+}
+requestAnimationFrame(loop);
+
+/* =========================================================
+   2 · THE TEAR
+   ========================================================= */
+const tearPath=$('tearPath'), PLEN=tearPath.getTotalLength();
+const tearG=$('tear'), tearBody=$('tearBody'), tearHi=$('tearHi'),
+      trail=$('trail'), glint=$('glint'), ripple=$('ripple');
+trail.style.strokeDasharray=PLEN;
+
+const D={form:2600,roll:5600,hang:1900,fall:650,splash:1100,rest:2800};
+const A=D.form, B=A+D.roll, C=B+D.hang, E=C+D.fall, F=E+D.splash, TOTAL=F+D.rest;
+const SHOULDER=486;
+const eo=t=>1-Math.pow(1-t,3), smooth=t=>t*t*(3-2*t);
+
+function drawTear(x,y,r,L,rot){
+  tearG.setAttribute('transform',`translate(${x} ${y}) rotate(${rot})`);
+  tearBody.setAttribute('d',
+   `M0 ${-L} C ${r*.3} ${-L*.5} ${r} ${-r*.7} ${r} 0 A ${r} ${r} 0 0 1 ${-r} 0 C ${-r} ${-r*.7} ${-r*.3} ${-L*.5} 0 ${-L} Z`);
+  tearHi.setAttribute('cx',-r*.38); tearHi.setAttribute('cy',-r*.1);
+  tearHi.setAttribute('rx',r*.2);   tearHi.setAttribute('ry',r*.32);
+}
+
+let tearRun=false, tearStart=0;
+function tearFrame(now){
+  if(!tearRun) return;
+  requestAnimationFrame(tearFrame);
+  let t=now-tearStart; if(t>TOTAL){tearStart=now;t=0;}
+
+  const p0=tearPath.getPointAtLength(0), pEnd=tearPath.getPointAtLength(PLEN);
+  tearG.setAttribute('opacity',0); ripple.setAttribute('opacity',0);
+
+  if(t<A){                                    // forms at the eye
+    const p=t/A;
+    glint.setAttribute('opacity',.55*smooth(p));
+    trail.setAttribute('opacity',0);
+    const r=.2+2.9*eo(p);
+    tearG.setAttribute('opacity',Math.min(1,p*3));
+    drawTear(p0.x,p0.y,r,r*1.04,0);
+  } else if(t<B){                             // rolls down the cheek
+    const p=(t-A)/D.roll;
+    let s=.5*Math.pow(p,1.7)+.5*smooth(p);
+    s+=.010*Math.sin(p*24)*Math.sin(Math.PI*p);   // stick–slip
+    s=Math.max(0,Math.min(1,s));
+    const L0=s*PLEN, pt=tearPath.getPointAtLength(L0);
+    const q=tearPath.getPointAtLength(Math.min(PLEN,L0+2)), q0=tearPath.getPointAtLength(Math.max(0,L0-2));
+    const rot=Math.atan2(-(q.x-q0.x),(q.y-q0.y))*180/Math.PI;
+    const r=3-.55*s;
+    glint.setAttribute('opacity',.55-.35*p);
+    trail.style.strokeDashoffset=PLEN-L0; trail.setAttribute('opacity',.28);
+    tearG.setAttribute('opacity',1);
+    drawTear(pt.x,pt.y,r,r*(1.5+1.3*Math.sin(Math.PI*p)),rot);
+  } else if(t<C){                             // gathers at the jaw
+    const p=(t-B)/D.hang;
+    glint.setAttribute('opacity',.2*(1-p));
+    trail.style.strokeDashoffset=0; trail.setAttribute('opacity',.28*(1-p*.6));
+    const r=2.45+1.6*smooth(p);
+    tearG.setAttribute('opacity',1);
+    drawTear(pEnd.x+Math.sin(t*.01)*.12,pEnd.y+r*.9*p,r,r*(1+.9*p*p),0);
+  } else if(t<E){                             // lets go
+    const p=(t-C)/D.fall;
+    glint.setAttribute('opacity',0);
+    trail.setAttribute('opacity',.1*(1-p));
+    const r=4.05-.7*p, y=pEnd.y+4+(SHOULDER-pEnd.y-8)*p*p;
+    tearG.setAttribute('opacity',1);
+    drawTear(pEnd.x,y,r,r*(2+1.2*p),0);
+  } else if(t<F){                             // ripple on the shoulder
+    const p=(t-E)/D.splash;
+    trail.setAttribute('opacity',0);
+    const rr=2+22*eo(p);
+    ripple.setAttribute('rx',rr); ripple.setAttribute('ry',rr*.22);
+    ripple.setAttribute('cy',SHOULDER); ripple.setAttribute('cx',pEnd.x);
+    ripple.setAttribute('opacity',.55*(1-p));
+  }
+}
+function startTear(){ if(tearRun) return; tearRun=true; tearStart=performance.now()+700; requestAnimationFrame(tearFrame); }
+function stopTear(){ tearRun=false; tearG.setAttribute('opacity',0); trail.setAttribute('opacity',0); glint.setAttribute('opacity',0); }
+
+/* =========================================================
+   3 · and thus it begins...
+   ========================================================= */
+let typed=false;
+function startTyping(){
+  if(typed) return; typed=true;
+  const txt='and thus it begins...', el=$('typedText'); let i=0;
+  setTimeout(function next(){
+    el.textContent=txt.slice(0,++i);
+    if(i<txt.length){
+      const ch=txt[i-1];
+      setTimeout(next, ch==='.'?650: ch===' '?160: 85+Math.random()*80);
+    }
+  },900);
+}
+</script>
 </body>
 </html>
