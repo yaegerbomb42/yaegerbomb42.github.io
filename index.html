@@ -28,6 +28,7 @@
     #coop-status.searching{color:#fbbf24;border-color:#fbbf2440;animation:pulse 1.5s ease-in-out infinite}
     #coop-status.connected{color:#34d399;border-color:#34d39940}
     #coop-status.p2{color:#a78bfa;border-color:#a78bfa40}
+    @media(pointer:coarse),(max-width:720px){#coop-panel{bottom:auto;top:64px}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
     /* Mobile touch bar */
     #touch-bar{position:fixed;inset-x:0;bottom:0;z-index:20;display:none;align-items:flex-end;justify-content:space-between;gap:8px;padding:10px 14px 20px;pointer-events:none}
@@ -61,7 +62,7 @@
     .ctrl-row{display:flex;gap:10px;font-size:.8rem;color:#666}
     .ctrl-row span:first-child{color:#eee;font-weight:600;min-width:70px}
   </style>
-  <script type="module" crossorigin src="/assets/index-BrssOc1p.js"></script>
+  <script type="module" crossorigin src="/assets/index-BFIjZu4o.js"></script>
 </head>
 <body>
   <canvas id="game-canvas"></canvas>
@@ -82,7 +83,7 @@
   <!-- Co-op panel -->
   <div id="coop-panel">
     <div id="coop-status" style="display:none"></div>
-    <button id="coop-btn">⚡ Find Co-Op Partner</button>
+    <button id="coop-btn">🌐 Play Online</button>
   </div>
 
   <!-- Mobile touch controls -->
